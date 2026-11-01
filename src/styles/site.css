@@ -166,7 +166,7 @@
   align-items: center;
   gap: 3px;
   min-height: 44px;
-  color: var(--accent);
+  color: var(--action);
   font-size: 1.0625rem;
   font-weight: 500;
   text-decoration: none;
@@ -370,9 +370,28 @@
 .s-nav-brand {
   display: inline-flex;
   align-items: center;
+  gap: 10px;
   min-height: 44px;
   margin-right: auto;
   border-radius: 6px;
+}
+
+/* The woodcut at icon size, beside the wordmark. */
+.s-logomark {
+  display: block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(26, 23, 20, 0.12);
+  user-select: none;
+}
+
+@media (min-width: 720px) {
+  .s-logomark {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .s-wordmark {
@@ -1383,40 +1402,8 @@
 
 .s-listens-stage {
   position: relative;
-  margin-top: 72px;
+  margin-top: 64px;
   padding: 0;
-}
-
-@media (min-width: 900px) {
-  .s-listens-stage {
-    padding: 64px 0 72px;
-  }
-}
-
-.s-listens-art {
-  position: absolute;
-  inset: 0 -6%;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  pointer-events: none;
-  /* Painted so the engraving can print onto it; feathered so it has no edge. */
-  background: var(--paper);
-  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
-}
-
-.s-listens-art img,
-.s-listens-art > span {
-  width: min(100%, 1180px);
-  opacity: 0.5;
-}
-
-@media (max-width: 899px) {
-  .s-listens-art {
-    inset: -24px -12% auto;
-    height: 70%;
-  }
 }
 
 .s-rc {
@@ -1506,13 +1493,37 @@
   line-height: 1.4;
 }
 
+/* The engraving sits beside the words, never under a card, so every face stays clear. */
 .s-never {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+  max-width: 1040px;
+  margin: 112px auto 0;
+}
+
+.s-never-art img,
+.s-never-art > span {
+  display: block;
+  width: 100%;
+}
+
+.s-never-copy {
   display: grid;
   justify-items: center;
   gap: 14px;
-  max-width: 640px;
-  margin: 96px auto 0;
   text-align: center;
+}
+
+@media (min-width: 900px) {
+  .s-never {
+    grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+    gap: 64px;
+  }
+  .s-never-copy {
+    justify-items: start;
+    text-align: left;
+  }
 }
 
 .s-never-title {
@@ -1978,19 +1989,27 @@
   position: relative;
   display: grid;
   justify-items: center;
-  padding: 24px 0 0;
 }
 
+/* The engraving shows in full. The report overlaps only its foot, the table legs and the floor,
+   never a face. Margins in percent follow the column width: the engraving is 1.12 columns wide at
+   640 by 425, so 15% of the column is the bottom fifth of the picture. */
 .s-proof-engraving {
-  position: absolute;
-  inset: -6% -10% auto;
+  position: relative;
+  width: 112%;
+  margin-inline: -6%;
   pointer-events: none;
 }
 
 .s-proof-engraving img,
 .s-proof-engraving > span {
+  display: block;
   width: 100%;
   opacity: 0.6;
+}
+
+.s-proof-art .s-report {
+  margin-top: -15%;
 }
 
 .s-report {
@@ -2386,8 +2405,8 @@
   flex: none;
   padding: 7px 12px;
   border-radius: var(--r-pill);
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--action-soft);
+  color: var(--action);
   font-size: 0.8125rem;
   font-weight: 600;
 }
@@ -2630,7 +2649,7 @@
 .s-referral-code span:last-child {
   padding: 8px 14px;
   border-radius: 10px;
-  background: var(--accent);
+  background: var(--action);
   color: var(--on-accent);
   font-size: 0.8125rem;
   letter-spacing: 0;
@@ -3376,7 +3395,7 @@
 .s-entry-save {
   padding: 9px 16px;
   border-radius: var(--r-pill);
-  background: var(--accent);
+  background: var(--action);
   color: var(--on-accent);
   font-size: 0.875rem;
   font-weight: 600;
@@ -3522,8 +3541,8 @@
 .s-plan[data-featured] {
   background: var(--s-card);
   box-shadow:
-    0 0 0 1.5px var(--accent),
-    0 30px 70px rgba(31, 58, 95, 0.12);
+    0 0 0 1.5px var(--action),
+    0 30px 70px rgba(85, 107, 47, 0.14);
 }
 
 .s-plan-name {

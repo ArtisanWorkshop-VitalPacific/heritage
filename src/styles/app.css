@@ -282,38 +282,32 @@
 
 /* ---------- Hero with engraving and glass tiles ---------- */
 
+/* The engraving has its own place in the grid. No tile, card or line of copy ever sits on it,
+   so every face in the picture stays clear. Wide screens: words left, engraving right, tiles
+   across the foot. Tablets: the engraving above the words. Phones: words only. */
 .ap-hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   border-radius: var(--r-xl);
   background: var(--surface);
   border: 1px solid var(--rule);
 }
 
 .ap-hero-art {
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  right: -2%;
-  width: min(62%, 720px);
-  transform: translateY(-50%);
+  justify-self: center;
+  width: min(100%, 440px);
+  padding: var(--sp-6) var(--sp-6) 0;
   pointer-events: none;
 }
 
 .ap-hero-art img,
 .ap-hero-art > span {
+  display: block;
   width: 100%;
   height: auto;
-}
-
-/* A soft wash keeps the copy legible where the engraving runs under it. */
-.ap-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(90deg, var(--surface) 0%, var(--surface) 34%, color-mix(in srgb, var(--surface) 30%, transparent) 70%, transparent 100%);
 }
 
 .ap-hero-body {
@@ -330,22 +324,52 @@
   display: grid;
   gap: var(--sp-3);
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  max-width: 760px;
 }
 
-@media (max-width: 760px) {
-  .ap-hero-art {
-    top: 0;
-    right: -10%;
-    width: 92%;
-    transform: none;
-    opacity: 0.55;
-  }
-  .ap-hero::before {
-    background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--surface) 70%, transparent) 30%, var(--surface) 62%);
+@media (min-width: 1000px) {
+  .ap-hero {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-areas:
+      "text art"
+      "extra art"
+      "tiles tiles";
+    grid-template-rows: auto 1fr auto;
+    column-gap: var(--sp-6);
   }
   .ap-hero-body {
-    padding: var(--sp-16) var(--sp-5) var(--sp-5);
+    display: contents;
+  }
+  .ap-hero-text {
+    grid-area: text;
+    align-self: end;
+    padding: var(--sp-10) 0 0 var(--sp-10);
+  }
+  /* A share card or similar block sits under the words. */
+  .ap-hero-body > :not(.ap-hero-text):not(.ap-hero-tiles) {
+    grid-area: extra;
+    align-self: start;
+    margin: var(--sp-6) 0 var(--sp-8) var(--sp-10);
+  }
+  .ap-hero-tiles {
+    grid-area: tiles;
+    margin: var(--sp-2) var(--sp-10) var(--sp-8);
+  }
+  .ap-hero-art {
+    grid-area: art;
+    align-self: center;
+    justify-self: end;
+    width: 100%;
+    max-width: 560px;
+    padding: var(--sp-6) var(--sp-8) var(--sp-6) 0;
+  }
+}
+
+@media (max-width: 639px) {
+  .ap-hero-art {
+    display: none;
+  }
+  .ap-hero-body {
+    padding: var(--sp-6) var(--sp-5) var(--sp-5);
     gap: var(--sp-6);
   }
   .ap-hero-tiles {
@@ -552,8 +576,8 @@
 }
 
 .ap-addkid:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
+  background: var(--action-soft);
+  border-color: var(--action);
 }
 
 .ap-addkid-icon {
@@ -562,7 +586,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--action);
   color: var(--on-accent);
 }
 
@@ -780,7 +804,7 @@
   justify-self: start;
   min-height: var(--touch);
   font-weight: 600;
-  color: var(--accent);
+  color: var(--action);
   text-decoration: none;
 }
 
@@ -1111,14 +1135,14 @@
   height: 48px;
   border-radius: 50%;
   border: 0;
-  background: var(--accent);
+  background: var(--action);
   color: var(--on-accent);
   cursor: pointer;
   transition: transform var(--d-fast) var(--ease), background-color var(--d-fast) var(--ease);
 }
 
 .ap-hear-play:hover {
-  background: var(--accent-2);
+  background: var(--action-2);
 }
 
 .ap-hear-play:active {
@@ -1480,22 +1504,6 @@
   font-size: var(--text-sm);
 }
 
-.ap-hero-refer .ap-hero-body {
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  align-items: end;
-  gap: var(--sp-8);
-}
-
-.ap-hero-refer .ap-hero-art {
-  width: min(56%, 640px);
-  top: 46%;
-}
-
-@media (max-width: 900px) {
-  .ap-hero-refer .ap-hero-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 
 .ap-share {
   display: grid;
@@ -1738,9 +1746,6 @@
   }
 }
 
-.ap-hero-org .ap-hero-art {
-  width: min(58%, 680px);
-}
 
 .ap-svc {
   display: grid;
@@ -1891,7 +1896,7 @@
   min-height: 0;
   font: inherit;
   font-weight: 650;
-  color: var(--accent);
+  color: var(--action);
   text-decoration: underline;
   text-underline-offset: 3px;
   cursor: pointer;
@@ -3062,9 +3067,9 @@
 }
 
 .ap-option[aria-checked="true"] {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
-  box-shadow: 0 0 0 1px var(--accent);
+  border-color: var(--action);
+  background: color-mix(in srgb, var(--action-soft) 70%, var(--surface));
+  box-shadow: 0 0 0 1px var(--action);
 }
 
 .ap-option-icon {
@@ -3078,7 +3083,7 @@
 }
 
 .ap-option[aria-checked="true"] .ap-option-icon {
-  background: var(--accent);
+  background: var(--action);
   color: var(--on-accent);
 }
 
@@ -3111,7 +3116,7 @@
 }
 
 .ap-option[aria-checked="true"] .ap-option-mark {
-  background: var(--accent);
+  background: var(--action);
   box-shadow: none;
 }
 
@@ -3139,7 +3144,7 @@
   width: 24px;
   height: 24px;
   margin: 0;
-  accent-color: var(--accent);
+  accent-color: var(--action);
   cursor: pointer;
 }
 

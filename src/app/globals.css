@@ -34,8 +34,10 @@
   --hw-ochre: #f8b466;
 
   /* Semantic: one job each */
-  --navy: #1f3a5f; /* tutor, current rung, primary action */
+  --navy: #1f3a5f; /* tutor, current rung, data */
   --navy-2: #2a4c78;
+  --olive: #556b2f; /* dark olive green: buttons, links and other actions */
+  --olive-2: #627a38;
   --mastered: #2a5234;
   --mastered-bg: #dce6d6;
   --review: #c28e2e;
@@ -56,6 +58,9 @@
   --accent-2: var(--navy-2);
   --on-accent: #f7f1e4;
   --accent-soft: rgba(31, 58, 95, 0.09);
+  --action: var(--olive);
+  --action-2: var(--olive-2);
+  --action-soft: rgba(85, 107, 47, 0.1);
   --focus: #2c6fd1;
   --plate: var(--paper); /* ground behind engravings in dark mode */
 
@@ -353,32 +358,32 @@ textarea {
 }
 
 .btn-primary {
-  --btn-bg: var(--accent);
+  --btn-bg: var(--action);
   --btn-fg: var(--on-accent);
-  --btn-border: var(--accent);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 6px 16px rgba(31, 58, 95, 0.18);
+  --btn-border: var(--action);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset, 0 6px 16px rgba(85, 107, 47, 0.22);
 }
 
 .btn-primary:hover {
-  --btn-bg: var(--accent-2);
-  border-color: var(--accent-2);
+  --btn-bg: var(--action-2);
+  border-color: var(--action-2);
 }
 
 .btn-secondary {
   --btn-bg: transparent;
-  --btn-fg: var(--accent);
-  --btn-border: var(--accent);
+  --btn-fg: var(--action);
+  --btn-border: var(--action);
 }
 
 .btn-quiet {
-  --btn-bg: var(--accent-soft);
-  --btn-fg: var(--accent);
+  --btn-bg: var(--action-soft);
+  --btn-fg: var(--action);
   --btn-border: transparent;
 }
 
 .btn-quiet:hover {
   border-color: transparent;
-  background: rgba(31, 58, 95, 0.14);
+  background: rgba(85, 107, 47, 0.16);
 }
 
 .btn-ghost {
@@ -389,7 +394,7 @@ textarea {
 
 .btn-ghost:hover {
   border-color: transparent;
-  background: var(--accent-soft);
+  background: var(--action-soft);
 }
 
 .btn-danger {
@@ -472,14 +477,14 @@ textarea {
   box-shadow: var(--glass-shadow-lg);
 }
 
-/* Navy glass for a primary floating control (e.g. the mic dock) */
-.glass-navy {
-  background: rgba(31, 58, 95, 0.78);
+/* Olive glass for a primary floating control (e.g. the mic dock) */
+.glass-action {
+  background: rgba(85, 107, 47, 0.84);
   color: var(--on-accent);
   -webkit-backdrop-filter: saturate(1.4) blur(18px);
   backdrop-filter: saturate(1.4) blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 12px 32px rgba(31, 58, 95, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 12px 32px rgba(85, 107, 47, 0.3);
 }
 
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -602,8 +607,8 @@ textarea {
 }
 
 .chip[aria-pressed="true"] {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--action);
+  border-color: var(--action);
   color: var(--on-accent);
 }
 

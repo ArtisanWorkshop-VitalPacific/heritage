@@ -19,7 +19,7 @@ export function MicBars({ count = 5 }: { count?: number }) {
 
 export function MicPill({ label = "Listening", bars = true }: { label?: string; bars?: boolean }) {
   return (
-    <span className="s-mic glass-navy">
+    <span className="s-mic glass-action">
       <IconMic size={18} />
       <span>{label}</span>
       {bars && <MicBars />}

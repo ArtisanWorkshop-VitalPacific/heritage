@@ -118,6 +118,9 @@ function chunks(text: string): string[] {
     .filter(Boolean);
 }
 
+// After two failed requests in a row (a bad key, a spent quota), the browser voice takes over.
+let elevenFailures = 0;
+
 async function speakEleven(text: string, opts: SpeakOptions, token: number): Promise<boolean> {
   try {
     const res = await fetch("/api/tts", {
@@ -125,7 +128,14 @@ async function speakEleven(text: string, opts: SpeakOptions, token: number): Pro
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ text, narrator: opts.narrator ?? "american", kind: opts.kind ?? "sentence" }),
     });
-    if (!res.ok || token !== speakToken) return false;
+    // 204 means the server could not speak this line: fall back to the browser voice.
+    const audioReply = res.status === 200 && (res.headers.get("content-type") ?? "").startsWith("audio/");
+    if (!audioReply) {
+      if (++elevenFailures >= 2) ttsMode = "browser";
+      return false;
+    }
+    elevenFailures = 0;
+    if (token !== speakToken) return true;
     const blob = await res.blob();
     if (token !== speakToken) return true;
     const url = URL.createObjectURL(blob);

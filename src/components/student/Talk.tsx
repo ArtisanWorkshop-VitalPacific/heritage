@@ -293,7 +293,7 @@ function TalkView({ child, rung }: { child: Child; rung: number }) {
             {status && <p className="st-talk-status">{status}</p>}
             <button
               type="button"
-              className={cx("st-talkbtn glass-navy", listening && "st-talkbtn-on")}
+              className={cx("st-talkbtn glass-action", listening && "st-talkbtn-on")}
               aria-pressed={listening}
               aria-label={listening ? "Stop and send" : "Hold to talk, or tap to start"}
               disabled={thinking}

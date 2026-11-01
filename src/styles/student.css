@@ -603,7 +603,7 @@
 }
 
 .st-mic[data-state="listening"] {
-  background: var(--navy);
+  background: var(--action);
   color: #fff;
   font-size: 1.25rem;
 }
@@ -627,7 +627,7 @@
 }
 
 .st-mic[data-state="heard"] {
-  background: var(--navy);
+  background: var(--action);
   color: #fff;
 }
 
@@ -1113,7 +1113,7 @@
 }
 
 .st-lp[data-on] .st-lp-hear {
-  background: var(--navy);
+  background: var(--action);
   color: #fff;
 }
 
@@ -1721,7 +1721,7 @@
 }
 
 .st-tick[aria-pressed="true"] .st-tick-box {
-  background: var(--navy);
+  background: var(--action);
   color: #fff;
   box-shadow: none;
 }
@@ -2358,8 +2358,8 @@
 }
 
 .st-pick[aria-pressed="true"] {
-  background: var(--navy);
-  border-color: var(--navy);
+  background: var(--action);
+  border-color: var(--action);
   color: #fff;
 }
 

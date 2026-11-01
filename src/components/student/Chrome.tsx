@@ -21,7 +21,7 @@ export function BackToToday({ label = "Today" }: { label?: string }) {
 export function Dock({ children, className, tone = "glass" }: { children: ReactNode; className?: string; tone?: "glass" | "navy" }) {
   return (
     <div className={cx("st-dock", className)}>
-      <div className={cx("st-dock-bar", tone === "navy" ? "glass-navy" : "glass glass-strong glass-lg")}>{children}</div>
+      <div className={cx("st-dock-bar", tone === "navy" ? "glass-action" : "glass glass-strong glass-lg")}>{children}</div>
     </div>
   );
 }

@@ -34,7 +34,7 @@ export default function GlobalError({ retry }: { error: unknown; retry: () => vo
             <button
               type="button"
               onClick={retry}
-              style={{ font: "600 16px -apple-system, system-ui, sans-serif", padding: "12px 22px", borderRadius: 999, border: 0, background: "#1f3a5f", color: "#fff", cursor: "pointer" }}
+              style={{ font: "600 16px -apple-system, system-ui, sans-serif", padding: "12px 22px", borderRadius: 999, border: 0, background: "#556b2f", color: "#fff", cursor: "pointer" }}
             >
               Try again
             </button>

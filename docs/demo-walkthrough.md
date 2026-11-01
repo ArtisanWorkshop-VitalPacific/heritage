@@ -54,7 +54,7 @@ Nora is 6, on rung 10 (the letter h), with one clean read already.
 ## Notes
 
 - Mrs. Wren answers from a script tonight. Add a payment card to the Vercel account and the AI Gateway turns on by itself: live replies and generated passages, still checked word by word by the validator.
-- Her voice is the browser's own voice. Add `ELEVENLABS_API_KEY` in Vercel and she speaks with the ElevenLabs voice.
+- Her voice is ElevenLabs (Eleven v4 Turbo for her lines, Multilingual v2 for single words). The family's narrator setting picks the voice: Gentle Mara (American) or Sandy Soft (British). If ElevenLabs can't answer, the browser voice takes over.
 - Speech is scored by the browser's recognizer. Production uses a child-tuned scorer and Susan's recorded phonograms.
 - Ladder colors were sampled from photographs of Reading with Phonics. McGuffey colors are provisional until scans arrive.
 - "Mrs. Wren" is a working name.

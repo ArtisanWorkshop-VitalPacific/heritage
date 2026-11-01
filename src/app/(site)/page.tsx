@@ -149,19 +149,19 @@ export default function Home() {
             </p>
           </SectionHead>
           <div className="s-listens-stage" data-reveal="">
-            <div className="s-listens-art" aria-hidden="true">
-              <Illustration id="hearth-reading" alt="" sizes="(min-width: 1080px) 1100px, 100vw" />
-            </div>
             <ReadingCheck />
           </div>
           <div className="s-never" data-reveal="">
-            <p className="s-never-title">
-              Mrs. Wren doesn’t say “wrong.”
-            </p>
-            <p className="s-body-lg">When your child misses a word, she says it, reads it with your child, and asks for it again before going on.</p>
-            <p className="s-wren-quote">
-              <span className="s-wren-name">Mrs. Wren</span> That word is hid. Read it with me: hid.
-            </p>
+            <div className="s-never-art" aria-hidden="true">
+              <Illustration id="hearth-reading" alt="" sizes="(min-width: 900px) 560px, 100vw" />
+            </div>
+            <div className="s-never-copy">
+              <p className="s-never-title">Mrs. Wren doesn’t say “wrong.”</p>
+              <p className="s-body-lg">When your child misses a word, she says it, reads it with your child, and asks for it again before going on.</p>
+              <p className="s-wren-quote">
+                <span className="s-wren-name">Mrs. Wren</span> That word is hid. Read it with me: hid.
+              </p>
+            </div>
           </div>
         </div>
       </section>

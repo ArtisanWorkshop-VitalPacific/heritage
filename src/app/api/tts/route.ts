@@ -1,20 +1,29 @@
+import { SPEECH_KINDS, synthesize, type SpeechKind } from "@/lib/eleven";
+
 export const dynamic = "force-dynamic";
 
 /**
- * ElevenLabs text to speech, used only when ELEVENLABS_API_KEY is set.
- * Otherwise returns 204 and the client uses the browser voice.
- * ELEVENLABS_VOICE_ID / ELEVENLABS_VOICE_ID_UK choose the American and British narrators.
+ * Mrs. Wren's voice. ElevenLabs when ELEVENLABS_API_KEY is set (see src/lib/eleven.ts for the
+ * voices and models); otherwise 204, and the client uses the browser voice.
  */
 
-// Gentle, warm female defaults from the ElevenLabs library. Replace with the licensed tutor voice.
-const DEFAULT_US = "EXAVITQu4vr4xnSDxMaL"; // "Sarah"
-const DEFAULT_UK = "pFZP5JQG7iQjIQuC4Bku"; // "Lily"
-
-const SPEED: Record<string, number> = { word: 0.82, sentence: 0.9, story: 0.94, talk: 0.95 };
+/** Only this site may spend the key: same-origin requests from a browser. */
+function sameOrigin(req: Request): boolean {
+  const site = req.headers.get("sec-fetch-site");
+  if (site) return site === "same-origin";
+  const origin = req.headers.get("origin");
+  if (!origin) return false;
+  try {
+    return new URL(origin).host === new URL(req.url).host;
+  } catch {
+    return false;
+  }
+}
 
 export async function POST(req: Request) {
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) return new Response(null, { status: 204 });
+  if (!sameOrigin(req)) return new Response(null, { status: 403 });
 
   let body: { text?: string; narrator?: string; kind?: string };
   try {
@@ -22,24 +31,15 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ error: "Send JSON with a text field." }, { status: 400 });
   }
-  const text = String(body.text ?? "").trim().slice(0, 600);
-  if (!text) return Response.json({ error: "Text is empty." }, { status: 400 });
+  const text = String(body.text ?? "");
+  if (!text.trim()) return Response.json({ error: "Text is empty." }, { status: 400 });
+  const kind: SpeechKind = SPEECH_KINDS.includes(body.kind as SpeechKind) ? (body.kind as SpeechKind) : "sentence";
 
-  const british = body.narrator === "british";
-  const voice = (british ? process.env.ELEVENLABS_VOICE_ID_UK : process.env.ELEVENLABS_VOICE_ID) || (british ? DEFAULT_UK : DEFAULT_US);
-  const model = process.env.ELEVENLABS_MODEL || "eleven_multilingual_v2";
+  const result = await synthesize(key, text, body.narrator ?? "american", kind);
+  for (const f of result.failures) console.error(`[tts] ${f.model} with voice ${f.voice} failed: ${f.status ?? "-"} ${f.detail}`);
+  if (!result.ok) return new Response(null, { status: 204 });
 
-  const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_128`, {
-    method: "POST",
-    headers: { "xi-api-key": key, "content-type": "application/json", accept: "audio/mpeg" },
-    body: JSON.stringify({
-      text,
-      model_id: model,
-      voice_settings: { stability: 0.55, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true, speed: SPEED[body.kind ?? "sentence"] ?? 0.9 },
-    }),
-    signal: AbortSignal.timeout(15000),
-  }).catch(() => null);
-
-  if (!res || !res.ok || !res.body) return new Response(null, { status: 204 });
-  return new Response(res.body, { headers: { "content-type": "audio/mpeg", "cache-control": "private, max-age=86400" } });
+  return new Response(result.audio, {
+    headers: { "content-type": "audio/mpeg", "cache-control": "private, max-age=86400", "x-tts-model": result.model, "x-tts-voice": result.voice },
+  });
 }

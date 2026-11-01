@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { IconArrowRight, IconX } from "@/components/icons";
 import { NAV_LINKS } from "./site-config";
-import { Wordmark } from "./Wordmark";
+import { Logomark, Wordmark } from "./Wordmark";
 
 /**
  * The marketing nav. Fixed to the top: transparent over the home hero and at the top of a page,
@@ -60,6 +60,7 @@ export function SiteNav() {
       <header className="s-nav" data-solid={solid || undefined}>
         <div className="s-nav-inner">
           <Link href="/" className="s-nav-brand" aria-label="Heritage Readers, home">
+            <Logomark />
             <Wordmark />
           </Link>
           <nav className="s-nav-links" aria-label="Main">
@@ -146,6 +147,7 @@ function MenuSheet({ onClose, isCurrent }: { onClose: () => void; isCurrent: (hr
     <div ref={sheet} id="s-menu" className="s-menu glass glass-strong" role="dialog" aria-modal="true" aria-label="Menu">
       <div className="s-menu-top">
         <Link href="/" className="s-nav-brand" aria-label="Heritage Readers, home" onClick={onClose}>
+          <Logomark />
           <Wordmark />
         </Link>
         <button type="button" className="s-nav-menu" aria-label="Close menu" onClick={onClose}>

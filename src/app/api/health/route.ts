@@ -1,4 +1,5 @@
 import { generateText } from "ai";
+import { synthesize } from "@/lib/eleven";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,23 @@ export async function GET(req: Request) {
     models: tutorModels(),
     time: new Date().toISOString(),
   };
+
+  // ?probe=1 also speaks one word with each narrator to show which voice and model answer.
+  if (url.searchParams.get("probe") === "1" && process.env.ELEVENLABS_API_KEY) {
+    const key = process.env.ELEVENLABS_API_KEY;
+    const voice: Record<string, unknown> = {};
+    for (const narrator of ["american", "british"]) {
+      const started = Date.now();
+      const r = await synthesize(key, "Ready.", narrator, "talk");
+      if (r.ok) {
+        await r.audio.cancel().catch(() => {});
+        voice[narrator] = { ok: true, model: r.model, voice: r.voice, ms: Date.now() - started, skipped: r.failures.map((f) => `${f.model} ${f.voice} ${f.status}`) };
+      } else {
+        voice[narrator] = { ok: false, failures: r.failures.map((f) => ({ model: f.model, voice: f.voice, status: f.status, detail: f.detail.slice(0, 160) })) };
+      }
+    }
+    body.voice = voice;
+  }
 
   if (url.searchParams.get("probe") === "1") {
     const started = Date.now();

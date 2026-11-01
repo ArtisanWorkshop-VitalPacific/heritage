@@ -173,7 +173,7 @@ function AdultBar() {
       <div className="ap-bar-row container">
         <Link href="/" className="ap-brand" aria-label="Heritage home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="ap-brand-mark" src="/brand/heritage-mark-240.webp" alt="" width={30} height={30} />
+          <img className="ap-brand-mark" src="/brand/heritage-mark-96.webp" alt="" width={30} height={30} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="ap-brand-name" src="/brand/heritage-wordmark.png" alt="Heritage" width={112} height={18} />
         </Link>
