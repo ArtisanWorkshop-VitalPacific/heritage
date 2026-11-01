@@ -245,6 +245,7 @@ function RoleSwitcher({ role, onSwitch }: { role: Role; onSwitch: (r: Role) => v
 function StudentBar() {
   const { child, actions } = useDemo();
   const router = useRouter();
+  const pathname = usePathname() ?? "/app";
   const [confirm, setConfirm] = useState(false);
 
   return (
@@ -263,7 +264,8 @@ function StudentBar() {
             className="btn btn-sm btn-primary"
             onClick={() => {
               actions.switchRole("parent");
-              router.push("/app");
+              // Stay on a page grown-ups can use (print, ladder); leave child-only pages for home.
+              if (!routeAllowed(pathname, "parent")) router.push("/app");
             }}
           >
             Return

@@ -192,7 +192,7 @@ export default function ReportPage() {
               <>
                 <p className="ap-project-label">Projected</p>
                 <p className="ap-project-value">
-                  {projection.group.label} by {fmtDay(projection.date, now)}
+                  Reaches {projection.group.label} by {fmtDay(projection.date, now)}
                 </p>
                 <p className="ap-project-note">
                   At {paceWords(projection.perWeek)}. {plural(projection.toGo, "rung")} to go to rung {projection.group.from}.

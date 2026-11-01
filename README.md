@@ -4,6 +4,10 @@ A classical reading tutor that listens. Hay & Wingo phonics and the McGuffey tra
 
 This repository is the walkthrough demo: the marketing site and the full web app in demo mode (data stays in the browser).
 
+Live: https://heritage-readers.vercel.app. Every push to `main` deploys to production on Vercel.
+
+Presenting? Read `docs/demo-walkthrough.md`. In the app, press `?` (or "Walkthrough" at the foot of a grown-up page) for the ten stops.
+
 ## Run
 
 ```bash
@@ -29,3 +33,9 @@ None required. Optional:
 - `ELEVENLABS_API_KEY` switches the tutor to the ElevenLabs voice (`ELEVENLABS_VOICE_ID`, `ELEVENLABS_VOICE_ID_UK` to choose voices).
 - `TUTOR_MODEL` overrides the AI Gateway model list (comma-separated).
 - `AI_GATEWAY_API_KEY` for local development; on Vercel the OIDC token is used.
+
+The tutor answers from `src/lib/tutor-script.ts` whenever the AI Gateway is unavailable. A billing or auth refusal skips the gateway for five minutes, so replies stay instant. Once the Vercel account has a payment method on file, the gateway answers and the script becomes the fallback.
+
+## Tests
+
+`npm test` runs 109 tests: the decoder and lexicon, every passage and word list validated at its rung, reading alignment, the scripted tutor and the persona.

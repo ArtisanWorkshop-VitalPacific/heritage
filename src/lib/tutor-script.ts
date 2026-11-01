@@ -131,6 +131,40 @@ const GLOSSARY: Record<string, string> = {
   syllable: "A syllable is one beat in a word. Rabbit has two: rab, bit.",
   vowel: "The vowels are a, e, i, o and u. Every word needs at least one.",
   consonant: "A consonant is any letter that is not a vowel, like b, m or t.",
+  valiant: "Valiant means very brave, the way a good knight is brave when danger comes.",
+  virtue: "A virtue is a good habit of the heart, like honesty, kindness or courage.",
+  virtues: "Virtues are good habits of the heart, like honesty, kindness and courage.",
+  courage: "Courage is being brave even when you feel afraid.",
+  wisdom: "Wisdom is knowing what is good and true, and choosing it.",
+  humble: "Humble means you do not boast. You let your good work speak for you.",
+  humility: "Humility is not boasting, and thinking of others before yourself.",
+  mercy: "Mercy is being kind to someone when you could have been hard on them, like the lion who let the mouse go.",
+  grace: "Grace is a gift of kindness that you did not have to earn.",
+  honor: "Honor is being trusted because you always do what is right.",
+  duty: "Your duty is the work you ought to do, even when no one is watching.",
+  prudent: "Prudent means careful and wise about what you do next, like the ant who saved food for winter.",
+  justice: "Justice means being fair, and giving each person what is right.",
+  charity: "Charity is love that gives to others, like sharing your bread.",
+  faith: "Faith is trusting in what is good and true, even before you can see it.",
+  hope: "Hope is looking forward to something good that is coming.",
+  truth: "The truth is what really happened, told plainly.",
+  steadfast: "Steadfast means you keep going and do not give up, like the slow tortoise.",
+  obedient: "Obedient means you listen and do what a good parent or teacher asks.",
+  courteous: "Courteous means polite and kind, saying please and thank you.",
+  compassion: "Compassion is feeling sorry for someone who is hurting, and wanting to help.",
+  forgive: "To forgive is to let go of being cross with someone who has said sorry.",
+  perseverance: "Perseverance is not giving up, even when something is hard.",
+  character: "Your character is the kind of person you are inside, shown by what you do.",
+  integrity: "Integrity means you do what is right, even when no one is looking.",
+  respect: "Respect is treating others as if they matter, because they do.",
+  knight: "A knight was a soldier long ago who rode a horse and promised to protect others.",
+  castle: "A castle is a big stone building with high walls, where a king or a lord lived long ago.",
+  kingdom: "A kingdom is a land ruled by a king or a queen.",
+  primer: "A primer is a first book for learning to read.",
+  alphabet: "The alphabet is all the letters, from a to z, in order.",
+  sentence: "A sentence is a group of words that tells a whole thought. It starts with a capital letter and ends with a mark like a period.",
+  narration: "Narration is telling back a story in your own words, after you hear or read it.",
+  copywork: "Copywork is copying a good sentence carefully by hand, letter by letter.",
 };
 
 interface Fable {
@@ -251,6 +285,7 @@ type Intent =
   | "tired"
   | "hard"
   | "why"
+  | "faith"
   | "thanks"
   | "bye"
   | "greet"
@@ -282,8 +317,9 @@ export function detectIntent(raw: string): { intent: Intent; word?: string } {
   if (/who are you|what('s| is) your name|are you (real|a robot|a person|human|alive|a computer|a machine|a teacher)|what are you\b/.test(t)) return { intent: "who" };
   if (/\b(i did it|i read it|i finished|i'?m finished|i'?m done reading|done reading|i got it|i read the (story|page|whole)|did i do (it|good|well)|was that (right|good)|i can read)\b/.test(t)) return { intent: "praise" };
   if (/\b(tired|sleepy|need a break|take a break|can we stop|i want to stop|i'?m bored|my eyes hurt|i'?m hungry)\b/.test(t)) return { intent: "tired" };
+  if (/\b(god|jesus|christ|lord|bible|scripture|pray|prayer|praying|church|heaven|angels?|psalms?|amen|creation|who made (the world|me|us|everything))\b/.test(t)) return { intent: "faith" };
   if (/\bwhy (do|should|must|have|would) (i|we|kids|children|people) (have to |need to |got to )?(read|learn)|why (is )?reading|what'?s the point|i don'?t (want|like) to read|reading is (boring|dumb|stupid|hard)|why do i need to read|why read/.test(t)) return { intent: "why" };
-  if (/\b(i can'?t|i cannot|too hard|it'?s hard|this is hard|so hard|i don'?t know|dunno|i give up|i'?m stuck|help( me)?\b|difficult|i forgot|i don'?t get it|i'?m not good)/.test(t)) return { intent: "hard" };
+  if (/\b(i can'?t|i cannot|i can not|too hard|it'?s hard|this is hard|so hard|i don'?t know|dunno|i give up|i'?m stuck|help( me)?\b|difficult|i forgot|i don'?t get it|i'?m not good)/.test(t)) return { intent: "hard" };
   if (/\b(thank you|thanks|thank u|thankyou)\b/.test(t)) return { intent: "thanks" };
   if (/\b(bye|goodbye|good night|goodnight|see you|i have to go|gotta go|i'?m leaving|farewell)\b/.test(t)) return { intent: "bye" };
   if (/^(hi|hello|hey|hiya|howdy|greetings|good (morning|afternoon|evening|day))\b|^(mrs\.? )?wren\b|^hello mrs/.test(t)) return { intent: "greet" };
@@ -611,6 +647,25 @@ function reply(req: TutorRequest): string {
       if (child.faithTrack) variants.push(`Reading lets you read Scripture for yourself one day${interest ? `, and books about ${interest} too` : ""}.`);
       if (child.modernComparisons) variants.push("Grown-ups read all day long, from recipes to road signs to letters from friends. Reading helps with everything.");
       return fit(pick(variants));
+    }
+
+    case "faith": {
+      if (!child.faithTrack) {
+        return fit(
+          pick([
+            "That is a wonderful question to ask your family, {name}. Now, shall we read on?",
+            "What a big question. Ask your mother or father about it tonight. For now, let us read our story.",
+          ]),
+        );
+      }
+      return fit(
+        pick([
+          "God gave us words, {name}. The Bible says, In the beginning was the Word. One day you will read it for yourself.",
+          "The Bible is a book many families read together. Every sound you learn brings you closer to reading it yourself.",
+          "That is a beautiful question. Ask your family to read a psalm with you tonight. For now, let us read our story.",
+          "God made the birds, the sea and every good thing, {name}. Reading helps us learn about all of them.",
+        ]),
+      );
     }
 
     case "thanks":
