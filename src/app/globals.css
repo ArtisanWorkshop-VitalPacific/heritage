@@ -124,37 +124,17 @@
   /* Engraving print treatment: removes the warm paper so the ink sits on our ground */
   --engrave-filter: grayscale(1) contrast(1.12) brightness(1.13);
 
-  color-scheme: light;
-}
+  /* Glass: a light, warm frosted material for bars, docks, sheets and panels over imagery */
+  --glass-bg: rgba(250, 246, 237, 0.56);
+  --glass-bg-strong: rgba(250, 246, 237, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.62);
+  --glass-blur: 22px;
+  --glass-saturate: 1.6;
+  --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 0 0 1px rgba(26, 23, 20, 0.06), 0 12px 32px rgba(26, 23, 20, 0.1);
+  --glass-shadow-lg: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(26, 23, 20, 0.06), 0 30px 80px rgba(26, 23, 20, 0.16);
 
-/* Adult app surfaces follow the system theme. Student and site surfaces stay light. */
-@media (prefers-color-scheme: dark) {
-  .theme-auto {
-    --bg: #14110e;
-    --surface: #1d1915;
-    --surface-2: #26211c;
-    --fg: #efe6d2;
-    --fg-2: #cfc4ae;
-    --muted: #a1a6ae;
-    --rule: #3a332b;
-    --accent: #9bb8dd;
-    --accent-2: #b6cbe7;
-    --on-accent: #14110e;
-    --accent-soft: rgba(155, 184, 221, 0.13);
-    --mastered: #8fbf9a;
-    --mastered-bg: #1f2e22;
-    --review: #d9b35b;
-    --review-ink: #e2c27a;
-    --review-bg: #33291a;
-    --correction: #d4837a;
-    --correction-bg: #3a221f;
-    --focus: #7fb0ff;
-    --plate: #efe6d2;
-    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
-    --shadow-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
-    --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.5);
-    color-scheme: dark;
-  }
+  /* The whole product is light. No dark theme. */
+  color-scheme: light;
 }
 
 /* ---------- Reset and base ---------- */
@@ -471,11 +451,55 @@ textarea {
   color: var(--ink);
 }
 
+/* ---------- Glass ----------
+ * Use where something floats over content: sticky bars, floating docks and toolbars,
+ * popovers and sheets, cards set over imagery, the hero copy panel. Not for ordinary cards.
+ */
+
+.glass {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  backdrop-filter: saturate(var(--glass-saturate)) blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+}
+
+.glass-lg {
+  box-shadow: var(--glass-shadow-lg);
+}
+
+/* Navy glass for a primary floating control (e.g. the mic dock) */
+.glass-navy {
+  background: rgba(31, 58, 95, 0.78);
+  color: var(--on-accent);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 12px 32px rgba(31, 58, 95, 0.28);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--glass-bg-strong);
+  }
+}
+
 /* ---------- Illustration treatments ---------- */
 
+/* Local fallback: remote PNG with paper. Multiply needs a painted background on an ancestor. */
 .engraving {
   filter: var(--engrave-filter);
   mix-blend-mode: multiply;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Deployed: the build turned the engraving into transparent lamp-black ink. No blend needed. */
+.engraving-ink {
   user-select: none;
   -webkit-user-drag: none;
 }

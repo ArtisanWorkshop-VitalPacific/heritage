@@ -88,10 +88,28 @@ async function worker() {
           }
           map._heroFrames = frames;
         }
-      } else if (sharp) {
-        const width = e.kind === "spot" ? 768 : e.id === "hero" || e.id === "village-lane" ? 2400 : 1800;
+      } else if (sharp && e.kind === "engraving") {
+        // Engravings become transparent ink: paper -> alpha 0, ink -> alpha 255, in lamp black.
+        // They then print onto any ground (parchment, page cream, a dark plate) with no blend modes.
+        const width = e.id === "hero" || e.id === "village-lane" ? 2400 : 1800;
+        const { data, info } = await sharp(src).resize({ width, withoutEnlargement: true }).greyscale().raw().toBuffer({ resolveWithObject: true });
+        const px = info.width * info.height;
+        const rgba = Buffer.alloc(px * 4);
+        for (let i = 0; i < px; i++) {
+          const g = data[i * info.channels];
+          const a = Math.max(0, Math.min(255, Math.round(((236 - g) * 255) / 200)));
+          rgba[i * 4] = 0x1a;
+          rgba[i * 4 + 1] = 0x17;
+          rgba[i * 4 + 2] = 0x14;
+          rgba[i * 4 + 3] = a;
+        }
         const file = `${e.id}.webp`;
-        await sharp(src).resize({ width, withoutEnlargement: true }).webp({ quality: e.kind === "spot" ? 84 : 80, alphaQuality: 90 }).toFile(path.join(outDir, file));
+        await sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).webp({ quality: 82, alphaQuality: 92 }).toFile(path.join(outDir, file));
+        map[e.id] = `/illustrations/${file}`;
+        map._engravingInk = true;
+      } else if (sharp) {
+        const file = `${e.id}.webp`;
+        await sharp(src).resize({ width: 768, withoutEnlargement: true }).webp({ quality: 84, alphaQuality: 90 }).toFile(path.join(outDir, file));
         map[e.id] = `/illustrations/${file}`;
       } else {
         await copyFile(src, path.join(outDir, `${e.id}.png`));

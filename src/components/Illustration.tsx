@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type CSSProperties } from "react";
-import { illustration } from "@/lib/illustrations";
+import { illustration, isInkEngraving } from "@/lib/illustrations";
 
 export interface IllustrationProps {
   id: string;
@@ -27,7 +27,9 @@ export function Illustration({ id, className, style, alt, priority, plate, sizes
   if (!ill || ill.kind === "video") return null;
 
   const ratio = `${ill.width} / ${ill.height}`;
-  const cls = [ill.kind === "engraving" ? "engraving" : "spot", className].filter(Boolean).join(" ");
+  // Deployed engravings are transparent ink; local ones still need the paper removed with a blend.
+  const kindClass = ill.kind === "spot" ? "spot" : isInkEngraving(id) ? "engraving-ink" : "engraving";
+  const cls = [kindClass, className].filter(Boolean).join(" ");
 
   if (failed) {
     return (

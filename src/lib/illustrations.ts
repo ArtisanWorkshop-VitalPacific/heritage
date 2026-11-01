@@ -39,6 +39,15 @@ export function illustration(id: string): ResolvedIllustration | undefined {
   return { ...entry, src: LOCAL[id] ?? entry.remote };
 }
 
+/**
+ * True when the build converted this engraving to transparent ink (deployed builds).
+ * False in local development, where the remote PNG still carries its paper.
+ */
+export function isInkEngraving(id: string): boolean {
+  const entry = BY_ID.get(id);
+  return Boolean(entry && entry.kind === "engraving" && LOCAL[id] && LOCAL_RAW._engravingInk === true);
+}
+
 export function allIllustrations(kind?: IllustrationEntry["kind"]): ResolvedIllustration[] {
   return ILLUSTRATIONS.filter((i) => !kind || i.kind === kind).map((i) => ({ ...i, src: LOCAL[i.id] ?? i.remote }));
 }
