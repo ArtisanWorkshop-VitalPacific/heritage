@@ -1,0 +1,17 @@
+node_modules
+.next
+.next-*
+out
+.env
+.env.local
+.vercel
+*.log
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+public/illustrations/*.png
+public/illustrations/*.jpg
+public/illustrations/*.webp
+public/illustrations/*.mp4
+.cache
+public/illustrations/hero-frames-*

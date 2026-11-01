@@ -1,0 +1,158 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "name": "Heritage Readers",
+    "version": "0.1.0",
+    "date": "2026-10-31",
+    "status": "provisional",
+    "principle": "Interface layer modern (Apple HIG as the base). Content layer period (engraving for narrative, mnemonic spot for drills). Textures live only inside illustration frames. Controls are never pictured as period objects.",
+    "colorNote": "Every color marked sample:true is a placeholder. Replace it with a value sampled from scans of the 1879 McGuffey Readers (neutrals) and the 1946 Hay & Wingo Reading with Phonics (spot colors) before production. Do not ship approximations.",
+    "surfaces": ["student", "parent", "teacher", "admin", "print"]
+  },
+
+  "color": {
+    "neutral": {
+      "parchment": { "$type": "color", "$value": "#EFE6D2", "source": "McGuffey 1879, page tone", "sample": true, "role": "interface background (flat tone, no texture)" },
+      "paper": { "$type": "color", "$value": "#E6DAC0", "source": "McGuffey 1879, illustration frame", "sample": true, "role": "illustration frames only; may carry texture" },
+      "lampBlack": { "$type": "color", "$value": "#1A1714", "source": "McGuffey 1879, text ink", "sample": true, "role": "primary text, engraving ink" },
+      "charcoal": { "$type": "color", "$value": "#2E2A26", "sample": true, "role": "secondary text" },
+      "slate": { "$type": "color", "$value": "#5B6470", "sample": true, "role": "muted text, captions, reference lines" },
+      "rule": { "$type": "color", "$value": "#CDBFA5", "sample": true, "role": "hairlines, dividers, inactive rungs" }
+    },
+    "spot": {
+      "navy": { "$type": "color", "$value": "#1F3A5F", "source": "Hay & Wingo 1946, spot ink", "sample": true },
+      "mutedRed": { "$type": "color", "$value": "#9B3B32", "source": "Hay & Wingo 1946, spot ink", "sample": true },
+      "ochre": { "$type": "color", "$value": "#C28E2E", "source": "Hay & Wingo 1946, spot ink", "sample": true },
+      "ochreText": { "$type": "color", "$value": "#7A5612", "role": "ochre as text or icon on parchment (fill ochre fails 4.5:1 for text)" },
+      "hunterGreen": { "$type": "color", "$value": "#2A5234", "source": "Hay & Wingo 1946, spot ink", "sample": true }
+    },
+    "semantic": {
+      "mastered": { "$type": "color", "$value": "{color.spot.hunterGreen}", "job": "a skill the child has mastered" },
+      "review": { "$type": "color", "$value": "{color.spot.ochre}", "job": "a skill scheduled for review" },
+      "tutor": { "$type": "color", "$value": "{color.spot.navy}", "job": "the tutor's voice, the current rung, the primary action" },
+      "correction": { "$type": "color", "$value": "{color.spot.mutedRed}", "job": "errors and corrections", "surfaces": ["parent", "teacher", "admin"], "note": "Never on the Student surface" }
+    },
+    "dark": {
+      "note": "Dark theme for the parent, teacher and admin surfaces at night. The student surface ships light only.",
+      "bg": { "$type": "color", "$value": "#15120F" },
+      "surface": { "$type": "color", "$value": "#1F1B17" },
+      "paper": { "$type": "color", "$value": "#2A241E" },
+      "text": { "$type": "color", "$value": "#EFE6D2" },
+      "textSecondary": { "$type": "color", "$value": "#CFC4AE" },
+      "muted": { "$type": "color", "$value": "#9A9FA8" },
+      "rule": { "$type": "color", "$value": "#3B342C" },
+      "navy": { "$type": "color", "$value": "#9BB8DD" },
+      "mutedRed": { "$type": "color", "$value": "#D4837A" },
+      "ochre": { "$type": "color", "$value": "#D9B35B" },
+      "hunterGreen": { "$type": "color", "$value": "#8FBF9A" }
+    },
+    "contrast": {
+      "bodyTextMinimum": "7:1 on parchment",
+      "uiTextMinimum": "4.5:1",
+      "measured": {
+        "lampBlack on parchment": "13.4:1",
+        "navy on parchment": "9.2:1",
+        "hunterGreen on parchment": "7.6:1",
+        "mutedRed on parchment": "6.1:1 (not used as text on the student surface)",
+        "ochreText on parchment": "5.2:1",
+        "ochre on parchment": "2.2:1 (fill only, with lampBlack text)"
+      }
+    }
+  },
+
+  "typography": {
+    "family": {
+      "ui": { "$type": "fontFamily", "$value": ["-apple-system", "BlinkMacSystemFont", "SF Pro Text", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"], "role": "interface layer, every surface" },
+      "literacy": { "$type": "fontFamily", "$value": ["Andika", "Sassoon Primary", "Arial Rounded MT Bold", "sans-serif"], "role": "content, ages 4 to 6. Single-story a and g, open counters." },
+      "book": { "$type": "fontFamily", "$value": ["Libre Caslon Text", "Caslon", "Baskerville", "Georgia", "serif"], "role": "content, ages 7 and up. Shared with the printed readers." },
+      "bookDisplay": { "$type": "fontFamily", "$value": ["Libre Caslon Display", "Libre Caslon Text", "Georgia", "serif"], "role": "titles inside the content layer, drop caps" }
+    },
+    "ui": {
+      "caption": { "$type": "dimension", "$value": "12px", "lineHeight": 1.35, "letterSpacing": "0.04em", "transform": "uppercase" },
+      "body": { "$type": "dimension", "$value": "15px", "lineHeight": 1.5 },
+      "bodyLarge": { "$type": "dimension", "$value": "17px", "lineHeight": 1.5 },
+      "title3": { "$type": "dimension", "$value": "20px", "lineHeight": 1.3, "weight": 600 },
+      "title2": { "$type": "dimension", "$value": "24px", "lineHeight": 1.25, "weight": 600 },
+      "title1": { "$type": "dimension", "$value": "32px", "lineHeight": 1.15, "weight": 700, "letterSpacing": "-0.01em" },
+      "number": { "$type": "dimension", "$value": "40px", "lineHeight": 1.05, "weight": 700, "numeric": "tabular-nums" }
+    },
+    "content": {
+      "bandA": { "ages": "4 to 6", "family": "{typography.family.literacy}", "size": { "tablet": "30px", "phone": "26px", "print": "24pt" }, "lineHeight": 1.7, "measure": "35 to 45 characters", "wordSpacing": "0.2em", "align": "left, ragged right" },
+      "bandB": { "ages": "7 to 8", "family": "{typography.family.book}", "size": { "tablet": "24px", "phone": "21px", "print": "16pt" }, "lineHeight": 1.6, "measure": "45 to 55 characters" },
+      "bandC": { "ages": "9 and up", "family": "{typography.family.book}", "size": { "tablet": "20px", "phone": "18px", "print": "12pt" }, "lineHeight": 1.55, "measure": "55 to 65 characters" },
+      "drill": { "family": "{typography.family.literacy}", "size": { "tablet": "64px", "phone": "48px" }, "lineHeight": 1.1, "note": "Hay & Wingo scaffold. One phonogram or word on screen, nothing else." },
+      "milestone": "The move from bandA to bandB is earned (first bandB passage read at 95% accuracy), announced to the child, and reflected in the printed readers."
+    },
+    "rules": ["No italics in body text for bands A and B.", "Letter spacing and word spacing are parent-adjustable within +0.05em to +0.2em.", "Dynamic Type and VoiceOver supported on every surface."]
+  },
+
+  "spacing": {
+    "unit": { "$type": "dimension", "$value": "4px" },
+    "1": { "$type": "dimension", "$value": "4px" },
+    "2": { "$type": "dimension", "$value": "8px" },
+    "3": { "$type": "dimension", "$value": "12px" },
+    "4": { "$type": "dimension", "$value": "16px" },
+    "6": { "$type": "dimension", "$value": "24px" },
+    "8": { "$type": "dimension", "$value": "32px" },
+    "12": { "$type": "dimension", "$value": "48px" },
+    "16": { "$type": "dimension", "$value": "64px" },
+    "touchTarget": { "$type": "dimension", "$value": "56px", "note": "Student surface minimum. 44px elsewhere." },
+    "gutter": { "$type": "dimension", "$value": "16px" }
+  },
+
+  "radius": {
+    "none": { "$type": "dimension", "$value": "0px", "role": "illustration frames, print" },
+    "sm": { "$type": "dimension", "$value": "6px", "role": "chips, tags" },
+    "md": { "$type": "dimension", "$value": "10px", "role": "cards, inputs" },
+    "lg": { "$type": "dimension", "$value": "16px", "role": "sheets, device" },
+    "pill": { "$type": "dimension", "$value": "999px", "role": "primary action" }
+  },
+
+  "motion": {
+    "easing": {
+      "standard": { "$type": "cubicBezier", "$value": [0.2, 0, 0, 1] },
+      "exit": { "$type": "cubicBezier", "$value": [0.4, 0, 1, 1] }
+    },
+    "duration": {
+      "fast": { "$type": "duration", "$value": "200ms", "role": "state changes, chips" },
+      "base": { "$type": "duration", "$value": "300ms", "role": "sheets, panels" },
+      "slow": { "$type": "duration", "$value": "400ms", "role": "screen transitions" },
+      "mastery": { "$type": "duration", "$value": "800ms", "role": "the one mastery animation. Built once, at full production quality." }
+    },
+    "rules": ["Respect prefers-reduced-motion on every surface.", "No autoplay video.", "No particle effects, no confetti.", "The reading-check underline follows ASR word alignment; no color flood."]
+  },
+
+  "sound": {
+    "cues": {
+      "bell": { "file": "bell.wav", "when": "lesson begins and ends", "level": "-20 LUFS" },
+      "woodClick": { "file": "wood-click.wav", "when": "a word is tapped", "level": "-24 LUFS" },
+      "pageTurn": { "file": "page-turn.wav", "when": "next passage", "level": "-22 LUFS" }
+    },
+    "voice": { "level": "-16 LUFS", "note": "Recorded acoustic cues only. The voice is the sound of the product. No music under reading." }
+  },
+
+  "print": {
+    "page": "US Letter, 0.75in margins, hole-punch safe left margin 1.0in",
+    "teacherPage": { "family": "{typography.family.book}", "size": "11pt", "script": "Direct Instruction form: say this, have the child do this, if the child errs do this" },
+    "studentPage": { "family": "{typography.content.bandA.family}", "size": "24pt", "lineHeight": 1.8, "illustration": "one mnemonic spot or one engraved vignette, greyscale" },
+    "scoreSheet": { "columns": ["word", "correct", "substitution", "omission", "insertion", "hesitation"], "qr": "lesson id, bottom right, 0.75in" },
+    "ink": "lampBlack only; spot colors print as greyscale"
+  },
+
+  "illustration": {
+    "engraving": { "use": "narrative passages, biographies, milestone readers", "medium": "end-grain wood engraving look: cross-hatching, stippling, single ink", "composition": "vignette with feathered border, never full bleed", "figures": "anatomical proportion, restrained expression", "color": "lampBlack on paper; one spot color at most" },
+    "mnemonicSpot": { "use": "phonics drills", "medium": "clean line art, two to three spot colors", "composition": "one isolated object on negative space, no background", "reference": "Hay & Wingo 1946, early Golden Book illustrators" },
+    "rules": ["No licensed characters.", "Character bible with reference sheets for every recurring figure.", "Generated with reference-image conditioning; reviewed by the editorial board before use."]
+  },
+
+  "components": {
+    "Passage": "The screen. Band type, tap-to-hear per word, reading-check underline, one primary action.",
+    "Ladder": "Vertical schematic, two rails, labeled rungs. States: mastered, current, upcoming, review.",
+    "DrillCard": "One phonogram or word, one mnemonic spot, nothing else.",
+    "Seal": "Engraved medallion for a mastered skill. Carries the phonogram.",
+    "Shelf": "Woodcut spines of real titles read.",
+    "Mic": "Listening state, visible from across the room.",
+    "Report": "Three numbers, two recordings, next three skills, projected date, screen minutes next to paper minutes.",
+    "PrintPacket": "Teacher page, student page, score sheet, from the same lesson object."
+  }
+}

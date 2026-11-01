@@ -1,0 +1,409 @@
+/* App frame: grown-up bar, student bar, role gate, demo footer. Prefix: ap- (shared with the grown-up agent). */
+
+.ap-root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+}
+
+.ap-main {
+  flex: 1;
+  width: 100%;
+  padding-block: var(--sp-8) var(--sp-16);
+}
+
+/* ---------- Opening state ---------- */
+
+.ap-opening {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--sp-4);
+  background: var(--parchment);
+  color: var(--ink);
+}
+
+.ap-opening-wren {
+  width: 120px;
+  animation: ap-breathe 1.8s var(--ease) infinite alternate;
+}
+
+.ap-opening-text {
+  font-family: var(--font-book);
+  font-style: italic;
+  color: var(--slate);
+}
+
+@keyframes ap-breathe {
+  from {
+    opacity: 0.55;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* ---------- Grown-up bar ---------- */
+
+.ap-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+  border-bottom: 1px solid var(--rule);
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.ap-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 60px;
+}
+
+.ap-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-decoration: none;
+  flex: none;
+}
+
+.ap-brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 1;
+}
+
+.theme-auto .ap-brand-mark {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.ap-brand-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: -0.005em;
+}
+
+.ap-bar-context {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  padding-left: var(--sp-4);
+  border-left: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.ap-tenant {
+  font-weight: 600;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ap-actor {
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ap-roles {
+  position: relative;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.ap-roles-more {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+}
+
+.ap-scrim {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  z-index: 41;
+}
+
+.ap-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 42;
+  width: min(320px, calc(100vw - 32px));
+  padding: var(--sp-2);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  box-shadow: var(--shadow-3);
+  display: grid;
+  gap: 2px;
+  animation: toast-in var(--d-base) var(--ease-out);
+}
+
+.ap-menu button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  display: grid;
+  gap: 2px;
+  padding: var(--sp-3);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+
+.ap-menu button:hover,
+.ap-menu button[aria-checked="true"] {
+  background: var(--accent-soft);
+}
+
+.ap-menu strong {
+  font-size: var(--text-sm);
+}
+
+.ap-menu span {
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.ap-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 48px;
+}
+
+.ap-nav-links {
+  display: flex;
+  gap: var(--sp-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  min-width: 0;
+  flex: 1;
+  margin-left: calc(var(--sp-3) * -1);
+}
+
+.ap-nav-links::-webkit-scrollbar {
+  display: none;
+}
+
+.ap-nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--d-fast) var(--ease), background-color var(--d-fast) var(--ease);
+}
+
+.ap-nav-link:hover {
+  color: var(--fg);
+  background: var(--accent-soft);
+}
+
+.ap-nav-link[aria-current="page"] {
+  color: var(--fg);
+}
+
+.ap-nav-link[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: -5px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--fg);
+}
+
+.ap-nav-end {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex: none;
+}
+
+@media (max-width: 860px) {
+  .ap-bar-row {
+    flex-wrap: wrap;
+    padding-block: var(--sp-2);
+    gap: var(--sp-2) var(--sp-3);
+  }
+  .ap-roles {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+  .ap-roles .segmented {
+    flex: 1;
+  }
+  .ap-roles .segmented > button {
+    flex: 1;
+    padding: 0 var(--sp-2);
+  }
+  .ap-roles-label {
+    display: none;
+  }
+  .ap-nav {
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    padding-bottom: var(--sp-2);
+  }
+  .ap-nav-end {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 520px) {
+  .ap-brand-name {
+    display: none;
+  }
+}
+
+/* ---------- Student bar ---------- */
+
+.ap-student {
+  background: var(--parchment);
+}
+
+.ap-sbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  min-height: 64px;
+  padding: env(safe-area-inset-top, 0px) var(--gutter-r) 0 var(--gutter-l);
+  background: color-mix(in srgb, var(--parchment) 88%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.ap-sbar-tutor {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+  text-decoration: none;
+  min-height: var(--touch-student);
+}
+
+.ap-sbar-wren {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--hw-page);
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.ap-sbar-wren img {
+  width: 140%;
+  max-width: none;
+}
+
+.ap-sbar-name {
+  font-family: var(--font-lit);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.ap-sbar-adult {
+  color: var(--slate);
+}
+
+.ap-sbar-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--slate);
+}
+
+.ap-student-main {
+  flex: 1;
+  width: 100%;
+}
+
+/* ---------- Role gate ---------- */
+
+.ap-gate {
+  display: grid;
+  place-items: center;
+  padding: var(--sp-16) var(--gutter-r) var(--sp-16) var(--gutter-l);
+}
+
+.ap-gate-card {
+  max-width: 520px;
+  text-align: center;
+  display: grid;
+  gap: var(--sp-4);
+  justify-items: center;
+}
+
+.ap-gate-card h1 {
+  font-size: var(--text-2xl);
+}
+
+.ap-gate-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* ---------- Demo footer ---------- */
+
+.ap-demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-block: var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-xs);
+  color: var(--muted);
+}
+
+.ap-demo p {
+  max-width: 760px;
+}
