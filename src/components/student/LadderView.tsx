@@ -168,7 +168,7 @@ function LadderView({ child, ladder, student, readRungs }: { child: Child; ladde
                   return (
                     <li key={n}>
                       <button type="button" className="st-seal-btn" aria-pressed={sel === n} onClick={() => pick(n, true)}>
-                        <Seal n={n} short={r.short} size={84} />
+                        <Seal n={n} short={r.short} size={96} />
                         <span className="st-seal-cap num">Rung {n}</span>
                       </button>
                     </li>

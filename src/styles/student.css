@@ -1999,6 +1999,11 @@
   font-weight: 700;
 }
 
+.st-seal .st-seal-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
 .st-seal-label {
   font-family: var(--font-book);
   font-weight: 700;

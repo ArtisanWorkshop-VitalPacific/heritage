@@ -30,11 +30,25 @@ function labelSize(lines: string[]): number {
   return 14;
 }
 
+/* Geometry in the 120 by 120 viewBox. The words sit in a band 6.2 units deep with about 3.9 units
+   of clear space on each side, between the fine ring and the inner ring. */
+const C = 60;
+const R = { outer: 57.8, beads: 55, fine: 52.2, inner: 37.4, label: 27.6 };
+const TOP_BASELINE = 41.8; // the top words stand on this circle, capitals rising outward to 48
+const BOTTOM_BASELINE = 48; // the bottom words hang from this circle, capitals rising inward to 41.8
+const BAND_MIDDLE = 44.9;
+const BAND_FONT = 8.6;
+// Below this size the band words cannot be read, so the seal shows its rings and label only.
+const WORDS_MIN_SIZE = 72;
+
+/** A half circle from 9 o'clock to 3 o'clock: over the top (clockwise) or under the bottom. */
+const halfCircle = (r: number, over: boolean) => `M ${C - r} ${C} A ${r} ${r} 0 0 ${over ? 1 : 0} ${C + r} ${C}`;
+
 const SUN = Array.from({ length: 60 }, (_, i) => {
   const a = (i * 6 * Math.PI) / 180;
   const c = Math.cos(a);
   const s = Math.sin(a);
-  return { x1: 60 + 29.5 * c, y1: 60 + 29.5 * s, x2: 60 + 36.5 * c, y2: 60 + 36.5 * s };
+  return { x1: C + 28.8 * c, y1: C + 28.8 * s, x2: C + 34.6 * c, y2: C + 34.6 * s };
 });
 
 export interface SealProps {
@@ -74,6 +88,7 @@ export function Seal({ n, short, size = 96, animate, mini, className, title }: S
     );
   }
 
+  const words = size >= WORDS_MIN_SIZE;
   return (
     <svg
       viewBox="0 0 120 120"
@@ -83,38 +98,53 @@ export function Seal({ n, short, size = 96, animate, mini, className, title }: S
       role="img"
       aria-label={label}
     >
-      <defs>
-        <path id={`${uid}-band`} d="M 15.5 60 a 44.5 44.5 0 1 1 89 0 a 44.5 44.5 0 1 1 -89 0" />
-      </defs>
+      {words && (
+        <defs>
+          <path id={`${uid}-top`} d={halfCircle(TOP_BASELINE, true)} />
+          <path id={`${uid}-bottom`} d={halfCircle(BOTTOM_BASELINE, false)} />
+        </defs>
+      )}
       <g className="st-seal-body">
-        <circle cx="60" cy="60" r="57.5" className="st-seal-fill" />
-        <circle cx="60" cy="60" r="57" fill="none" strokeWidth="1.6" className="st-seal-ring" pathLength={100} />
-        <circle cx="60" cy="60" r="53.6" fill="none" strokeWidth="2.6" strokeDasharray="0.01 4.15" strokeLinecap="round" className="st-seal-beads" />
-        <circle cx="60" cy="60" r="50.4" fill="none" strokeWidth="0.8" className="st-seal-fine" />
-        <text className="st-seal-band" fontSize="7.1" letterSpacing="1.1">
-          <textPath href={`#${uid}-band`} startOffset="0" textLength="276" lengthAdjust="spacing">
-            {`HERITAGE READERS · RUNG ${n} · MASTERED · `}
-          </textPath>
-        </text>
-        <circle cx="60" cy="60" r="38.6" fill="none" strokeWidth="1.2" className="st-seal-fine" />
+        <circle cx={C} cy={C} r={R.outer + 0.5} className="st-seal-fill" />
+        <circle cx={C} cy={C} r={R.outer} fill="none" strokeWidth="1.4" className="st-seal-ring" pathLength={100} />
+        <circle cx={C} cy={C} r={R.beads} fill="none" strokeWidth="2.2" strokeDasharray="0.01 4.05" strokeLinecap="round" className="st-seal-beads" />
+        <circle cx={C} cy={C} r={R.fine} fill="none" strokeWidth="0.7" className="st-seal-fine" />
+        {words && (
+          <g className="st-seal-band" fontSize={BAND_FONT} letterSpacing="0.9" textAnchor="middle">
+            {/* Top words read along the top; bottom words read left to right, upright. */}
+            <text>
+              <textPath href={`#${uid}-top`} startOffset="50%">
+                HERITAGE READERS
+              </textPath>
+            </text>
+            <text>
+              <textPath href={`#${uid}-bottom`} startOffset="50%">
+                {`RUNG ${n} · MASTERED`}
+              </textPath>
+            </text>
+            <circle cx={C - BAND_MIDDLE} cy={C} r="1.15" className="st-seal-dot" />
+            <circle cx={C + BAND_MIDDLE} cy={C} r="1.15" className="st-seal-dot" />
+          </g>
+        )}
+        <circle cx={C} cy={C} r={R.inner} fill="none" strokeWidth="1.1" className="st-seal-fine" />
         <g className="st-seal-sun" strokeWidth="0.55">
           {SUN.map((l, i) => (
             <line key={i} {...l} />
           ))}
         </g>
-        <circle cx="60" cy="60" r="28.4" fill="none" strokeWidth="1" className="st-seal-fine" />
+        <circle cx={C} cy={C} r={R.label} fill="none" strokeWidth="1" className="st-seal-fine" />
       </g>
-      <text x="60" y="60" textAnchor="middle" className="st-seal-label" fontSize={fs}>
+      <text x={C} y={C} textAnchor="middle" className="st-seal-label" fontSize={fs}>
         {lines.length === 1 ? (
-          <tspan x="60" dy="0.34em">
+          <tspan x={C} dy="0.34em">
             {lines[0]}
           </tspan>
         ) : (
           <>
-            <tspan x="60" dy="-0.22em">
+            <tspan x={C} dy="-0.22em">
               {lines[0]}
             </tspan>
-            <tspan x="60" dy="1.08em">
+            <tspan x={C} dy="1.08em">
               {lines[1]}
             </tspan>
           </>
