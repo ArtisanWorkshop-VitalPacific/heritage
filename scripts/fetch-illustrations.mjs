@@ -1,11 +1,11 @@
 // Build-time asset pipeline for the generated illustrations.
 // 1. Download each original from the Higgsfield CDN into .cache/illustrations.
 // 2. Convert to WebP with sharp (engravings 1800w, spots 768w) into public/illustrations.
-// 3. Cut the hero clip into two JPEG image sequences with ffmpeg (sm 720w, lg 1440w)
-//    for the scroll-scrubbed hero, and copy the MP4 as a fallback.
+// 3. Cut the hero clip into two WebP image sequences (ffmpeg, then sharp; sm 720w, lg 1280w,
+//    15 fps) for the scroll-scrubbed hero, and re-encode a light MP4 as a fallback.
 // 4. Write src/lib/illustrations.local.json so the app serves local files.
 // Any failure falls back to the remote URL for that asset. The build never fails here.
-import { mkdir, readFile, writeFile, stat, readdir, copyFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile, stat, readdir, copyFile, rm } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
@@ -74,17 +74,44 @@ async function worker() {
     try {
       const src = await download(e);
       if (e.kind === "video") {
-        await copyFile(src, path.join(outDir, "hero-motion.mp4"));
+        const mp4 = path.join(outDir, "hero-motion.mp4");
         map[e.id] = "/illustrations/hero-motion.mp4";
-        if (ffmpeg) {
-          const sets = { sm: 720, lg: 1440 };
+        if (!ffmpeg) {
+          await copyFile(src, mp4);
+        } else {
+          // Fallback clip: 1280w, short GOP so seeking stays quick, no audio, fast start.
+          try {
+            await run(ffmpeg, ["-y", "-hide_banner", "-loglevel", "error", "-i", src, "-vf", "scale=1280:-2:flags=lanczos", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26", "-g", "6", "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", mp4]);
+          } catch {
+            await copyFile(src, mp4);
+          }
+          // Scroll-scrub sequences. A light temporal denoise steadies the engraving lines between
+          // frames and keeps the files small. Frames are WebP when sharp is present, else JPEG.
+          const sets = { sm: 720, lg: 1280 };
           const frames = {};
           for (const [key, width] of Object.entries(sets)) {
             const dir = path.join(outDir, `hero-frames-${key}`);
+            const tmp = path.join(cacheDir, `hero-frames-${key}`);
+            await rm(dir, { recursive: true, force: true });
+            await rm(tmp, { recursive: true, force: true });
             await mkdir(dir, { recursive: true });
-            await run(ffmpeg, ["-y", "-hide_banner", "-loglevel", "error", "-i", src, "-vf", `fps=18,scale=${width}:-2`, "-q:v", key === "sm" ? "5" : "4", path.join(dir, "f%03d.jpg")]);
-            const count = (await readdir(dir)).filter((f) => f.endsWith(".jpg")).length;
-            frames[key] = { count, width, height: Math.round((width * 9) / 16), pattern: `/illustrations/hero-frames-${key}/f{n}.jpg` };
+            await mkdir(tmp, { recursive: true });
+            await run(ffmpeg, ["-y", "-hide_banner", "-loglevel", "error", "-i", src, "-vf", `fps=15,scale=${width}:-2:flags=lanczos,hqdn3d=1.5:1.5:3:3`, "-q:v", "2", path.join(tmp, "f%03d.jpg")]);
+            const names = (await readdir(tmp)).filter((f) => f.endsWith(".jpg")).sort();
+            let ext = "jpg";
+            if (sharp) {
+              ext = "webp";
+              for (const name of names) {
+                await sharp(path.join(tmp, name))
+                  .webp({ quality: key === "sm" ? 62 : 60, effort: 4 })
+                  .toFile(path.join(dir, name.replace(/\.jpg$/, ".webp")));
+              }
+            } else {
+              for (const name of names) await copyFile(path.join(tmp, name), path.join(dir, name));
+            }
+            let height = Math.round((width * 9) / 16);
+            if (sharp && names[0]) height = (await sharp(path.join(tmp, names[0])).metadata()).height ?? height;
+            frames[key] = { count: names.length, width, height, pattern: `/illustrations/hero-frames-${key}/f{n}.${ext}` };
           }
           map._heroFrames = frames;
         }
