@@ -18,7 +18,7 @@ const SURFACE: Record<string, string> = { family: "Family", school: "School", st
 const PRIVACY = [
   { icon: IconLock, title: "A parent consents for each child.", text: "No child starts a lesson until a parent has given consent." },
   { icon: IconMic, title: "Raw audio isn’t kept by default.", text: "Speech is turned into text to score the reading. Parents decide whether to keep the week 1 and week 8 recordings." },
-  { icon: IconPaper, title: "A standard data privacy agreement.", text: "Your school can sign it before any roster is shared, so the terms are settled first." },
+  { icon: IconPaper, title: "A standard data privacy agreement.", text: "Your school can sign it before sharing any roster with us." },
   { icon: IconShield, title: "Student Privacy Pledge commitments.", text: "We don’t sell student data or advertise to students, and we use the data only for teaching." },
 ];
 
