@@ -30,6 +30,10 @@ const INTRO_OUT: [number, number] = [0.07, 0.3];
 const OUTRO_IN: [number, number] = [0.68, 0.84];
 const PUSH: [number, number] = [0, 0.58]; // oval vignette opens to full frame
 const VIGNETTE_MAX = 3.2;
+// Landscape opening: the picture starts as a smaller plate under the headline (a frontispiece),
+// so both figures sit below the words, and grows to full frame as the vignette opens.
+const START_SCALE = 0.68;
+const START_DROP = 0.2; // of the stage height
 const MAX_DPR = 2;
 const FILL_WORKERS = 4;
 const BLEND_STEPS = 8; // crossfade steps between neighbouring frames
@@ -148,8 +152,16 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
         fy = nextFy;
         dirty = true;
       }
-      const rise = riseBy ? lift * (1 - show) : 0;
-      picture.style.transform = rise ? `translate3d(0, ${(-rise * riseBy).toFixed(1)}px, 0) scale(${(1 + rise * 0.16).toFixed(4)})` : "";
+      if (portrait.matches) {
+        const rise = riseBy ? lift * (1 - show) : 0;
+        picture.style.transform = rise ? `translate3d(0, ${(-rise * riseBy).toFixed(1)}px, 0) scale(${(1 + rise * 0.16).toFixed(4)})` : "";
+      } else {
+        const grow = push * push * (3 - 2 * push);
+        const scale = START_SCALE + (1 - START_SCALE) * grow;
+        const drop = START_DROP * stageH * (1 - grow);
+        // "none" at full frame: the stylesheet's default is the opening plate.
+        picture.style.transform = grow < 1 ? `translate3d(0, ${drop.toFixed(1)}px, 0) scale(${scale.toFixed(4)})` : "none";
+      }
     };
 
     /* ---------- Sources ---------- */

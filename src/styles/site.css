@@ -667,10 +667,25 @@
 .s-hero-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 52% 54% at 50% 68%, var(--s-parchment-0) 52%, rgba(239, 230, 210, 0.72) 80%, var(--parchment) 100%);
-  transform-origin: 50% 68%;
+  /* The plate starts small under the headline, so the oval is centred on it and roomy enough
+     to hold the boy and the mother. It scales up with the scroll until the picture is full frame. */
+  background: radial-gradient(ellipse 60% 58% at 50% 50%, var(--s-parchment-0) 58%, rgba(239, 230, 210, 0.72) 84%, var(--parchment) 100%);
+  transform-origin: 50% 50%;
   will-change: transform;
   pointer-events: none;
+}
+
+.s-hero-picture {
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+/* Landscape opening state, before the script takes over and with reduced motion. */
+@media (min-aspect-ratio: 6/5) {
+  .s-hero-picture {
+    transform: translate3d(0, 20vh, 0) scale(0.68);
+    transform: translate3d(0, 20svh, 0) scale(0.68);
+  }
 }
 
 .s-hero-video {
