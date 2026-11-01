@@ -51,6 +51,19 @@ function build(t: string, word: string, narrator: Narrator): { model: string; bo
     }
     case "E":
       return v4(`[slowly] /${onset}${vowel}${vowel}${vowel}${rest}/... [warmly] ${word}.`);
+    case "G":
+    case "H":
+    case "J": {
+      // G: STRUT as schwa, British LOT as ɔ. H: STRUT as ɐ, British LOT as ɔ. J: a glottal stop closes the open parts.
+      const sub = (x: string) =>
+        t === "G" ? x.replace(/ʌ/g, "ə").replace(/ɒ/g, "ɔ") : t === "H" ? x.replace(/ʌ/g, "ɐ").replace(/ɒ/g, "ɔ") : x;
+      const v = sub(vowel);
+      const o = sub(onset);
+      const r = sub(rest);
+      const close = t === "J" ? "ʔ" : "";
+      const list = [o ? o + v + close : "", v + close, r ? v + r : ""].filter(Boolean);
+      return v4(`[slowly] ${list.map((c) => `/${c}/`).join(", ")}... [warmly] ${word}.`);
+    }
     default:
       return null;
   }
