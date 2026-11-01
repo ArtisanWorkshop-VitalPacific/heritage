@@ -52,6 +52,9 @@ export interface Child {
   classId?: string;
   linkedTenantIds?: string[]; // e.g. a co-op that may also see this child
   createdAt: string;
+  /** When and by whom parent consent was recorded. Absent: no consent on file. */
+  consentAt?: string;
+  consentBy?: string;
 }
 
 export interface ClassGroup {
@@ -114,11 +117,16 @@ export interface ReferralInvite {
   status: "sent" | "joined" | "paid";
   sentAt: string;
   paidAt?: string;
+  /** School invites: the school's name, and the staff member who sent it. */
+  school?: string;
+  invitedBy?: string;
 }
 
 export interface Referral {
   code: string;
   ownerMemberId: string;
+  /** Set on an organization's shared code, which any staff member with referrals.use may send. */
+  tenantId?: string;
   invites: ReferralInvite[];
   monthsEarned: number;
   cap: number; // 12 per year

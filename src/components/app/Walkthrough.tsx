@@ -19,7 +19,7 @@ interface Stop {
 const STOPS: Stop[] = [
   { title: "The website", detail: "Scroll the film. Then Method, Schools, Pricing, Susan.", href: "/" },
   { title: "A new family", detail: "A parent, a child, an age band, a voice.", href: "/app/onboarding", role: "parent" },
-  { title: "Placement", detail: "Sounds, words, a short passage. One rung.", href: "/app/placement", role: "parent" },
+  { title: "Placement", detail: "The child takes it: sounds, words, a short passage. One rung.", href: "/app/placement", role: "student" },
   { title: "Nora's lesson", detail: "Rung 10, the letter h. One clean read from mastery.", href: "/app/lesson", role: "student", childId: "c_nora", family: "fam_harper" },
   { title: "Talk with Mrs. Wren", detail: "Hold the microphone. Ask her anything.", href: "/app/talk", role: "student", childId: "c_nora", family: "fam_harper" },
   { title: "The parent's report", detail: "Mastery, fluency, recordings, minutes on paper.", href: "/app/report", role: "parent", childId: "c_nora", family: "fam_harper" },

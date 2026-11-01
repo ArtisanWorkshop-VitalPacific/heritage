@@ -72,7 +72,7 @@ export const RUNGS: Rung[] = [
       ["sap", "sip"],
       ["mop", "map"],
     ],
-    words: ["sat", "set", "sit", "pat", "pet", "pot", "map", "mop", "top", "tip", "pup", "up", "us"],
+    words: ["sat", "set", "sit", "pat", "pet", "pot", "map", "mop", "top", "pup", "up", "us"],
     passage: {
       id: "p7",
       rung: 7,
@@ -101,7 +101,7 @@ export const RUNGS: Rung[] = [
       ["ten", "tan"],
       ["bun", "ban"],
     ],
-    words: ["nap", "net", "not", "nut", "bat", "bit", "bun", "sun", "pen", "pin", "ten", "tub", "on", "in"],
+    words: ["nap", "not", "nut", "bat", "bit", "bun", "sun", "pen", "pin", "ten", "on", "in"],
     passage: {
       id: "p8",
       rung: 8,
@@ -131,7 +131,7 @@ export const RUNGS: Rung[] = [
       ["bag", "bog"],
       ["mad", "mud"],
     ],
-    words: ["dad", "den", "dig", "dot", "dug", "dog", "bag", "big", "bed", "mud", "sad", "pig", "gum", "got"],
+    words: ["dad", "den", "dig", "dug", "dog", "bag", "big", "bed", "mud", "sad", "pig", "got"],
     passage: {
       id: "p9",
       rung: 9,
@@ -217,7 +217,7 @@ export const RUNGS: Rung[] = [
       ["log", "leg"],
       ["lid", "led"],
     ],
-    words: ["fan", "fed", "fit", "fog", "fun", "fin", "lap", "leg", "lid", "lip", "log", "lot", "if"],
+    words: ["fan", "fed", "fit", "fog", "fun", "fin", "lap", "leg", "lid", "lip", "log", "if"],
     passage: {
       id: "p12",
       rung: 12,
@@ -294,7 +294,7 @@ export const RUNGS: Rung[] = [
       ["wag", "wig"],
       ["wet", "wit"],
     ],
-    words: ["wag", "wet", "win", "wig", "web", "wed", "wit"],
+    words: ["wag", "wet", "win", "wig", "web", "wed", "wit", "wigs"],
     passage: {
       id: "p15",
       rung: 15,
@@ -327,7 +327,7 @@ export const RUNGS: Rung[] = [
       ["yap", "yip"],
       ["vat", "vet"],
     ],
-    words: ["van", "vet", "yes", "yet", "yum", "zip", "zap", "quit", "quiz", "box", "fox", "six", "mix", "wax"],
+    words: ["van", "vet", "yes", "yum", "zip", "zap", "quit", "quiz", "box", "fox", "six", "wax"],
     passage: {
       id: "p16",
       rung: 16,
@@ -358,7 +358,7 @@ export const RUNGS: Rung[] = [
       ["luck", "lock"],
       ["sock", "sack"],
     ],
-    words: [],
+    words: ["bell", "hill", "doll", "kiss", "mess", "puff", "buzz", "fizz", "duck", "sock", "egg", "add"],
     passage: {
       id: "p17",
       rung: 17,
@@ -384,7 +384,7 @@ export const RUNGS: Rung[] = [
     pattern: [
       { from: "ten", to: "tent" },
       { from: "ban", to: "band" },
-      { from: "cam", to: "camp" },
+      { from: "ram", to: "ramp" },
       { from: "hum", to: "hump" },
       { from: "men", to: "mend" },
       { from: "den", to: "dent" },
@@ -396,7 +396,7 @@ export const RUNGS: Rung[] = [
       ["hunt", "hint"],
       ["dump", "damp"],
     ],
-    words: [],
+    words: ["tent", "hunt", "went", "sand", "hand", "pond", "bend", "lamp", "jump", "bump", "camp", "mint"],
     passage: {
       id: "p18",
       rung: 18,
@@ -427,7 +427,7 @@ export const RUNGS: Rung[] = [
       ["left", "lift"],
       ["mist", "must"],
     ],
-    words: [],
+    words: ["nest", "desk", "mask", "soft", "gift", "belt", "milk", "help", "elf", "held", "kept", "next"],
     passage: {
       id: "p19",
       rung: 19,
@@ -453,7 +453,7 @@ export const RUNGS: Rung[] = [
       ["slap", "slip"],
       ["sled", "slid"],
     ],
-    words: [],
+    words: ["black", "block", "clap", "clock", "flag", "flat", "glad", "plum", "plan", "sled", "slip", "club"],
     passage: {
       id: "p20",
       rung: 20,
@@ -477,7 +477,7 @@ export const RUNGS: Rung[] = [
       ["drop", "drip"],
       ["track", "trick"],
     ],
-    words: [],
+    words: ["brick", "crab", "crib", "drum", "drip", "frog", "grin", "grass", "press", "trip", "truck", "dress"],
     passage: {
       id: "p21",
       rung: 21,
@@ -493,7 +493,7 @@ export const RUNGS: Rung[] = [
     title: "Blends with s: sc, sk, sm, sn, sp, st, sw",
     short: "st sp sw",
     group: "onset-blends",
-    graphemes: ["sc", "sk", "sm", "sn", "sp", "st", "sw", "spl", "spr", "str", "scr", "squ"],
+    graphemes: ["sc", "sk", "sm", "sn", "sp", "st", "sw", "spl", "spr", "str", "scr", "squ", "tw"],
     ladder: { onset: "st", left: ["sta", "ste", "sti", "sto", "stu"], right: ["stamp", "step", "stiff", "stop", "stuck"] },
     pairs: [
       ["step", "stop"],
@@ -502,7 +502,7 @@ export const RUNGS: Rung[] = [
       ["stack", "stick"],
       ["swim", "swam"],
     ],
-    words: [],
+    words: ["skip", "smell", "snack", "spin", "stop", "swim", "twin", "split", "strap", "scrub", "squid", "stamp"],
     passage: {
       id: "p22",
       rung: 22,
@@ -526,7 +526,7 @@ export const RUNGS: Rung[] = [
       ["dish", "dash"],
       ["mesh", "mash"],
     ],
-    words: [],
+    words: ["ship", "shop", "shed", "shell", "fish", "dish", "wish", "rush", "brush", "crash", "splash", "shut"],
     passage: {
       id: "p23",
       rung: 23,
@@ -549,7 +549,7 @@ export const RUNGS: Rung[] = [
       ["pitch", "patch"],
       ["check", "chick"],
     ],
-    words: [],
+    words: ["chin", "chop", "chick", "check", "much", "rich", "catch", "match", "pitch", "bench", "lunch", "inch"],
     passage: {
       id: "p24",
       rung: 24,
@@ -581,7 +581,7 @@ export const RUNGS: Rung[] = [
       ["with", "wish"],
       ["thick", "chick"],
     ],
-    words: [],
+    words: ["thin", "thick", "that", "then", "them", "bath", "math", "moth", "with", "when", "whip", "which"],
     passage: {
       id: "p25",
       rung: 25,
@@ -613,7 +613,7 @@ export const RUNGS: Rung[] = [
       ["wink", "wing"],
       ["think", "thing"],
     ],
-    words: [],
+    words: ["sing", "ring", "king", "long", "song", "hang", "pink", "sink", "think", "bank", "junk", "trunk"],
     passage: {
       id: "p26",
       rung: 26,
@@ -652,7 +652,7 @@ export const RUNGS: Rung[] = [
       ["hat", "hate"],
       ["can", "cane"],
     ],
-    words: [],
+    words: ["cake", "lake", "gate", "game", "name", "cape", "tape", "wave", "cave", "made", "plate", "snake"],
     passage: {
       id: "p27",
       rung: 27,
@@ -684,7 +684,7 @@ export const RUNGS: Rung[] = [
       ["dim", "dime"],
       ["fin", "fine"],
     ],
-    words: [],
+    words: ["kite", "bike", "like", "time", "line", "pine", "ride", "hide", "five", "smile", "white", "slide"],
     passage: {
       id: "p28",
       rung: 28,
@@ -717,7 +717,7 @@ export const RUNGS: Rung[] = [
       ["cub", "cube"],
       ["tub", "tube"],
     ],
-    words: [],
+    words: ["home", "bone", "rope", "nose", "stone", "joke", "cube", "tube", "mule", "flute", "rule", "these"],
     passage: {
       id: "p29",
       rung: 29,
@@ -746,7 +746,7 @@ export const RUNGS: Rung[] = [
       ["red", "read"],
       ["sell", "seal"],
     ],
-    words: [],
+    words: ["see", "tree", "feet", "green", "sheep", "sleep", "sea", "eat", "leaf", "read", "team", "meat"],
     passage: {
       id: "p30",
       rung: 30,
@@ -775,7 +775,7 @@ export const RUNGS: Rung[] = [
       ["pad", "paid"],
       ["plan", "plain"],
     ],
-    words: [],
+    words: ["rain", "tail", "mail", "paint", "wait", "snail", "day", "play", "say", "tray", "stay", "gray"],
     passage: {
       id: "p31",
       rung: 31,
@@ -802,7 +802,7 @@ export const RUNGS: Rung[] = [
       ["rod", "road"],
       ["cost", "coast"],
     ],
-    words: [],
+    words: ["boat", "coat", "goat", "road", "soap", "toast", "snow", "grow", "slow", "bowl", "show", "crow"],
     passage: {
       id: "p32",
       rung: 32,
@@ -830,7 +830,7 @@ export const RUNGS: Rung[] = [
       ["pat", "part"],
       ["had", "hard"],
     ],
-    words: [],
+    words: ["car", "star", "jar", "far", "farm", "barn", "park", "dark", "yard", "sharp", "card", "cart"],
     passage: {
       id: "p33",
       rung: 33,
@@ -858,7 +858,7 @@ export const RUNGS: Rung[] = [
       ["shot", "short"],
       ["spot", "sport"],
     ],
-    words: [],
+    words: ["for", "fork", "corn", "horn", "born", "storm", "short", "north", "torch", "porch", "sort", "cord"],
     passage: {
       id: "p34",
       rung: 34,
@@ -887,7 +887,7 @@ export const RUNGS: Rung[] = [
       ["bid", "bird"],
       ["bun", "burn"],
     ],
-    words: [],
+    words: ["her", "fern", "herd", "bird", "girl", "first", "shirt", "fur", "burn", "turn", "hurt", "church"],
     passage: {
       id: "p35",
       rung: 35,
@@ -920,12 +920,12 @@ export const RUNGS: Rung[] = [
       ["shot", "shoot"],
       ["foot", "food"],
     ],
-    words: [],
+    words: ["moon", "soon", "food", "spoon", "room", "zoo", "book", "look", "good", "wood", "foot", "cook"],
     passage: {
       id: "p36",
       rung: 36,
       title: "The Moon and the Brook",
-      sentences: ["Ruth took a book to the brook.", "She sat on a cool rock and read.", "Soon the moon came up.", "Ruth took her book and went home to her room."],
+      sentences: ["Ruth took a book to the brook.", "She sat on a cool rock to read.", "Soon the moon came up.", "Ruth took her book and went home to her room."],
       illustration: "village-lane",
       cast: ["Ruth"],
     },
@@ -948,7 +948,7 @@ export const RUNGS: Rung[] = [
       ["fond", "found"],
       ["sand", "sound"],
     ],
-    words: [],
+    words: ["out", "loud", "cloud", "round", "found", "house", "cow", "town", "brown", "owl", "crown", "down"],
     passage: {
       id: "p37",
       rung: 37,
@@ -975,7 +975,7 @@ export const RUNGS: Rung[] = [
       ["bay", "boy"],
       ["sell", "soil"],
     ],
-    words: [],
+    words: ["oil", "coin", "boil", "point", "soil", "join", "noise", "boy", "toy", "joy"],
     passage: {
       id: "p38",
       rung: 38,
@@ -1008,7 +1008,7 @@ export const RUNGS: Rung[] = [
       ["sing", "singing"],
       ["sit", "sitting"],
     ],
-    words: [],
+    words: ["jumped", "landed", "hopped", "planted", "rested", "singing", "sitting", "running", "baking", "shining", "hoping", "fishing"],
     passage: {
       id: "p39",
       rung: 39,
@@ -1046,7 +1046,7 @@ export const RUNGS: Rung[] = [
       ["in", "insect"],
       ["pump", "pumpkin"],
     ],
-    words: [],
+    words: ["rabbit", "napkin", "sunset", "basket", "muffin", "pumpkin", "picnic", "kitten", "garden", "problem", "insect", "pitcher"],
     passage: {
       id: "p40",
       rung: 40,
@@ -1072,19 +1072,20 @@ export function rungLabel(n: number): string {
   return r ? `${r.n} · ${r.short}` : String(n);
 }
 
-export const RUNG_GROUPS: { id: Rung["group"]; label: string; from: number; to: number }[] = [
-  { id: "vowels", label: "Vowels", from: 1, to: 5 },
-  { id: "consonants", label: "Consonants", from: 6, to: 16 },
-  { id: "doubles", label: "Doubles", from: 17, to: 17 },
-  { id: "ending-blends", label: "Ending blends", from: 18, to: 19 },
-  { id: "onset-blends", label: "Blends", from: 20, to: 22 },
-  { id: "digraphs", label: "Digraphs", from: 23, to: 26 },
-  { id: "silent-e", label: "Silent e", from: 27, to: 29 },
-  { id: "vowel-teams", label: "Vowel teams", from: 30, to: 32 },
-  { id: "r-controlled", label: "R-controlled", from: 33, to: 35 },
-  { id: "vowel-teams", label: "More teams", from: 36, to: 38 },
-  { id: "endings", label: "Endings", from: 39, to: 39 },
-  { id: "syllables", label: "Syllables", from: 40, to: 40 },
+/** Groups of rungs for boards and maps. `id` is unique; `group` is the RungGroup the rungs carry. */
+export const RUNG_GROUPS: { id: string; group: Rung["group"]; label: string; from: number; to: number }[] = [
+  { id: "vowels", group: "vowels", label: "Vowels", from: 1, to: 5 },
+  { id: "consonants", group: "consonants", label: "Consonants", from: 6, to: 16 },
+  { id: "doubles", group: "doubles", label: "Doubles", from: 17, to: 17 },
+  { id: "ending-blends", group: "ending-blends", label: "Ending blends", from: 18, to: 19 },
+  { id: "onset-blends", group: "onset-blends", label: "Blends", from: 20, to: 22 },
+  { id: "digraphs", group: "digraphs", label: "Digraphs", from: 23, to: 26 },
+  { id: "silent-e", group: "silent-e", label: "Silent e", from: 27, to: 29 },
+  { id: "vowel-teams", group: "vowel-teams", label: "Vowel teams", from: 30, to: 32 },
+  { id: "r-controlled", group: "r-controlled", label: "R-controlled", from: 33, to: 35 },
+  { id: "more-teams", group: "vowel-teams", label: "More teams", from: 36, to: 38 },
+  { id: "endings", group: "endings", label: "Endings", from: 39, to: 39 },
+  { id: "syllables", group: "syllables", label: "Syllables", from: 40, to: 40 },
 ];
 
 /** Sight words introduced at or before the given rung. */

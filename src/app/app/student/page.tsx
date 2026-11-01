@@ -1,11 +1,8 @@
 "use client";
 
-/** Stub: the owning agent replaces this file. */
+import { StudentHome } from "@/components/student/StudentHome";
+
+/** The child's home: greeting, today's lesson, practice, talk, ladder, screen time. */
 export default function StudentPage() {
-  return (
-    <section className="container" style={{ paddingBlock: "64px" }}>
-      <p className="eyebrow">Being built</p>
-      <h1 className="display" style={{ fontSize: "2.25rem", marginTop: 8 }}>Today</h1>
-    </section>
-  );
+  return <StudentHome />;
 }

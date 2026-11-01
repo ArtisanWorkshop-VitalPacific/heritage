@@ -26,7 +26,7 @@ export function tokenize(sentences: string[]): Token[] {
   let i = 0;
   sentences.forEach((s, si) => {
     for (const raw of s.split(/\s+/).filter(Boolean)) {
-      const clean = raw.toLowerCase().replace(/[^a-z']/g, "").replace(/^'+|'+$/g, "");
+      const clean = raw.toLowerCase().replace(/[’‘`]/g, "'").replace(/[^a-z']/g, "").replace(/^'+|'+$/g, "");
       if (!clean) continue;
       out.push({ i: i++, display: raw, clean, sentence: si });
     }

@@ -1,6 +1,19 @@
 export { RUNGS, RUNG_GROUPS, getRung, rungLabel, sightThrough } from "./rungs";
 export { passageFor, PASSAGES, tokenize, type Token } from "./corpus";
-export { validatePassage, isAllowed, type ValidationResult, type Violation } from "./validator";
+export { validatePassage, isAllowed, explainWord, passageWords, type ValidationResult, type Violation } from "./validator";
+export {
+  decode,
+  isDecodable,
+  decodeRung,
+  analyzeWord,
+  normalizeWord,
+  type DecodeResult,
+  type WordAnalysis,
+  type WordParse,
+  type Requirement,
+} from "./decode";
+export { bankFor, newWordsAt, namesFor, rungOfWord, topicWordsFor } from "./bank";
+export { LEXICON, LEXICON_NAMES, lexEntry, inLexicon, isIrregular, isLexiconName, topicFor, type LexEntry } from "./lexicon";
 export {
   LESSON_STEPS,
   type LessonStep,

@@ -1,11 +1,8 @@
 "use client";
 
-/** Stub: the owning agent replaces this file. */
+import { Drill } from "@/components/student/Drill";
+
+/** Practice surface: letter pages, the vowel ladder, pairs and words for any rung already reached. */
 export default function DrillPage() {
-  return (
-    <section className="container" style={{ paddingBlock: "64px" }}>
-      <p className="eyebrow">Being built</p>
-      <h1 className="display" style={{ fontSize: "2.25rem", marginTop: 8 }}>Ladder drill</h1>
-    </section>
-  );
+  return <Drill />;
 }

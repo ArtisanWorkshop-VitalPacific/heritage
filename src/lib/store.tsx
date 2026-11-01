@@ -73,12 +73,18 @@ export interface DemoActions {
     narrator: Child["narrator"];
     mode: Child["mode"];
     band?: AgeBand;
+    /** True when the parent ticked consent during onboarding. */
+    consent?: boolean;
   }): string;
   updateChild(childId: string, patch: Partial<Omit<Child, "id" | "tenantId">>): Result;
   savePlacement(result: PlacementResult): void;
   recordSession(input: Omit<Session, "id" | "clean" | "masteredRung">): SessionOutcome;
-  invite(email: string): Result;
+  /** Sends a referral. Staff in an organization send the school's shared code; pass the school's name. */
+  invite(email: string, extra?: { school?: string }): Result;
+  /** Demo control: the invited family or school paid. One month each; refuses a second payment. */
   markInvitePaid(email: string): Result;
+  /** Records or withdraws parent consent for a child (consent.manage). */
+  setConsent(childId: string, given: boolean): Result;
   addMember(input: { name: string; email: string; role: Member["role"] }): Result;
   changeRole(memberId: string, role: Member["role"]): Result;
   enterScore(input: { childId: string; rung: number; accuracy: number; paperMinutes: number }): Result;
@@ -102,6 +108,15 @@ export interface DemoContextValue {
 }
 
 const DemoContext = createContext<DemoContextValue | null>(null);
+
+/** The referral code the current actor sends: their own, or their organization's shared code. */
+function referralFor(state: DemoState) {
+  const own = state.referrals.find((r) => r.ownerMemberId === state.ui.actorId);
+  if (own) return own;
+  const tenant = state.tenants.find((t) => t.id === state.ui.tenantId);
+  if (!tenant || tenant.kind === "family") return undefined;
+  return state.referrals.find((r) => r.tenantId === tenant.id);
+}
 
 /** Which member acts for each role. Parent and observer follow the selected family. */
 function actorFor(state: DemoState, role: Role): { actorId: string; tenantId: string } {
@@ -289,6 +304,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
             narrator: input.narrator,
             mode: input.mode,
             createdAt: new Date().toISOString(),
+            ...(input.consent ? { consentAt: new Date().toISOString(), consentBy: s.ui.actorId } : {}),
           };
           const members = s.members.map((m) =>
             m.tenantId === tenantId && (m.role === "parent" || m.role === "observer")
@@ -343,29 +359,45 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         return { session, clean: res.clean, remediate: res.remediate, cleanReads: res.cleanReads, masteredRung: res.masteredRung };
       },
 
-      invite(email) {
+      invite(email, extra) {
         if (!roleCan(stateRef.current.ui.role, "referrals.use")) return deny("referrals.use", email);
         const clean = email.trim().toLowerCase();
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return { ok: false, error: "Enter an email address like name@example.com." };
         const s = stateRef.current;
-        const ref = s.referrals.find((r) => r.ownerMemberId === s.ui.actorId);
+        const ref = referralFor(s);
         if (!ref) return { ok: false, error: "This account has no referral code yet." };
-        if (ref.invites.some((i) => i.email === clean)) return { ok: false, error: "You already invited this address." };
+        if (ref.invites.some((i) => i.email === clean)) return { ok: false, error: "This address has already been invited." };
+        const school = extra?.school?.trim();
+        if (ref.tenantId && extra && !school) return { ok: false, error: "Enter the school's name." };
         commit((st) => ({
           ...st,
           referrals: st.referrals.map((r) =>
-            r.code === ref.code ? { ...r, invites: [{ email: clean, status: "sent", sentAt: new Date().toISOString() }, ...r.invites] } : r,
+            r.code === ref.code
+              ? {
+                  ...r,
+                  invites: [
+                    { email: clean, status: "sent", sentAt: new Date().toISOString(), ...(school ? { school } : {}), invitedBy: st.ui.actorId },
+                    ...r.invites,
+                  ],
+                }
+              : r,
           ),
+          audit: ref.tenantId ? audit(st, "referral.invite", school ? `${school} (${clean})` : clean) : st.audit,
         }));
         return { ok: true };
       },
 
       markInvitePaid(email) {
         const s = stateRef.current;
-        const ref = s.referrals.find((r) => r.ownerMemberId === s.ui.actorId);
+        const ref = referralFor(s);
         if (!ref) return { ok: false, error: "No referral code." };
+        const clean = email.trim().toLowerCase();
+        const inv = ref.invites.find((i) => i.email === clean);
+        if (!inv) return { ok: false, error: "No invite for that address." };
+        if (inv.status === "paid") return { ok: false, error: "This invite is already paid." };
         if (ref.monthsEarned >= ref.cap) return { ok: false, error: "You have reached this year's cap of 12 months." };
         const now = new Date().toISOString();
+        const who = inv.school ?? clean;
         commit((st) => ({
           ...st,
           referrals: st.referrals.map((r) =>
@@ -373,11 +405,30 @@ export function DemoProvider({ children }: { children: ReactNode }) {
               ? {
                   ...r,
                   monthsEarned: r.monthsEarned + 1,
-                  invites: r.invites.map((i) => (i.email === email ? { ...i, status: "paid", paidAt: now } : i)),
+                  invites: r.invites.map((i) => (i.email === clean ? { ...i, status: "paid", paidAt: now } : i)),
                 }
               : r,
           ),
-          ledger: [{ id: uid("l"), memberId: st.ui.actorId, date: now, months: 1, reason: `${email} joined and paid. One month each.` }, ...st.ledger],
+          ledger: [{ id: uid("l"), memberId: st.ui.actorId, date: now, months: 1, reason: `${who} joined and paid. One month each.` }, ...st.ledger],
+        }));
+        return { ok: true };
+      },
+
+      setConsent(childId, given) {
+        if (!roleCan(stateRef.current.ui.role, "consent.manage")) return deny("consent.manage", childId);
+        const s = stateRef.current;
+        const c = s.children.find((x) => x.id === childId);
+        if (!c) return { ok: false, error: "No such child." };
+        commit((st) => ({
+          ...st,
+          children: st.children.map((x) =>
+            x.id === childId
+              ? given
+                ? { ...x, consentAt: new Date().toISOString(), consentBy: st.ui.actorId }
+                : { ...x, consentAt: undefined, consentBy: undefined }
+              : x,
+          ),
+          audit: audit(st, given ? "consent.give" : "consent.withdraw", c.name),
         }));
         return { ok: true };
       },

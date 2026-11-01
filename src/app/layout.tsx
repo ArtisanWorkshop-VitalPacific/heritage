@@ -7,7 +7,13 @@ import "@fontsource/libre-caslon-text/700.css";
 import "@fontsource/libre-caslon-display/400.css";
 import "./globals.css";
 
+// Share images need an absolute base. Vercel provides the production host; local builds use localhost.
+const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Heritage Readers",
     template: "%s · Heritage Readers",
@@ -33,7 +39,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body>{children}</body>
     </html>
   );

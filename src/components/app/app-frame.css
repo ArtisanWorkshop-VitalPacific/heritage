@@ -75,6 +75,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--sp-2);
+  min-height: 44px;
+  min-width: 44px;
   text-decoration: none;
   flex: none;
 }
@@ -272,6 +274,10 @@
     flex-wrap: wrap;
     gap: var(--sp-2);
     padding-bottom: var(--sp-2);
+  }
+  /* Links take their own scrolling row; the negative margin must not let them share a line. */
+  .ap-nav-links {
+    flex: 1 0 100%;
   }
   .ap-nav-end {
     width: 100%;

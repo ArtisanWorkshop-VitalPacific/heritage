@@ -3,6 +3,7 @@
 import type { Passage, TutorReply, TutorRequest } from "./types";
 import type { Violation } from "./ladder/validator";
 import { passageFor } from "./ladder/corpus";
+import { scriptedReply } from "./tutor-script";
 
 /**
  * Client helpers for the tutor and the passage generator.
@@ -19,9 +20,12 @@ export async function askTutor(req: TutorRequest): Promise<TutorReply> {
       signal: AbortSignal.timeout(10_000),
     });
     if (!res.ok) throw new Error(String(res.status));
-    return (await res.json()) as TutorReply;
+    const j = (await res.json()) as Partial<TutorReply>;
+    if (typeof j.text !== "string" || !j.text.trim()) throw new Error("empty reply");
+    return { text: j.text, source: j.source === "gateway" ? "gateway" : "script", model: j.model };
   } catch {
-    return { text: `Let us read it together, ${req.child.name}. Point to the first word.`, source: "script" };
+    // Offline or the server is unreachable: Mrs. Wren answers from the local script.
+    return { text: scriptedReply(req), source: "script" };
   }
 }
 

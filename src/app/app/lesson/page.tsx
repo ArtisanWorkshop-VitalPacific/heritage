@@ -1,11 +1,8 @@
 "use client";
 
-/** Stub: the owning agent replaces this file. */
+import { Lesson } from "@/components/student/Lesson";
+
+/** Today's lesson: warm up, learn, words, story, check, close. */
 export default function LessonPage() {
-  return (
-    <section className="container" style={{ paddingBlock: "64px" }}>
-      <p className="eyebrow">Being built</p>
-      <h1 className="display" style={{ fontSize: "2.25rem", marginTop: 8 }}>Lesson</h1>
-    </section>
-  );
+  return <Lesson />;
 }

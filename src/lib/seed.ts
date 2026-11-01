@@ -12,7 +12,7 @@ import type {
   Tenant,
 } from "./types";
 
-export const SEED_VERSION = 3;
+export const SEED_VERSION = 4;
 
 const DAY = 86_400_000;
 
@@ -129,6 +129,9 @@ export function createSeed(now = Date.now()): DemoState {
     narrator: "american",
     mode: "paper",
     createdAt: iso(now - 60 * DAY),
+    // Seeded children all have consent on file: by the family's parent, or through the school.
+    consentAt: iso(now - 60 * DAY),
+    consentBy: tenantId === "fam_harper" ? "m_claire" : "m_adler",
     ...extra,
   });
 
@@ -228,7 +231,7 @@ export function createSeed(now = Date.now()): DemoState {
       monthsEarned: 1,
       cap: 12,
     },
-    { code: "OAKHILL-SCHOOL", ownerMemberId: "m_adler", invites: [], monthsEarned: 0, cap: 12 },
+    { code: "OAKHILL-SCHOOL", ownerMemberId: "m_adler", tenantId: "org_oakhill", invites: [], monthsEarned: 0, cap: 12 },
   ];
 
   const ledger: LedgerEntry[] = [

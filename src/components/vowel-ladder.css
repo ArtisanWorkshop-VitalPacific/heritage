@@ -163,7 +163,15 @@
   color: inherit;
   white-space: nowrap;
   cursor: default;
+  position: relative;
   transition: background-color var(--d-fast) var(--ease), transform var(--d-base) var(--ease-out);
+}
+
+/* A child's finger needs more than the glyphs: widen the hit area without moving the layout. */
+.vl-word::after {
+  content: "";
+  position: absolute;
+  inset: -10px -6px;
 }
 
 button.vl-word {
@@ -189,7 +197,16 @@ button.vl-word:hover {
 }
 
 .vl-dash {
-  margin-left: 0.05em;
+  /* The book's open-syllable rule, drawn rather than typed. */
+  display: inline-block;
+  width: 0.9em;
+  height: 0.09em;
+  min-height: 2px;
+  margin-left: 0.08em;
+  vertical-align: 0.3em;
+  border-radius: 1px;
+  background: currentColor;
+  color: var(--hw-pink);
 }
 
 .vl-actions {

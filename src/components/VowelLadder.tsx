@@ -109,7 +109,7 @@ export function VowelLadder({
             <>
               <span className="vl-pink">{pink}</span>
               {ink && <span className="vl-ink">{ink}</span>}
-              {dashed && <span className="vl-pink vl-dash">—</span>}
+              {dashed && <span className="vl-dash" aria-hidden />}
             </>
           );
           return (
