@@ -112,6 +112,31 @@ function fade(x: Float32Array, inSec: number, outSec: number, sampleRate: number
   return y;
 }
 
+/** Evens out the loudness of a held vowel (within 6 dB) so it does not fade or swell. */
+function even(x: Float32Array, sampleRate: number): Float32Array {
+  const block = Math.round(0.02 * sampleRate);
+  const levels: number[] = [];
+  for (let s = 0; s < x.length; s += block) {
+    let e = 0;
+    const end = Math.min(x.length, s + block);
+    for (let i = s; i < end; i++) e += x[i] * x[i];
+    levels.push(Math.sqrt(e / Math.max(1, end - s)));
+  }
+  const target = [...levels].sort((p, q) => p - q)[Math.floor(levels.length / 2)];
+  if (!target) return x;
+  const gains = levels.map((l) => (l > 0 ? Math.min(2, Math.max(0.5, target / l)) : 1));
+  const y = new Float32Array(x.length);
+  for (let i = 0; i < x.length; i++) {
+    // Linear between block centres, so the gain never steps.
+    const pos = i / block - 0.5;
+    const k = Math.max(0, Math.min(gains.length - 1, Math.floor(pos)));
+    const t = Math.max(0, Math.min(1, pos - k));
+    const gain = gains[k] * (1 - t) + gains[Math.min(gains.length - 1, k + 1)] * t;
+    y[i] = x[i] * gain;
+  }
+  return y;
+}
+
 interface Frames {
   rms: number[];
   /** How periodic each frame is, 0 to 1: a vowel is periodic even when breathy; h, s, t and p are not. */
@@ -202,7 +227,9 @@ export function buildStretched(
   we = Math.min(pcm.length, ws + (last + 2) * f.hop + Math.round(0.02 * sampleRate));
   ws = ws + first * f.hop;
 
-  // The vowel: the letters' timings, narrowed to the voiced frames around them.
+  // The vowel: the voiced stretch nearest the vowel letters. Letter timings can lean into the
+  // consonants, so they bound the vowel only where voicing carries on into a voiced consonant
+  // (the b in "bog", the m in "hum"). After h, p, t, s and the like, the voicing itself marks the vowel.
   const ls = sec(t0[at + letters[0]]);
   const le = sec(t1[at + letters[1] - 1]);
   const g = frames(pcm, ws, we, sampleRate, true);
@@ -222,25 +249,34 @@ export function buildStretched(
   let b = a;
   while (a > 0 && voiced[a - 1]) a--;
   while (b < voiced.length - 1 && voiced[b + 1]) b++;
-  // A voiced run can carry on into a nasal or l (hum, hill): keep to the vowel letters, with 30 ms either side.
+  const runStart = Math.max(ws, ws + a * g.hop);
+  const runEnd = Math.min(we, ws + (b + 3) * g.hop);
+  const w = word.toLowerCase();
+  const VOICED = /[bdgjlmnrvwyz]/;
+  const onsetVoiced = letters[0] > 0 && (VOICED.test(w[letters[0] - 1]) || w.slice(letters[0] - 2, letters[0]) === "th");
+  const codaVoiced = letters[1] < w.length && VOICED.test(w[letters[1]]);
   const margin = Math.round(0.03 * sampleRate);
-  let vs = Math.max(ws, ws + a * g.hop, ls - margin);
-  let ve = Math.min(we, ws + (b + 3) * g.hop, le + margin);
+  let vs = onsetVoiced ? Math.max(runStart, ls - margin) : runStart;
+  let ve = codaVoiced ? Math.min(runEnd, le + margin) : runEnd;
   if (ve - vs < 0.05 * sampleRate) {
-    vs = Math.max(ws, ws + a * g.hop);
-    ve = Math.min(we, ws + (b + 3) * g.hop);
+    vs = runStart;
+    ve = runEnd;
   }
   if (ve - vs < 0.04 * sampleRate) return null;
+  // No onset runs longer than a slow, careful consonant: trims a breath or hum before the word.
+  const maxOnset = Math.round((0.12 + 0.08 * letters[0]) * sampleRate);
+  if (vs - ws > maxOnset) ws = vs - maxOnset;
 
   const cut = (from: number, to: number) => pcm.slice(from, to);
   // The spelling decides the parts: "up" has no onset part, "bee" no part after the vowel. A voiced
   // onset (b, d, g) can run into the vowel, so the audio alone would miss it.
   const hasOnset = letters[0] > 0;
   const hasCoda = letters[1] < word.length;
-  // The middle of the vowel, away from the consonants on either side, held for `timing.hold`.
-  const trim = Math.round((ve - vs) * 0.1);
+  // The middle of the vowel, away from the consonants on either side, held for `timing.hold` at an
+  // even loudness.
+  const trim = Math.round((ve - vs) * 0.15);
   const steady = cut(vs + trim, ve - trim);
-  const held = fade(stretch(steady, Math.min(14, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), 0.03, 0.05, sampleRate);
+  const held = fade(even(stretch(steady, Math.min(14, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), sampleRate), 0.03, 0.05, sampleRate);
 
   const parts: Float32Array[] = [];
   if (hasOnset) parts.push(fade(cut(ws, ve), 0.005, 0.03, sampleRate));

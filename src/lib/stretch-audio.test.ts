@@ -122,6 +122,36 @@ describe("building the stretched word", () => {
     expect(built.samples.length / RATE).toBeGreaterThan(2.6);
   });
 
+  it("trusts the voicing over letter timings that lean into the consonants (hut)", () => {
+    const seg = (sec: number, f: (t: number) => number) => Float32Array.from({ length: Math.round(sec * RATE) }, (_, i) => f(i / RATE));
+    let seed = 5;
+    const noise = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+    const parts = [
+      seg(0.04, () => 0),
+      seg(0.18, () => 0.1 * noise()),
+      seg(0.14, (t) => 0.4 * Math.sin(2 * Math.PI * 200 * t) + 0.15 * Math.sin(2 * Math.PI * 700 * t)),
+      seg(0.08, () => 0),
+      seg(0.15, () => 0.25 * noise()),
+      seg(0.1, () => 0),
+    ];
+    const pcm = new Float32Array(parts.reduce((s, p) => s + p.length, 0));
+    let at = 0;
+    for (const p of parts) {
+      pcm.set(p, at);
+      at += p.length;
+    }
+    // The vowel really runs 0.22 to 0.36 s; the timings put the u at 0.30 to 0.44 s.
+    const alignment = {
+      characters: ["h", "u", "t", "."],
+      character_start_times_seconds: [0.04, 0.3, 0.44, 0.59],
+      character_end_times_seconds: [0.3, 0.44, 0.59, 0.62],
+    };
+    const built = buildStretched(pcm, RATE, alignment, "hut")!;
+    expect(built).not.toBeNull();
+    expect(built.vowel[0]).toBeLessThan(0.25);
+    expect(built.vowel[1]).toBeLessThan(0.4);
+  });
+
   it("leaves out the onset part for a word that starts on its vowel", () => {
     const { pcm, alignment } = fakeTop();
     // The same recording read as "op": the vowel is the first letter.
