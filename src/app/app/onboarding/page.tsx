@@ -17,7 +17,8 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 interface ChildDraft {
   name: string;
   age: number;
-  sex: Child["sex"];
+  /** Empty until chosen: a skipped choice should not quietly become "girl". */
+  sex: Child["sex"] | "";
   interests: string[];
   narrator: Child["narrator"];
   faithTrack: boolean;
@@ -40,7 +41,7 @@ export default function OnboardingPage() {
   const [kid, setKid] = useState<ChildDraft>({
     name: "",
     age: 6,
-    sex: "girl",
+    sex: "",
     interests: [],
     narrator: "american",
     faithTrack: true,
@@ -82,6 +83,7 @@ export default function OnboardingPage() {
     }
     if (s === 1) {
       if (!/^[A-Za-z][A-Za-z' -]{0,29}$/.test(kid.name.trim())) e.childName = "Enter your child's first name, in letters.";
+      if (!kid.sex) e.sex = "Choose girl or boy.";
       if (kid.interests.length < 1) e.interests = "Pick at least one interest.";
     }
     if (s === 2 && !consent) e.consent = "Consent is required for the reading check. Check the box to continue.";
@@ -107,13 +109,14 @@ export default function OnboardingPage() {
       actions.addChild({
         name: capitalize(kid.name.trim()),
         age: kid.age,
-        sex: kid.sex,
+        sex: kid.sex || "girl",
         interests: kid.interests,
         faithTrack: kid.faithTrack,
         modernComparisons: kid.modernComparisons,
         screenCapMinutes: kid.screenCapMinutes,
         narrator: kid.narrator,
         mode: kid.mode,
+        consent: consent,
       });
       setCreated({ name: capitalize(kid.name.trim()), family: familyLabel });
     }
@@ -253,9 +256,18 @@ export default function OnboardingPage() {
                     ["girl", "Girl"],
                     ["boy", "Boy"],
                   ]}
-                  onChange={(sex) => setKid({ ...kid, sex })}
+                  onChange={(sex) => {
+                    setKid({ ...kid, sex });
+                    clear("sex");
+                  }}
                 />
-                <p className="field-hint">Mrs. Wren uses it for stories and pronouns.</p>
+                {errors.sex ? (
+                  <p className="field-error" role="alert">
+                    {errors.sex}
+                  </p>
+                ) : (
+                  <p className="field-hint">Mrs. Wren uses it for stories and pronouns.</p>
+                )}
               </div>
 
               <div className="field">
@@ -398,7 +410,7 @@ export default function OnboardingPage() {
                 </span>
               </label>
               <p className="ap-consent-hint" id="consent-hint">
-                Nothing is recorded or stored. Only the words heard are scored.
+                Raw audio is not kept by default. Only the words heard are scored.
               </p>
               {errors.consent && (
                 <p className="field-error" id="consent-err" role="alert">

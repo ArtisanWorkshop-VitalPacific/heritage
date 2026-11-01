@@ -62,10 +62,40 @@ export function AppFrame({ children }: { children: ReactNode }) {
 }
 
 function Shell({ children }: { children: ReactNode }) {
-  const { hydrated, role } = useDemo();
+  const { hydrated, role, actions, state, child } = useDemo();
   const pathname = usePathname() ?? "/app";
   const [tour, setTour] = useState(false);
   const closeTour = useCallback(() => setTour(false), []);
+  // Links from the website can open a page as a role: /app/teacher?as=teacher. Applied once on arrival,
+  // then removed from the address so a reload keeps whatever the presenter chooses next.
+  const [asDone, setAsDone] = useState(false);
+  const arrival = hydrated && !asDone ? new URLSearchParams(window.location.search) : null;
+  const asParam = (arrival?.get("as") ?? null) as Role | null;
+  const cParam = arrival?.get("c") ?? null;
+  useEffect(() => {
+    if (!hydrated || asDone) return;
+    const params = new URLSearchParams(window.location.search);
+    const as = params.get("as") as Role | null;
+    if (as) {
+      params.delete("as");
+      // ?c=<childId> names the child (printed packets); otherwise the demo's sample child, Nora.
+      const c = params.get("c");
+      params.delete("c");
+      const named = c ? state.children.find((k) => k.id === c) : undefined;
+      const famOfNamed = named && state.tenants.find((t) => t.id === named.tenantId)?.kind === "family" ? named.tenantId : undefined;
+      const wantsChild = as === "student" || as === "parent" || as === "observer";
+      if (ROLES.some((r) => r.id === as) && (as !== role || (named && named.id !== child?.id))) {
+        actions.stage({
+          role: as,
+          familyTenantId: wantsChild ? famOfNamed ?? (named ? undefined : "fam_harper") : undefined,
+          childId: wantsChild ? named?.id ?? (as === "student" ? "c_nora" : undefined) : undefined,
+        });
+      }
+      const q = params.toString();
+      window.history.replaceState(window.history.state, "", window.location.pathname + (q ? `?${q}` : "") + window.location.hash);
+    }
+    setAsDone(true);
+  }, [hydrated, asDone, role, actions, state, child]);
 
   // "?" opens the presenter's walkthrough from anywhere in the app (not while typing).
   useEffect(() => {
@@ -82,6 +112,8 @@ function Shell({ children }: { children: ReactNode }) {
   }, []);
 
   if (!hydrated) return <Opening />;
+  // Hold the page until the arrival role and child are in place, so nothing renders for the wrong one.
+  if (asParam && ROLES.some((r) => r.id === asParam) && (asParam !== role || (cParam && cParam !== child?.id))) return <Opening />;
 
   const allowed = routeAllowed(pathname, role);
   if (role === "student") {

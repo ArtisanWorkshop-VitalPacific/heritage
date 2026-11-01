@@ -684,7 +684,7 @@ function CheckStep({
               </div>
               <div className="st-stat">
                 <dt>Words correct per minute</dt>
-                <dd className="num">{result.wcpm}</dd>
+                <dd className="num">{result.wcpm > 0 ? result.wcpm : <small>Not timed</small>}</dd>
               </div>
             </>
           ) : (

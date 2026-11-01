@@ -205,7 +205,7 @@ export default function Home() {
             <SectionHead eyebrow="For parents" title="Progress you can measure, and hear." id="s-proof-title">
               <p className="s-body-lg">Three numbers every week: rungs mastered, the rung your child reads at, and words correct per minute.</p>
               <p className="s-body-lg">And the same passage, recorded in week 1 and week 8, so you can hear the difference.</p>
-              <MoreLink href="/app/report">See the parent report</MoreLink>
+              <MoreLink href="/app/report?as=parent">See the parent report</MoreLink>
             </SectionHead>
           </div>
           <div className="s-split-art s-proof-art" data-reveal="">

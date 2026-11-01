@@ -334,11 +334,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       },
 
       savePlacement(result) {
-        commit((s) => ({
-          ...s,
-          placements: [...s.placements.filter((p) => p.childId !== result.childId), result],
-          ladders: { ...s.ladders, [result.childId]: startingState(result.childId, result.rung) },
-        }));
+        commit((s) => {
+          // A child with lessons on record keeps them: a second placement may move the child up,
+          // never down past mastered work. A new child starts at the placed rung.
+          const existing = s.ladders[result.childId];
+          const hasHistory = s.sessions.some((x) => x.childId === result.childId) || Boolean(existing?.mastered.length);
+          const ladder =
+            existing && hasHistory
+              ? result.rung > existing.rung
+                ? { ...startingState(result.childId, result.rung), mastered: Array.from(new Set([...existing.mastered, ...startingState(result.childId, result.rung).mastered])).sort((a, b) => a - b), review: existing.review }
+                : existing
+              : startingState(result.childId, result.rung);
+          return {
+            ...s,
+            placements: [...s.placements.filter((p) => p.childId !== result.childId), result],
+            ladders: { ...s.ladders, [result.childId]: ladder },
+          };
+        });
       },
 
       recordSession(input) {
@@ -398,19 +410,25 @@ export function DemoProvider({ children }: { children: ReactNode }) {
         if (ref.monthsEarned >= ref.cap) return { ok: false, error: "You have reached this year's cap of 12 months." };
         const now = new Date().toISOString();
         const who = inv.school ?? clean;
-        commit((st) => ({
-          ...st,
-          referrals: st.referrals.map((r) =>
-            r.code === ref.code
-              ? {
-                  ...r,
-                  monthsEarned: r.monthsEarned + 1,
-                  invites: r.invites.map((i) => (i.email === clean ? { ...i, status: "paid", paidAt: now } : i)),
-                }
-              : r,
-          ),
-          ledger: [{ id: uid("l"), memberId: st.ui.actorId, date: now, months: 1, reason: `${who} joined and paid. One month each.` }, ...st.ledger],
-        }));
+        commit((st) => {
+          // Re-check against the latest state: two clicks in one tick must credit once.
+          const cur = st.referrals.find((r) => r.code === ref.code);
+          const curInv = cur?.invites.find((i) => i.email === clean);
+          if (!cur || !curInv || curInv.status === "paid" || cur.monthsEarned >= cur.cap) return st;
+          return {
+            ...st,
+            referrals: st.referrals.map((r) =>
+              r.code === ref.code
+                ? {
+                    ...r,
+                    monthsEarned: r.monthsEarned + 1,
+                    invites: r.invites.map((i) => (i.email === clean ? { ...i, status: "paid", paidAt: now } : i)),
+                  }
+                : r,
+            ),
+            ledger: [{ id: uid("l"), memberId: st.ui.actorId, date: now, months: 1, reason: `${who} joined and paid. One month each.` }, ...st.ledger],
+          };
+        });
         return { ok: true };
       },
 

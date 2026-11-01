@@ -355,7 +355,7 @@ export function teacherScript(n: number): ScriptSection[] {
   }
   close.push(cont(r.passage ? "The child copies the model sentence on the copywork lines." : "The child copies the letters on the copywork lines."));
   close.push(cont("Scan the code on the score sheet to log the lesson and open the three-minute reading check."));
-  out.push({ title: "Close", minutes: 2, lines: close });
+  out.push({ title: "Close", minutes: 1, lines: close });
 
   return out;
 }

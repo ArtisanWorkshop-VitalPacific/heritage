@@ -268,9 +268,11 @@ export default function SettingsPage() {
       <Group title="Consent" sub="What happens to a child's voice.">
         <Fact label="Voice">
           Processed in this browser during reading checks. Only the words heard are scored.
-          {isFamily && parent ? ` Consent given by ${parent.name} on ${fmtFull(child.createdAt)}.` : ""}
+          {child.consentAt
+            ? ` Consent given by ${state.members.find((m) => m.id === child.consentBy)?.name ?? parent?.name ?? "a parent"} on ${fmtFull(child.consentAt)}.`
+            : " No consent on file yet."}
         </Fact>
-        <Fact label="Recordings">Not kept in the demo. In production, parents choose to keep recordings for 90 days or to keep none.</Fact>
+        <Fact label="Recordings">Raw audio is not kept by default. Parents choose whether to keep the week 1 and week 8 recordings. The demo keeps none.</Fact>
         <Fact label="Who can see progress">
           {isFamily ? "Parents, and the Observers a parent names." : "Parents, and the school staff with this class."} Roles decide the rest.
         </Fact>

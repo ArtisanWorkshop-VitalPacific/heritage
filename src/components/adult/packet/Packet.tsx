@@ -28,6 +28,8 @@ export interface PacketProps {
   /** Who the packet is for, on the teacher page: "Nora" or "Primer Class: Nora and Lucy". */
   forLine: string;
   origin: string;
+  /** The child's id, so the score sheet's code opens this lesson for this child. */
+  childId?: string;
 }
 
 const SHEETS = 3;
@@ -388,9 +390,10 @@ function WriteLines() {
 
 /* ---------- Page 3: the score sheet ---------- */
 
-function ScoreSheet({ r, childName, origin }: PacketProps & { r: Rung }) {
+function ScoreSheet({ r, childName, childId, origin }: PacketProps & { r: Rung }) {
   const [qr, setQr] = useState<string>("");
-  const url = `${origin}/app/lesson?r=${r.n}`;
+  // Opens the lesson as the student, for this child when the packet is a child's.
+  const url = `${origin}/app/lesson?as=student${childId ? `&c=${encodeURIComponent(childId)}` : ""}&r=${r.n}`;
   useEffect(() => {
     let live = true;
     QRCode.toString(url, { type: "svg", margin: 0, errorCorrectionLevel: "M", color: { dark: "#000000", light: "#ffffff" } })
@@ -507,7 +510,7 @@ function ScoreSheet({ r, childName, origin }: PacketProps & { r: Rung }) {
         </div>
         <div className="pr-c-qr">
           <div className="pr-qr" aria-label={`QR code for ${url}`} role="img" dangerouslySetInnerHTML={{ __html: qr }} />
-          <p className="pr-qr-text">Scan to log the lesson and open the three-minute reading check.</p>
+          <p className="pr-qr-text">Scan to open this lesson on screen for the three-minute reading check.</p>
           <p className="pr-qr-url">{url.replace(/^https?:\/\//, "")}</p>
         </div>
       </div>

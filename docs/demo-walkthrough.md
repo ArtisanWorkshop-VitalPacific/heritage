@@ -6,7 +6,7 @@ Live: https://heritage-readers.vercel.app
 
 ## Presenter tools
 
-- **Walkthrough.** The button at the foot of any grown-up page, or press `?` on a keyboard. Ten stops. Each one sets the role and the child, then opens the page.
+- **Walkthrough.** The button at the foot of any grown-up page, or press `?` on a keyboard. Nine stops. Each one sets the role and the child, then opens the page.
 - **View as.** Top right of the app: Parent, Teacher, Admin, Student, and More (Owner, Aide, Observer).
 - **Reset demo.** Foot of any grown-up page. Restores the starting families. Everything lives in this browser, so another device starts fresh.
 
@@ -24,13 +24,13 @@ Live: https://heritage-readers.vercel.app
 
 ## 3. Placement (3 minutes)
 
-Letter sounds (the grown-up taps), then words (the child reads aloud and the microphone listens), then a short passage. The result places the child on a rung.
+Straight on from the new family. Letter sounds (the grown-up taps), then words (the child reads aloud and the microphone listens), then a short passage. The result places the child on a rung and opens the first lesson. Placement belongs to new children: Nora and Eli are already placed.
 
 ## 4. A lesson as Nora (5 minutes)
 
 Nora is 6, on rung 10 (the letter h), with one clean read already.
 
-1. Walkthrough stop 4, or "Hand the device to Nora" on the family home.
+1. Walkthrough stop 3, or "Hand the device to Nora" on the family home.
 2. Warm up, the letter h, the vowel ladder, word pairs, then the story "The Hen in the Hat."
 3. "Begin reading" and read aloud. The underline follows the reader. A read at 95% or better is her second clean read: rung 10 is mastered and the seal appears.
 4. Talk with Mrs. Wren: hold the microphone and ask "What does diligent mean?", "Why do I need to read?", "Tell me a fable" or "How do I say hat?"

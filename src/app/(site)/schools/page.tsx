@@ -38,7 +38,7 @@ export default function SchoolsPage() {
         art="schoolroom"
         actions={
           <>
-            <Link href="/app" className="btn btn-primary btn-lg">
+            <Link href="/app/teacher?as=teacher" className="btn btn-primary btn-lg">
               See the teacher view
             </Link>
             <a href={contactHref("Heritage Readers for our school")} className="btn btn-secondary btn-lg">
@@ -63,7 +63,7 @@ export default function SchoolsPage() {
             ))}
           </ul>
           <div className="s-center-link">
-            <MoreLink href="/app">Switch roles in the app</MoreLink>
+            <MoreLink href="/app/admin?as=admin">See roles and permissions in the app</MoreLink>
           </div>
         </div>
       </section>
@@ -156,8 +156,8 @@ export default function SchoolsPage() {
         </div>
       </section>
 
-      <ClosingCTA band title="See the teacher view." body="Open the app, switch to Teacher, and look at the Primer Class: the mastery board, the packets and the scores.">
-        <Link href="/app" className="btn btn-primary btn-lg">
+      <ClosingCTA band title="See the teacher view." body="Open the Primer Class as its teacher: the mastery board, the packets and the scores.">
+        <Link href="/app/teacher?as=teacher" className="btn btn-primary btn-lg">
           See the teacher view
         </Link>
         <a href={contactHref("Heritage Readers for our school")} className="btn btn-secondary btn-lg">

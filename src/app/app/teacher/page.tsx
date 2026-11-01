@@ -259,9 +259,11 @@ function ScoreForm({ child, onToast }: { child: Child; onToast: (m: string) => v
 
   useEffect(() => {
     setRung(ladderOf(state, child.id).rung);
-    // reset the rung choice when the child's ladder moves
+    // reset the rung choice when the child or the child's current rung changes (a score can master a rung)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [child.id]);
+  }, [child.id, ladder.rung]);
+  // Never submit a rung the select no longer offers.
+  const chosen = options.includes(rung) ? rung : options[0];
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -272,7 +274,8 @@ function ScoreForm({ child, onToast }: { child: Child; onToast: (m: string) => v
     if (!Number.isFinite(m) || m < 1 || m > 60) next.min = "Enter minutes from 1 to 60.";
     setErrors(next);
     if (next.acc || next.min) return;
-    const accuracy = Math.round(a) / 100;
+    const accuracy = a / 100;
+    const rung = chosen;
     const preview = applySession(ladderOf(state, child.id), { rung, accuracy, date: new Date().toISOString() });
     const res = actions.enterScore({ childId: child.id, rung, accuracy, paperMinutes: Math.round(m) });
     if (!res.ok) {
@@ -304,7 +307,7 @@ function ScoreForm({ child, onToast }: { child: Child; onToast: (m: string) => v
       <div className="ap-scoreform-fields">
         <div className="field">
           <label htmlFor={`${id}-r`}>Rung</label>
-          <select id={`${id}-r`} className="select" value={rung} onChange={(e) => setRung(Number(e.target.value))}>
+          <select id={`${id}-r`} className="select" value={chosen} onChange={(e) => setRung(Number(e.target.value))}>
             {options.map((n, i) => (
               <option key={n} value={n}>
                 {i === 0 ? n : `${n} (review)`}

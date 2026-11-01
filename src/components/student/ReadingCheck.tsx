@@ -283,15 +283,19 @@ export function ReadingCheck({
   }, []);
 
   const finalize = useCallback(
-    (outcomes: WordOutcome[], seconds: number) => {
+    (outcomes: WordOutcome[], seconds: number, marked = false) => {
       const accuracy = accuracyOf(outcomes);
       const correct = outcomes.filter((o) => o.index >= 0 && o.status === "correct").length;
-      const rate = wcpm(correct, seconds);
+      // On the grown-up marking path the clock is the grown-up's, not the reader's. A rate above what
+      // a child at this band could read, or a run under eight seconds, is recorded as not timed (0).
+      const ceiling = band === "A" ? 110 : band === "B" ? 150 : 190;
+      const raw = wcpm(correct, seconds);
+      const rate = marked && (seconds < 8 || raw > ceiling) ? 0 : raw;
       setMarked(new Set(outcomes.filter((o) => o.index >= 0 && o.status !== "correct").map((o) => o.index)));
       setPhase("done");
       onCompleteRef.current(outcomes, accuracy, rate, seconds);
     },
-    [setPhase],
+    [setPhase, band],
   );
 
   const finishListening = useCallback(
@@ -323,7 +327,7 @@ export function ReadingCheck({
     const seconds = Math.max(1, Math.round((Date.now() - startAtRef.current) / 1000));
     const help = helpedRef.current;
     const outcomes: WordOutcome[] = target.map((word, index) => ({ word, index, status: help.has(index) ? "hesitation" : "correct" }));
-    finalize(outcomes, seconds);
+    finalize(outcomes, seconds, true);
   }, [finalize, target]);
 
   /** The microphone is unavailable: carry on as tap-to-mark, keeping the timer and any marks. */

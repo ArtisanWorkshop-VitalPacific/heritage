@@ -140,7 +140,7 @@ export default function PacketPage() {
 
       <div ref={desk} className="pr-desk">
         <div className="pr-sheets" style={{ ["--pr-zoom" as string]: zoom }}>
-          <Packet rung={ref.rung} childName={childName} forLine={forLine} origin={typeof window !== "undefined" ? window.location.origin : ""} />
+          <Packet rung={ref.rung} childName={childName} childId={ref.kind === "child" ? ref.childId : undefined} forLine={forLine} origin={typeof window !== "undefined" ? window.location.origin : ""} />
         </div>
       </div>
 

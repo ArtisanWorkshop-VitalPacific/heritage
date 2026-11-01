@@ -123,7 +123,8 @@ export default function PricingPage() {
           <div className="s-split-copy">
             <SectionHead eyebrow="Referral" title="Give a month, get a month." id="p-ref">
               <p className="s-body-lg">Share your link with another family. When they start a paid plan, you each get a month free. Up to 12 months a year.</p>
-              <MoreLink href="/app/referrals">See your referral link</MoreLink>
+              <p className="s-body">Three paid referrals also earn the printed reader set. Families who pay with ESA funds earn the reader set instead of month credit.</p>
+              <MoreLink href="/app/referrals?as=parent">See your referral link</MoreLink>
             </SectionHead>
           </div>
           <div className="s-split-art" data-reveal="">

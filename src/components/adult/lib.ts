@@ -251,12 +251,17 @@ export function weekPlan(ladder: LadderState, now = Date.now()): PlanItem[] {
     while (idx < slots.length - 1 && slots[idx]) idx++;
     if (!slots[idx]) slots[idx] = { day: days[idx], rung: r.rung, kind: "review" };
   }
+  // Two clean reads master a rung, so each rung gets two days: a first read, then a second.
   let next = ladder.rung;
+  let read = Math.min(1, ladder.cleanReads[next] ?? 0);
   for (let i = 0; i < slots.length; i++) {
     if (slots[i] || next > MAX_RUNG) continue;
-    const kind = next === ladder.rung && (ladder.cleanReads[next] ?? 0) > 0 ? "second" : "new";
-    slots[i] = { day: days[i], rung: next, kind };
-    next++;
+    slots[i] = { day: days[i], rung: next, kind: read >= 1 ? "second" : "new" };
+    read++;
+    if (read >= 2) {
+      next++;
+      read = 0;
+    }
   }
   return slots.filter((s): s is PlanItem => s !== null);
 }

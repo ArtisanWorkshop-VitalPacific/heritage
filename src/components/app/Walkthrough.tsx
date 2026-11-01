@@ -18,8 +18,7 @@ interface Stop {
 /** The presenter's route through the demo. Each stop sets the role and child, then opens the page. */
 const STOPS: Stop[] = [
   { title: "The website", detail: "Scroll the film. Then Method, Schools, Pricing, Susan.", href: "/" },
-  { title: "A new family", detail: "A parent, a child, an age band, a voice.", href: "/app/onboarding", role: "parent" },
-  { title: "Placement", detail: "The child takes it: sounds, words, a short passage. One rung.", href: "/app/placement", role: "student" },
+  { title: "A new family", detail: "A parent, a child, a voice. Then the child takes placement.", href: "/app/onboarding", role: "parent" },
   { title: "Nora's lesson", detail: "Rung 10, the letter h. One clean read from mastery.", href: "/app/lesson", role: "student", childId: "c_nora", family: "fam_harper" },
   { title: "Talk with Mrs. Wren", detail: "Hold the microphone. Ask her anything.", href: "/app/talk", role: "student", childId: "c_nora", family: "fam_harper" },
   { title: "The parent's report", detail: "Mastery, fluency, recordings, minutes on paper.", href: "/app/report", role: "parent", childId: "c_nora", family: "fam_harper" },
@@ -62,7 +61,7 @@ export function Walkthrough({ open, onClose }: { open: boolean; onClose: () => v
           <div>
             <p className="eyebrow">Presenter</p>
             <h2 id="ap-tour-title">Walkthrough</h2>
-            <p className="muted">Ten stops. About twenty minutes.</p>
+            <p className="muted">Nine stops. About twenty minutes.</p>
           </div>
           <button type="button" className="btn btn-icon btn-ghost" aria-label="Close" onClick={onClose}>
             <IconX size={20} />
