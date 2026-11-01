@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { DemoProvider, useDemo } from "@/lib/store";
 import { PRIMARY_ROLES, ROLES, ROLE_HOME, ROUTE_ACCESS, roleLabel, routeAllowed } from "@/lib/roles";
 import type { Role } from "@/lib/types";
 import { Illustration } from "@/components/Illustration";
 import { IconChevronDown, IconLock } from "@/components/icons";
+import { Walkthrough } from "./Walkthrough";
 import "./app-frame.css";
 
 interface NavItem {
@@ -63,6 +64,22 @@ export function AppFrame({ children }: { children: ReactNode }) {
 function Shell({ children }: { children: ReactNode }) {
   const { hydrated, role } = useDemo();
   const pathname = usePathname() ?? "/app";
+  const [tour, setTour] = useState(false);
+  const closeTour = useCallback(() => setTour(false), []);
+
+  // "?" opens the presenter's walkthrough from anywhere in the app (not while typing).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        setTour((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (!hydrated) return <Opening />;
 
@@ -74,17 +91,19 @@ function Shell({ children }: { children: ReactNode }) {
         <main id="main" className="ap-student-main">
           {allowed ? children : <RoleGate pathname={pathname} />}
         </main>
+        <Walkthrough open={tour} onClose={closeTour} />
       </div>
     );
   }
 
   return (
-    <div className="ap-root theme-auto">
+    <div className="ap-root">
       <AdultBar />
       <main id="main" className="ap-main">
         {allowed ? children : <RoleGate pathname={pathname} />}
       </main>
-      <DemoFooter />
+      <DemoFooter onTour={() => setTour(true)} />
+      <Walkthrough open={tour} onClose={closeTour} />
     </div>
   );
 }
@@ -321,7 +340,7 @@ function RoleGate({ pathname }: { pathname: string }) {
 
 /* ---------- Demo footer ---------- */
 
-function DemoFooter() {
+function DemoFooter({ onTour }: { onTour: () => void }) {
   const { actions } = useDemo();
   const [asked, setAsked] = useState(false);
   return (
@@ -330,6 +349,9 @@ function DemoFooter() {
         <strong>Demo mode.</strong> Profiles and progress live in this browser only. Speech uses your browser&apos;s recognizer; production uses a
         child-tuned scorer and Susan&apos;s recorded phonograms.
       </p>
+      <button type="button" className="btn btn-sm btn-secondary" onClick={onTour}>
+        Walkthrough
+      </button>
       {asked ? (
         <span className="cluster">
           <span className="muted">Erase demo changes?</span>

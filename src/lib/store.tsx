@@ -59,6 +59,8 @@ export interface SessionOutcome {
 export interface DemoActions {
   switchRole(role: Role): void;
   selectChild(childId: string): void;
+  /** Presenter jump: one atomic change of family, role and child (used by the walkthrough). */
+  stage(input: { role: Role; familyTenantId?: string; childId?: string }): void;
   createFamily(input: { parentName: string; email: string; familyName: string }): string;
   addChild(input: {
     name: string;
@@ -227,6 +229,23 @@ export function DemoProvider({ children }: { children: ReactNode }) {
 
       selectChild(childId) {
         commit((s) => ({ ...s, ui: { ...s.ui, childId } }));
+      },
+
+      stage({ role: nextRole, familyTenantId, childId }) {
+        commit((s) => {
+          const famOk = familyTenantId && s.tenants.some((t) => t.id === familyTenantId);
+          const base: DemoState = famOk ? { ...s, ui: { ...s.ui, familyTenantId: familyTenantId! } } : s;
+          const { actorId, tenantId } = actorFor(base, nextRole);
+          const ui = { ...base.ui, role: nextRole, actorId, tenantId };
+          const vis = visibleChildrenFor({ ...base, ui }, nextRole, base.members.find((m) => m.id === actorId));
+          const pick =
+            childId && vis.some((c) => c.id === childId)
+              ? childId
+              : vis.some((c) => c.id === base.ui.childId)
+                ? base.ui.childId
+                : vis[0]?.id ?? base.ui.childId;
+          return { ...base, ui: { ...ui, childId: pick } };
+        });
       },
 
       createFamily({ parentName, email, familyName }) {
