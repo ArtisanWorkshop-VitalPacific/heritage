@@ -91,20 +91,40 @@ async function worker() {
       } else if (sharp && e.kind === "engraving") {
         // Engravings become transparent ink: paper -> alpha 0, ink -> alpha 255, in lamp black.
         // They then print onto any ground (parchment, page cream, a dark plate) with no blend modes.
+        // Paper grain is removed by gating on the local tone (a light blur): where the neighborhood
+        // reads as paper, alpha is 0, so no faint grey rectangle shows. The outer edge is feathered.
         const width = e.id === "hero" || e.id === "village-lane" ? 2400 : 1800;
-        const { data, info } = await sharp(src).resize({ width, withoutEnlargement: true }).greyscale().raw().toBuffer({ resolveWithObject: true });
-        const px = info.width * info.height;
-        const rgba = Buffer.alloc(px * 4);
-        for (let i = 0; i < px; i++) {
-          const g = data[i * info.channels];
-          const a = Math.max(0, Math.min(255, Math.round(((236 - g) * 255) / 200)));
-          rgba[i * 4] = 0x1a;
-          rgba[i * 4 + 1] = 0x17;
-          rgba[i * 4 + 2] = 0x14;
-          rgba[i * 4 + 3] = a;
+        const grey = () => sharp(src).resize({ width, withoutEnlargement: true }).greyscale();
+        const { data, info } = await grey().raw().toBuffer({ resolveWithObject: true });
+        const { data: soft, info: softInfo } = await grey().blur(1.4).raw().toBuffer({ resolveWithObject: true });
+        const W = info.width;
+        const H = info.height;
+        const ch = info.channels;
+        const sch = softInfo.channels;
+        const feather = Math.max(8, Math.round(Math.min(W, H) * 0.035));
+        const rgba = Buffer.alloc(W * H * 4);
+        for (let y = 0; y < H; y++) {
+          const ey = Math.min(y, H - 1 - y);
+          for (let x = 0; x < W; x++) {
+            const i = y * W + x;
+            const g = data[i * ch];
+            const s = soft[i * sch];
+            let a = Math.max(0, Math.min(1, (230 - g) / 190));
+            const gate = s >= 227 ? 0 : s <= 219 ? 1 : (227 - s) / 8;
+            a *= gate;
+            const edge = Math.min(ey, Math.min(x, W - 1 - x));
+            if (edge < feather) {
+              const t = edge / feather;
+              a *= t * t * (3 - 2 * t);
+            }
+            rgba[i * 4] = 0x1a;
+            rgba[i * 4 + 1] = 0x17;
+            rgba[i * 4 + 2] = 0x14;
+            rgba[i * 4 + 3] = Math.round(a * 255);
+          }
         }
         const file = `${e.id}.webp`;
-        await sharp(rgba, { raw: { width: info.width, height: info.height, channels: 4 } }).webp({ quality: 82, alphaQuality: 92 }).toFile(path.join(outDir, file));
+        await sharp(rgba, { raw: { width: W, height: H, channels: 4 } }).webp({ quality: 82, alphaQuality: 92 }).toFile(path.join(outDir, file));
         map[e.id] = `/illustrations/${file}`;
         map._engravingInk = true;
       } else if (sharp) {

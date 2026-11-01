@@ -15,6 +15,8 @@ export const metadata: Metadata = {
   description:
     "A classical reading tutor that listens. Hay & Wingo phonics and the McGuffey tradition, taught one child at a time, on paper first.",
   applicationName: "Heritage Readers",
+  // A walkthrough demo with sample families: keep it out of search until launch.
+  robots: { index: false, follow: false },
   openGraph: {
     title: "Heritage Readers",
     description: "A classical reading tutor that listens.",
