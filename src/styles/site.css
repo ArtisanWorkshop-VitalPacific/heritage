@@ -693,12 +693,22 @@
     linear-gradient(to top, var(--parchment) 0, var(--s-parchment-0) 14%);
 }
 
-/* The parchment behind the copy: a soft oval centred on the words. It stops short of the
-   right third, where the mother stands, and the left third, where the oak is. */
+/* The parchment behind the opening words: a gradient that falls from the top. */
 .s-hero-fade {
   position: absolute;
   inset: 0 0 auto;
   height: 62%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--parchment) 0%, rgba(239, 230, 210, 0.96) 40%, rgba(239, 230, 210, 0.62) 68%, var(--s-parchment-0) 100%);
+}
+
+/* Behind the closing words: a soft oval centred on the words. It stops short of the right third,
+   where the mother stands, and the left third, where the oak is. */
+.s-hero-fade-out {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 62%;
+  opacity: 0;
   pointer-events: none;
   background: radial-gradient(ellipse 27% 64% at 50% 6%, var(--parchment) 0%, rgba(239, 230, 210, 0.95) 52%, rgba(239, 230, 210, 0.55) 77%, var(--s-parchment-0) 100%);
 }
@@ -818,7 +828,8 @@
     background: radial-gradient(closest-side, var(--s-parchment-0) 58%, rgba(239, 230, 210, 0.72) 84%, var(--parchment) 100%);
     transform-origin: 50% 50%;
   }
-  .s-hero-fade {
+  .s-hero-fade,
+  .s-hero-fade-out {
     height: 50%;
     background: linear-gradient(to bottom, var(--parchment) 0%, var(--parchment) 72%, var(--s-parchment-0) 100%);
   }

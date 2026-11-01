@@ -17,6 +17,11 @@ export interface HeroScrubProps {
   /** Focal point for cover cropping, 0..1. */
   focusX?: number;
   focusY?: number;
+  /**
+   * The vertical focal point at the end of the film. As the camera pushes in, the crop eases from
+   * focusY to this value, so a figure that rises toward the top of the frame stays in view.
+   */
+  focusYEnd?: number;
 }
 
 /* Timeline, as fractions of the scroll through the section. */
@@ -45,7 +50,8 @@ const getReduceServer = () => false;
  * Frames come from image sequences when the build made them, otherwise from the MP4.
  * Reduced motion: no pinning and no scrubbing; the still engraving with the copy.
  */
-export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5, focusY = 0.5 }: HeroScrubProps) {
+export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5, focusY = 0.5, focusYEnd }: HeroScrubProps) {
+  const fyEnd = focusYEnd ?? focusY;
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const pictureRef = useRef<HTMLDivElement>(null);
@@ -53,6 +59,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vignetteRef = useRef<HTMLDivElement>(null);
   const fadeRef = useRef<HTMLDivElement>(null);
+  const fadeOutRef = useRef<HTMLDivElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const outroRef = useRef<HTMLDivElement>(null);
   const reduced = useSyncExternalStore(subscribeReduce, getReduce, getReduceServer);
@@ -75,9 +82,10 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     const canvas = canvasRef.current;
     const vignette = vignetteRef.current;
     const fade = fadeRef.current;
+    const fadeOut = fadeOutRef.current;
     const introEl = introRef.current;
     const outroEl = outroRef.current;
-    if (!section || !stage || !picture || !canvas || !vignette || !fade || !introEl || !outroEl) return;
+    if (!section || !stage || !picture || !canvas || !vignette || !fade || !fadeOut || !introEl || !outroEl) return;
     if (reduced) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -89,6 +97,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     let cw = 0;
     let ch = 0;
     let dirty = true; // the canvas needs a redraw even if the frame index did not change
+    let fy = focusY; // the vertical focal point, eased toward fyEnd as the film plays
 
     const schedule = () => {
       if (!raf && !disposed) raf = requestAnimationFrame(tick);
@@ -104,10 +113,10 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
       ctx.imageSmoothingQuality = "high";
       ctx.globalAlpha = 1;
       ctx.clearRect(0, 0, cw, ch);
-      drawCover(ctx, src, sw, sh, cw, ch, focusX, focusY);
+      drawCover(ctx, src, sw, sh, cw, ch, focusX, fy);
       if (over && over.mix > 0) {
         ctx.globalAlpha = over.mix;
-        drawCover(ctx, over.src, over.sw, over.sh, cw, ch, focusX, focusY);
+        drawCover(ctx, over.src, over.sw, over.sh, cw, ch, focusX, fy);
         ctx.globalAlpha = 1;
       }
       goLive();
@@ -131,7 +140,14 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
       outroEl.style.transform = show < 1 ? `translate3d(0, ${((1 - show) * 28).toFixed(1)}px, 0)` : "";
       const push = ramp(PUSH[0], PUSH[1], p);
       vignette.style.transform = `scale(${(1 + push * (VIGNETTE_MAX - 1)).toFixed(4)})`;
-      fade.style.opacity = Math.max(1 - lift, show).toFixed(3);
+      // A full-width wash behind the opening words; a narrow oval behind the closing words.
+      fade.style.opacity = (1 - lift).toFixed(3);
+      fadeOut.style.opacity = show.toFixed(3);
+      const nextFy = focusY + (fyEnd - focusY) * ramp(0.2, 0.75, p);
+      if (Math.abs(nextFy - fy) > 0.001) {
+        fy = nextFy;
+        dirty = true;
+      }
       const rise = riseBy ? lift * (1 - show) : 0;
       picture.style.transform = rise ? `translate3d(0, ${(-rise * riseBy).toFixed(1)}px, 0) scale(${(1 + rise * 0.16).toFixed(4)})` : "";
     };
@@ -412,10 +428,10 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
       window.removeEventListener("scroll", onScroll);
       introEl.removeEventListener("focusin", onFocusIn);
       teardown.forEach((fn) => fn());
-      for (const el of [introEl, outroEl, vignette, fade, picture]) el.removeAttribute("style");
+      for (const el of [introEl, outroEl, vignette, fade, fadeOut, picture]) el.removeAttribute("style");
       picture.removeAttribute("data-live");
     };
-  }, [reduced, frames, videoSrc, still.src, focusX, focusY]);
+  }, [reduced, frames, videoSrc, still.src, focusX, focusY, fyEnd]);
 
   return (
     <section ref={sectionRef} className="s-hero" data-s-hero aria-labelledby="s-hero-title">
@@ -440,6 +456,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
         </div>
         <div className="s-hero-edges" aria-hidden="true" />
         <div ref={fadeRef} className="s-hero-fade" aria-hidden="true" />
+        <div ref={fadeOutRef} className="s-hero-fade-out" aria-hidden="true" />
         <div className="s-hero-copy">
           <div ref={introRef} className="s-hero-intro">
             {intro}
