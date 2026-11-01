@@ -22,6 +22,9 @@ export default function Home() {
         frames={heroFrames()}
         still={{ src: still.src, alt: still.alt, width: still.width, height: still.height }}
         videoSrc={motion?.src ?? null}
+        // The camera pushes in until the mother's head sits near the top of the frame.
+        // Crop from the bottom (grass and bench legs) so her head is never under the nav.
+        focusY={0.18}
         intro={
           <div className="s-hero-intro-inner">
             <h1 id="s-hero-title" className="s-hero-title">
