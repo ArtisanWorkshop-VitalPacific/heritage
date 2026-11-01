@@ -286,11 +286,12 @@ export function ReadingCheck({
     (outcomes: WordOutcome[], seconds: number, marked = false) => {
       const accuracy = accuracyOf(outcomes);
       const correct = outcomes.filter((o) => o.index >= 0 && o.status === "correct").length;
-      // On the grown-up marking path the clock is the grown-up's, not the reader's. A rate above what
-      // a child at this band could read, or a run under eight seconds, is recorded as not timed (0).
+      // A rate above what a child at this band could read is not this child's rate: a grown-up read
+      // aloud, or (marking path) the clock was the grown-up's. Record it as not timed (0), so the
+      // fluency chart stays true. Marking runs under eight seconds are not timed either.
       const ceiling = band === "A" ? 110 : band === "B" ? 150 : 190;
       const raw = wcpm(correct, seconds);
-      const rate = marked && (seconds < 8 || raw > ceiling) ? 0 : raw;
+      const rate = raw > ceiling || (marked && seconds < 8) ? 0 : raw;
       setMarked(new Set(outcomes.filter((o) => o.index >= 0 && o.status !== "correct").map((o) => o.index)));
       setPhase("done");
       onCompleteRef.current(outcomes, accuracy, rate, seconds);

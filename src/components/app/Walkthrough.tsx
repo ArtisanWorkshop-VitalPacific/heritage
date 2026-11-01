@@ -87,7 +87,7 @@ export function Walkthrough({ open, onClose }: { open: boolean; onClose: () => v
             );
           })}
         </ol>
-        <p className="ap-tour-foot muted">Press ? on a keyboard to open this list, here or on the website. Reset demo, at the foot of each grown-up page, restores the starting families.</p>
+        <p className="ap-tour-foot muted">Reset demo before each run: Nora must start on rung 10 with one clean read. It is at the foot of each grown-up page. Press ? on a keyboard to open this list, here or on the website.</p>
       </div>
     </div>
   );

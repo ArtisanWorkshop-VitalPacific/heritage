@@ -556,6 +556,7 @@ function PassageStep({
 }) {
   const [loading, setLoading] = useState(false);
   const [reading, setReading] = useState(false);
+  const [writerOff, setWriterOff] = useState(false);
   const readingRef = useRef(false);
 
   const newStory = async () => {
@@ -568,13 +569,16 @@ function PassageStep({
     const generated = res.source === "generated" && res.violations.length === 0;
     const fallback = passageFor(rung.n);
     const passage = generated ? res.passage : fallback ?? res.passage;
+    // No story writer right now (the AI gateway is off): keep today's story and retire the button,
+    // rather than "writing" the same story again.
+    if (!generated) setWriterOff(true);
     setStory({ passage, generated, fresh: true });
   };
 
   const intro = story.fresh
     ? story.generated
       ? `Here is a new story for you, ${child.name}. Read it to me.`
-      : `Here is today’s story, ${child.name}. Read it to me.`
+      : `Today’s story is the one for you, ${child.name}. Read it to me.`
     : undefined;
 
   return (
@@ -599,7 +603,8 @@ function PassageStep({
         ) : undefined
       }
       readyExtra={
-        !reading && (
+        !reading &&
+        !writerOff && (
           <button type="button" className="btn btn-quiet st-btn st-newstory" onClick={() => void newStory()} disabled={loading} aria-busy={loading}>
             <IconRefresh size={20} className={loading ? "st-spin" : undefined} />
             {loading ? "Writing a story" : "New story"}

@@ -266,6 +266,7 @@
   .ap-roles .segmented > button {
     flex: 1;
     padding: 0 var(--sp-2);
+    min-height: 40px;
   }
   .ap-roles-label {
     display: none;
@@ -349,6 +350,7 @@
 
 .ap-sbar-adult {
   color: var(--slate);
+  min-height: 44px;
 }
 
 .ap-sbar-confirm {

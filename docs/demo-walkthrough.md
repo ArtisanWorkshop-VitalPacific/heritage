@@ -4,6 +4,8 @@ About 20 minutes. Best on a laptop in Chrome or an iPad in Safari, with sound on
 
 Live: https://heritage-readers.vercel.app
 
+**Before you start: press Reset demo** (foot of any grown-up page). A rehearsal moves Nora past rung 10, and the mastery moment needs her on rung 10 with one clean read.
+
 ## Presenter tools
 
 - **Walkthrough.** The button at the foot of any grown-up page, or press `?` on a keyboard (on the website too). Ten stops. Each one sets the role and the child, then opens the page.
@@ -32,7 +34,7 @@ Nora is 6, on rung 10 (the letter h), with one clean read already.
 
 1. Walkthrough stop 3, or "Hand the device to Nora" on the family home.
 2. Warm up, the letter h, the vowel ladder, word pairs, then the story "The Hen in the Hat."
-3. "Begin reading" and read aloud. The underline follows the reader. A read at 95% or better is her second clean read: rung 10 is mastered and the seal appears.
+3. "Begin reading" and read aloud. The underline follows the reader. A read at 95% or better is her second clean read: rung 10 is mastered and the seal appears. When a grown-up reads, the rate is faster than any six-year-old, so it is marked "Not timed" and her fluency chart stays true. Worth pointing out.
 4. Talk with Mrs. Wren: hold the microphone and ask "What does diligent mean?", "Why do I need to read?", "Tell me a fable" or "How do I say hat?"
 5. "Grown-ups" (top right), then "Return."
 
