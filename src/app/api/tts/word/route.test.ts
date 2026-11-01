@@ -55,7 +55,7 @@ describe("GET /api/tts/word", () => {
     const res = await get(`w=nut&n=american&v=${STRETCH_VERSION}`);
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("audio/wav");
-    expect(res.headers.get("x-tts-model")).toBe("eleven_v4");
+    expect(res.headers.get("x-tts-model")).toBe("eleven_multilingual_v2");
     expect(res.headers.get("cdn-cache-control")).toContain("s-maxage");
     const bytes = new Uint8Array(await res.arrayBuffer());
     expect(String.fromCharCode(...bytes.slice(0, 4))).toBe("RIFF");
@@ -63,13 +63,13 @@ describe("GET /api/tts/word", () => {
     expect(bytes.length).toBeGreaterThan(2.2 * RATE * 2);
     expect(sent).toHaveLength(1);
     expect(sent[0].url).toContain("/with-timestamps?output_format=pcm_24000");
-    expect(sent[0].body.model_id).toBe("eleven_v4");
-    expect(sent[0].body.text).toBe("[slowly] nut.");
+    expect(sent[0].body.model_id).toBe("eleven_multilingual_v2");
+    expect(sent[0].body.text).toBe("nut.");
   });
 
   it("records a word with two readings in its lesson phrase", async () => {
     expect((await get(`w=read&n=american&v=${STRETCH_VERSION}`)).status).toBe(200);
-    expect(sent[0].body.text).toBe("[slowly] to read.");
+    expect(sent[0].body.text).toBe("to read.");
   });
 
   it("generates each word once per voice, then serves the stored audio", async () => {

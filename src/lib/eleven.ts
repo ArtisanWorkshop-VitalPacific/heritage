@@ -13,7 +13,7 @@
  */
 
 import { canStretch, stressedVowel, type Narrator } from "./ladder/stretch";
-import { buildStretched, pcmToFloat, sourceText, wav } from "./stretch-audio";
+import { buildStretched, pcmToFloat, sourceText, wav, type Alignment } from "./stretch-audio";
 
 export type SpeechKind = "word" | "sentence" | "story" | "talk";
 export const SPEECH_KINDS: readonly SpeechKind[] = ["word", "sentence", "story", "talk"];
@@ -24,8 +24,6 @@ const VOICES = {
 } as const;
 
 const STABLE = "eleven_multilingual_v2";
-// Lesson words are recorded once with Eleven v4, said slowly, then cut into their parts.
-const STRETCH_MODEL = "eleven_v4";
 const SPEED: Record<SpeechKind, number> = { word: 0.8, sentence: 0.9, story: 0.92, talk: 0.94 };
 // Delivery for the expressive models. A tag holds until the next one.
 const DIRECTION: Record<SpeechKind, string> = {
@@ -129,42 +127,38 @@ export async function synthesizeStretched(key: string, word: string, narrator: N
   if (!canStretch(word)) return null;
   const stressed = stressedVowel(word);
   const failures: SpeechFailure[] = [];
+  // Multilingual v2: its letter timings line up with the audio, and its speed setting gives a slow,
+  // clear word. Eleven v4's timings drift when an audio tag sets the pace.
+  const model = STABLE;
+  const body = { text: sourceText(word), model_id: model, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0, use_speaker_boost: true, speed: 0.75 } };
   for (const voice of voicesFor(narrator)) {
-    for (const model of [STRETCH_MODEL, STABLE]) {
-      if (refused.has(model)) continue;
-      const body =
-        model === STABLE
-          ? { text: sourceText(word), model_id: model, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0, use_speaker_boost: true, speed: 0.8 } }
-          : { text: `[slowly] ${sourceText(word)}`, model_id: model, voice_settings: { stability: 0.5 } };
-      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=pcm_${SOURCE_RATE}`, {
-        method: "POST",
-        headers: { "xi-api-key": key, "content-type": "application/json" },
-        body: JSON.stringify(body),
-        signal: AbortSignal.timeout(20000),
-      }).catch(() => null);
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=pcm_${SOURCE_RATE}`, {
+      method: "POST",
+      headers: { "xi-api-key": key, "content-type": "application/json" },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(20000),
+    }).catch(() => null);
 
-      if (!res?.ok) {
-        const detail = res ? (await res.text().catch(() => "")).slice(0, 300) : "network error";
-        failures.push({ model, voice, status: res?.status ?? null, detail });
-        if (res && (res.status === 401 || res.status === 429)) return { ok: false, failures };
-        if (res && res.status === 400 && /model/i.test(detail) && !/voice/i.test(detail)) refused.add(model);
-        if (res && (res.status === 404 || /voice/i.test(detail))) break;
-        continue;
-      }
-
-      const json = (await res.json().catch(() => null)) as {
-        audio_base64?: string;
-        alignment?: Parameters<typeof buildStretched>[2] | null;
-        normalized_alignment?: Parameters<typeof buildStretched>[2] | null;
-      } | null;
-      const align = json?.alignment ?? json?.normalized_alignment;
-      const built = json?.audio_base64 && align ? buildStretched(pcmToFloat(Buffer.from(json.audio_base64, "base64")), SOURCE_RATE, align, word, stressed) : null;
-      if (!built) {
-        failures.push({ model, voice, status: 200, detail: "the word or its vowel could not be found in the recording" });
-        continue;
-      }
-      return { ok: true, wav: wav(built.samples, SOURCE_RATE), model, voice, failures };
+    if (!res?.ok) {
+      const detail = res ? (await res.text().catch(() => "")).slice(0, 300) : "network error";
+      failures.push({ model, voice, status: res?.status ?? null, detail });
+      // A bad key or an exhausted quota fails the same way for every voice.
+      if (res && (res.status === 401 || res.status === 429)) return { ok: false, failures };
+      continue;
     }
+
+    const json = (await res.json().catch(() => null)) as {
+      audio_base64?: string;
+      alignment?: Alignment | null;
+      normalized_alignment?: Alignment | null;
+    } | null;
+    const align = json?.alignment ?? json?.normalized_alignment;
+    const built = json?.audio_base64 && align ? buildStretched(pcmToFloat(Buffer.from(json.audio_base64, "base64")), SOURCE_RATE, align, word, stressed) : null;
+    if (!built) {
+      failures.push({ model, voice, status: 200, detail: "the word or its vowel could not be found in the recording" });
+      continue;
+    }
+    return { ok: true, wav: wav(built.samples, SOURCE_RATE), model, voice, failures };
   }
   return { ok: false, failures };
 }
