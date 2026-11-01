@@ -454,6 +454,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       addMember({ name, email, role: r }) {
         if (!roleCan(stateRef.current.ui.role, "members.manage")) return deny("members.manage", email);
         if (!name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return { ok: false, error: "Enter a name and a valid email." };
+        if (stateRef.current.members.some((m) => m.email.toLowerCase() === email.trim().toLowerCase())) return { ok: false, error: "This person is already a member." };
         commit((s) => ({
           ...s,
           members: [

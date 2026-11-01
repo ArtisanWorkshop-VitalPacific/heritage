@@ -25,6 +25,7 @@ const STOPS: Stop[] = [
   { title: "Print the week", detail: "Teacher script, student page, score sheet.", href: "/app/print", role: "parent", family: "fam_harper" },
   { title: "Give a month", detail: "Invite a family. Both families get a month.", href: "/app/referrals", role: "parent", family: "fam_harper" },
   { title: "A teacher's class", detail: "Mastery board, paper scores, packets by rung.", href: "/app/teacher", role: "teacher" },
+  { title: "A role gate", detail: "A teacher tries Organization. The gate says who may open it.", href: "/app/admin", role: "teacher" },
   { title: "The organization", detail: "Members, roles, permissions, audit log.", href: "/app/admin", role: "admin" },
 ];
 
@@ -61,7 +62,7 @@ export function Walkthrough({ open, onClose }: { open: boolean; onClose: () => v
           <div>
             <p className="eyebrow">Presenter</p>
             <h2 id="ap-tour-title">Walkthrough</h2>
-            <p className="muted">Nine stops. About twenty minutes.</p>
+            <p className="muted">Ten stops. About twenty minutes.</p>
           </div>
           <button type="button" className="btn btn-icon btn-ghost" aria-label="Close" onClick={onClose}>
             <IconX size={20} />
@@ -86,7 +87,7 @@ export function Walkthrough({ open, onClose }: { open: boolean; onClose: () => v
             );
           })}
         </ol>
-        <p className="ap-tour-foot muted">Press ? on a keyboard to open this list. Reset demo, at the foot of each grown-up page, restores the starting families.</p>
+        <p className="ap-tour-foot muted">Press ? on a keyboard to open this list, here or on the website. Reset demo, at the foot of each grown-up page, restores the starting families.</p>
       </div>
     </div>
   );

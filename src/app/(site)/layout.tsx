@@ -2,6 +2,7 @@ import "@/styles/site.css";
 import { RevealController } from "@/components/site/RevealController";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteNav } from "@/components/site/SiteNav";
+import { PresenterKey } from "@/components/site/PresenterKey";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       </main>
       <SiteFooter />
       <RevealController />
+      <PresenterKey />
     </div>
   );
 }

@@ -6,7 +6,7 @@ This repository is the walkthrough demo: the marketing site and the full web app
 
 Live: https://heritage-readers.vercel.app. Every push to `main` deploys to production on Vercel.
 
-Presenting? Read `docs/demo-walkthrough.md`. In the app, press `?` (or "Walkthrough" at the foot of a grown-up page) for the nine stops.
+Presenting? Read `docs/demo-walkthrough.md`. In the app, press `?` (or "Walkthrough" at the foot of a grown-up page) for the ten stops.
 
 ## Run
 

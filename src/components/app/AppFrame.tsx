@@ -75,6 +75,12 @@ function Shell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated || asDone) return;
     const params = new URLSearchParams(window.location.search);
+    if (params.get("tour") === "1") {
+      params.delete("tour");
+      setTour(true);
+      const q0 = params.toString();
+      window.history.replaceState(window.history.state, "", window.location.pathname + (q0 ? `?${q0}` : "") + window.location.hash);
+    }
     const as = params.get("as") as Role | null;
     if (as) {
       params.delete("as");
@@ -376,6 +382,7 @@ function RoleGate({ pathname }: { pathname: string }) {
 
 function DemoFooter({ onTour }: { onTour: () => void }) {
   const { actions } = useDemo();
+  const router = useRouter();
   const [asked, setAsked] = useState(false);
   return (
     <footer className="ap-demo container">
@@ -395,6 +402,7 @@ function DemoFooter({ onTour }: { onTour: () => void }) {
             onClick={() => {
               actions.reset();
               setAsked(false);
+              router.push("/app");
             }}
           >
             Reset

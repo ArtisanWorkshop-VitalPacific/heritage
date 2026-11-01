@@ -6,7 +6,7 @@ Live: https://heritage-readers.vercel.app
 
 ## Presenter tools
 
-- **Walkthrough.** The button at the foot of any grown-up page, or press `?` on a keyboard. Nine stops. Each one sets the role and the child, then opens the page.
+- **Walkthrough.** The button at the foot of any grown-up page, or press `?` on a keyboard (on the website too). Ten stops. Each one sets the role and the child, then opens the page.
 - **View as.** Top right of the app: Parent, Teacher, Admin, Student, and More (Owner, Aide, Observer).
 - **Reset demo.** Foot of any grown-up page. Restores the starting families. Everything lives in this browser, so another device starts fresh.
 
@@ -38,7 +38,7 @@ Nora is 6, on rung 10 (the letter h), with one clean read already.
 
 ## 5. The parent's proof (3 minutes)
 
-1. **Report.** Rungs mastered, instructional level, words correct per minute against the grade norm, the week 1 and week 8 recordings (sample audio), the next three skills, minutes on screen next to minutes on paper.
+1. **Report.** Rungs mastered, instructional level, words correct per minute against the grade norm, the first and latest recordings (sample audio), the next three skills, minutes on screen next to minutes on paper.
 2. **Print.** This week's packets. Open one: the teacher's script, the student page, and the score sheet with its QR code.
 3. **Give a month.** Copy the code, invite an email, mark it paid (a demo control), and both families are credited.
 
@@ -46,7 +46,7 @@ Nora is 6, on rung 10 (the letter h), with one clean read already.
 
 1. **Teacher** (Eleanor Finch, Primer Class): the mastery board, a paper score, class packets by rung.
 2. **Admin** (Ruth Adler): members, change a role, the roles and permissions matrix, the audit log, privacy and export.
-3. As Teacher, open Organization. The role gate says who may open it.
+3. Walkthrough stop 9, "A role gate": the teacher opens Organization and the gate says who may open it.
 4. **Student:** only the lesson. No settings, no sharing.
 
 ## Notes
