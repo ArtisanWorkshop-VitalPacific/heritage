@@ -120,7 +120,9 @@ async function worker() {
         // They then print onto any ground (parchment, page cream, a dark plate) with no blend modes.
         // Paper grain is removed by gating on the local tone (a light blur): where the neighborhood
         // reads as paper, alpha is 0, so no faint grey rectangle shows. The outer edge is feathered.
-        const width = e.id === "hero" || e.id === "village-lane" ? 2400 : 1800;
+        const wide = e.id === "hero" || e.id === "village-lane";
+        const widths = wide ? [960, 1400, 2000] : [640, 960, 1400];
+        const width = widths[widths.length - 1];
         const grey = () => sharp(src).resize({ width, withoutEnlargement: true }).greyscale();
         const { data, info } = await grey().raw().toBuffer({ resolveWithObject: true });
         const { data: soft, info: softInfo } = await grey().blur(1.4).raw().toBuffer({ resolveWithObject: true });
@@ -150,9 +152,17 @@ async function worker() {
             rgba[i * 4 + 3] = Math.round(a * 255);
           }
         }
-        const file = `${e.id}.webp`;
-        await sharp(rgba, { raw: { width: W, height: H, channels: 4 } }).webp({ quality: 82, alphaQuality: 92 }).toFile(path.join(outDir, file));
-        map[e.id] = `/illustrations/${file}`;
+        // Alpha carries all the detail, so size drives weight: write three widths for srcset.
+        const ink = await sharp(rgba, { raw: { width: W, height: H, channels: 4 } }).png({ compressionLevel: 1 }).toBuffer();
+        const set = [];
+        for (const w of widths) {
+          const file = w === width ? `${e.id}.webp` : `${e.id}-${w}.webp`;
+          const pipe = w === width ? sharp(ink) : sharp(ink).resize({ width: w });
+          await pipe.webp({ quality: 80, alphaQuality: 88, effort: 5 }).toFile(path.join(outDir, file));
+          set.push(`/illustrations/${file} ${Math.min(w, W)}w`);
+        }
+        map[e.id] = `/illustrations/${e.id}.webp`;
+        map._srcset = { ...(map._srcset ?? {}), [e.id]: set.join(", ") };
         map._engravingInk = true;
       } else if (sharp) {
         const file = `${e.id}.webp`;

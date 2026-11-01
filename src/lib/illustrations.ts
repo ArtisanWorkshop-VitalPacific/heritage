@@ -29,14 +29,18 @@ export function frameUrl(set: FrameSet, index0: number): string {
 
 export interface ResolvedIllustration extends IllustrationEntry {
   src: string;
+  /** Width-described candidates for engravings in deployed builds ("url 640w, url 960w, ..."). */
+  srcSet?: string;
 }
 
 const BY_ID = new Map(ILLUSTRATIONS.map((i) => [i.id, i]));
+const SRCSET = (LOCAL_RAW._srcset ?? {}) as Record<string, string>;
 
 export function illustration(id: string): ResolvedIllustration | undefined {
   const entry = BY_ID.get(id);
   if (!entry) return undefined;
-  return { ...entry, src: LOCAL[id] ?? entry.remote };
+  const local = LOCAL[id];
+  return { ...entry, src: local ?? entry.remote, srcSet: local ? SRCSET[id] : undefined };
 }
 
 /**

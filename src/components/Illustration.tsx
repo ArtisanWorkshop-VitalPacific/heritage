@@ -49,17 +49,21 @@ export function Illustration({ id, className, style, alt, priority, plate, sizes
     );
   }
 
+  // Lazy images let the browser pick by laid-out width ("auto"); others fall back to a fair guess.
+  const resolvedSizes = ill.srcSet ? sizes ?? (priority ? "(max-width: 820px) 100vw, 60vw" : "auto, (max-width: 820px) 100vw, 50vw") : sizes;
+
   const img = (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={ill.src}
+      srcSet={ill.srcSet}
       alt={alt ?? ill.alt}
       width={ill.width}
       height={ill.height}
       loading={priority ? "eager" : "lazy"}
       decoding="async"
       fetchPriority={priority ? "high" : "auto"}
-      sizes={sizes}
+      sizes={resolvedSizes}
       className={cls}
       style={{ aspectRatio: ratio, height: "auto", ...style }}
       onError={() => setFailed(true)}
