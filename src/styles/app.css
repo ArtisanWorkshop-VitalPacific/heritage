@@ -333,16 +333,20 @@
       "text art"
       "extra art"
       "tiles tiles";
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: 1fr auto auto;
     column-gap: var(--sp-6);
   }
   .ap-hero-body {
     display: contents;
   }
+  /* The words sit level with the middle of the engraving, or just above a share card. */
   .ap-hero-text {
     grid-area: text;
-    align-self: end;
+    align-self: center;
     padding: var(--sp-10) 0 0 var(--sp-10);
+  }
+  .ap-hero:has(.ap-hero-body > :not(.ap-hero-text):not(.ap-hero-tiles)) .ap-hero-text {
+    align-self: end;
   }
   /* A share card or similar block sits under the words. */
   .ap-hero-body > :not(.ap-hero-text):not(.ap-hero-tiles) {
