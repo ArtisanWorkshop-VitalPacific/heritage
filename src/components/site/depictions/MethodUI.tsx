@@ -35,7 +35,7 @@ export function MasteryTimeline() {
           </li>
         ))}
       </ol>
-      <p className="s-timeline-note">Below 90%, the rung stays and the next passage uses only what your child has mastered.</p>
+      <p className="s-timeline-note">If a reading falls below 90 percent, your child stays on the rung for another day.</p>
     </figure>
   );
 }

@@ -19,13 +19,13 @@ export const metadata: Metadata = {
     template: "%s · Heritage Readers",
   },
   description:
-    "A classical reading tutor that listens. Hay & Wingo phonics and the McGuffey tradition, taught one child at a time, on paper first.",
+    "A phonics tutor for children ages 4 to 8. Fifteen-minute lessons based on Reading with Phonics, taught from a printed page, with a reading check that listens as your child reads aloud.",
   applicationName: "Heritage Readers",
   // A walkthrough demo with sample families: keep it out of search until launch.
   robots: { index: false, follow: false },
   openGraph: {
     title: "Heritage Readers",
-    description: "A classical reading tutor that listens.",
+    description: "A phonics tutor for children ages 4 to 8, based on the teaching of Susan Weaver, M.A.",
     type: "website",
   },
 };

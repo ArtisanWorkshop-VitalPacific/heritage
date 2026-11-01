@@ -28,23 +28,25 @@ export default function Home() {
         intro={
           <div className="s-hero-intro-inner">
             <h1 id="s-hero-title" className="s-hero-title">
-              Reading, taught the way it always worked.
+              A phonics tutor for children ages 4 to 8.
             </h1>
-            <p className="s-hero-sub">Phonics first. One child at a time. On paper.</p>
+            <p className="s-hero-sub">
+              Fifteen-minute lessons based on <cite>Reading with Phonics</cite> (1946), taught from a printed page at your table.
+            </p>
             <div className="s-hero-cta glass glass-lg">
               <Link href="/app/onboarding" className="btn btn-primary btn-lg">
-                Begin placement
+                Start placement
               </Link>
               <a href="#lesson" className="btn btn-ghost btn-lg s-hero-cta-2">
-                See a lesson
+                How a lesson works
               </a>
             </div>
           </div>
         }
         outro={
           <div className="s-hero-outro-inner">
-            <p className="s-hero-payoff">Now the page listens.</p>
-            <p className="s-hero-sub">Your child reads aloud. Mrs. Wren hears every word.</p>
+            <p className="s-hero-payoff">Then your child reads the story to Mrs. Wren.</p>
+            <p className="s-hero-sub">She follows each word on screen and notes the ones that need another try.</p>
             <MicPill label="Listening" />
           </div>
         }
@@ -54,9 +56,9 @@ export default function Home() {
       <section className="s-section s-thesis" aria-label="What Heritage Readers is">
         <div className="s-wrap">
           <p className="s-statement" data-reveal="">
-            <span>Heritage Readers teaches children to read the classical way.</span>{" "}
+            <span>Heritage Readers teaches reading the way Susan Weaver has taught it for 42 years.</span>{" "}
             <span className="s-statement-quiet">
-              Sounds before words. Words before stories. Each step mastered before the next, and a tutor who listens while your child reads aloud.
+              Children learn the letter sounds first, then words made from those sounds, then short stories that use only what they have learned. A child moves up after reading a step correctly twice.
             </span>
           </p>
           <dl className="s-specs" data-reveal="">
@@ -65,7 +67,7 @@ export default function Home() {
               <dd className="num">40</dd>
             </div>
             <div>
-              <dt>Minutes on paper, with a grown-up</dt>
+              <dt>Minutes at the table with a parent</dt>
               <dd className="num">12</dd>
             </div>
             <div>
@@ -73,7 +75,7 @@ export default function Home() {
               <dd className="num">3</dd>
             </div>
             <div>
-              <dt>Words on screen beyond your child’s rung</dt>
+              <dt>Words shown that your child hasn’t been taught</dt>
               <dd className="num">0</dd>
             </div>
           </dl>
@@ -83,8 +85,8 @@ export default function Home() {
       {/* (b) How a lesson works */}
       <section id="lesson" className="s-section s-band" aria-labelledby="s-lesson-title">
         <div className="s-wrap">
-          <SectionHead eyebrow="How a lesson works" title="Fifteen minutes. Mostly on paper." id="s-lesson-title" center>
-            <p className="s-lede">Every lesson has three parts, in the same order, every day.</p>
+          <SectionHead eyebrow="How a lesson works" title="Most of the lesson happens at the table." id="s-lesson-title" center>
+            <p className="s-lede">A lesson takes about fifteen minutes, and it runs in the same order each day so your child knows what comes next.</p>
           </SectionHead>
           <ol className="s-steps">
             <li className="s-step" data-reveal="">
@@ -92,24 +94,24 @@ export default function Home() {
               <p className="s-step-num">
                 <span className="num">12</span> min · On paper
               </p>
-              <h3 className="s-h3">With you, at the table.</h3>
-              <p className="s-body">Print the lesson. A script tells you what to say, what your child reads, and what to do after a missed word.</p>
+              <h3 className="s-h3">You teach from a printed page.</h3>
+              <p className="s-body">The script tells you what to say and which words your child reads. If a word is missed, it shows you how to correct it.</p>
             </li>
             <li className="s-step" data-reveal="">
               <MiniScreen />
               <p className="s-step-num">
                 <span className="num">3</span> min · On screen
               </p>
-              <h3 className="s-h3">Reading aloud to Mrs. Wren.</h3>
-              <p className="s-body">Your child reads one short passage. Mrs. Wren listens word by word and marks any word to review.</p>
+              <h3 className="s-h3">Mrs. Wren listens to the story.</h3>
+              <p className="s-body">Your child reads one short story out loud. She follows each word and keeps a list of the ones to practice again.</p>
             </li>
             <li className="s-step" data-reveal="">
               <MiniLine />
               <p className="s-step-num">
                 <span className="num">1</span> line · To you
               </p>
-              <h3 className="s-h3">What happened, in one sentence.</h3>
-              <p className="s-body">After every lesson: what was read, how it went, and what comes next.</p>
+              <h3 className="s-h3">You get a short note.</h3>
+              <p className="s-body">After each lesson you get one line telling you how the reading went and which lesson is next.</p>
             </li>
           </ol>
         </div>
@@ -119,11 +121,11 @@ export default function Home() {
       <section className="s-section" aria-labelledby="s-ladder-title">
         <div className="s-wrap s-split">
           <div className="s-split-copy">
-            <SectionHead eyebrow="The ladder" title={<>From short a to <span className="s-nowrap">two-syllable</span> words.</>} id="s-ladder-title">
+            <SectionHead eyebrow="The ladder" title="The vowel ladder from Reading with Phonics" id="s-ladder-title">
               <p className="s-body-lg">
-                This is the vowel ladder from Hay &amp; Wingo’s <cite>Reading with Phonics</cite> (1946). Your child starts at the blue dot and reads up: ha, he, hi, ho, hu. Then the whole words: hat, hen, him, hot, hum.
+                Julie Hay and Charles Wingo published <cite>Reading with Phonics</cite> in 1946. On their vowel ladder, a child starts at the blue dot, reads the sounds up the left side, and then reads the whole words on the right. Tap a word to hear it.
               </p>
-              <p className="s-body-lg">Heritage Readers follows the ladder across 40 rungs: short vowels, consonants, blends, digraphs, silent e, vowel teams, r-controlled vowels, endings, and two-syllable words.</p>
+              <p className="s-body-lg">Heritage Readers follows the book’s order over 40 rungs, starting with the short vowels and ending with two-syllable words.</p>
               <MoreLink href="/method#ladder">See all 40 rungs</MoreLink>
             </SectionHead>
           </div>
@@ -136,9 +138,9 @@ export default function Home() {
       {/* (d) It listens */}
       <section className="s-section s-band s-listens" aria-labelledby="s-listen-title">
         <div className="s-wrap">
-          <SectionHead eyebrow="The reading check" title="It listens to every word." id="s-listen-title" center>
+          <SectionHead eyebrow="The reading check" title="A line follows each word as your child reads." id="s-listen-title" center>
             <p className="s-lede">
-              Your child reads the passage aloud. The underline follows along, word by word. A word that needs practice is marked in ochre for review.
+              Mrs. Wren listens through the microphone. When a word needs more practice, it is underlined in ochre and comes back in the next review.
             </p>
           </SectionHead>
           <div className="s-listens-stage" data-reveal="">
@@ -149,9 +151,9 @@ export default function Home() {
           </div>
           <div className="s-never" data-reveal="">
             <p className="s-never-title">
-              Mrs. Wren never says “wrong.”
+              Mrs. Wren doesn’t say “wrong.”
             </p>
-            <p className="s-body-lg">She says the word, reads it with your child, and asks for it once more. Then the lesson goes on.</p>
+            <p className="s-body-lg">When your child misses a word, she says it, reads it with your child, and asks for it again before going on.</p>
             <p className="s-wren-quote">
               <span className="s-wren-name">Mrs. Wren</span> That word is hid. Read it with me: hid.
             </p>
@@ -162,8 +164,8 @@ export default function Home() {
       {/* (e) The stories */}
       <section className="s-section" aria-labelledby="s-stories-title">
         <div className="s-wrap">
-          <SectionHead eyebrow="The stories" title="Old stories, in words your child can read." id="s-stories-title">
-            <p className="s-body-lg">Aesop’s fables and the old tales, retold for each rung and drawn in the manner of the 1879 McGuffey Readers. Each story ends with its moral.</p>
+          <SectionHead eyebrow="The stories" title="Aesop’s fables, retold for new readers" id="s-stories-title">
+            <p className="s-body-lg">We retell Aesop’s fables and other old stories using only the sounds a child has learned. The pictures are drawn in the style of the 1879 McGuffey Readers, and each story ends with its moral.</p>
           </SectionHead>
         </div>
         <div className="s-wrap s-fables-wrap" data-reveal="">
@@ -174,8 +176,8 @@ export default function Home() {
       {/* (f) Paper first */}
       <section className="s-section s-band" aria-labelledby="s-paper-title">
         <div className="s-wrap">
-          <SectionHead eyebrow="Paper first" title="Every lesson prints." id="s-paper-title" center>
-            <p className="s-lede">The teacher page, the student page and the score sheet come from the same lesson. Twelve minutes at the table, then three on screen.</p>
+          <SectionHead eyebrow="Paper first" title="Each lesson prints on three pages." id="s-paper-title" center>
+            <p className="s-lede">You get a teacher page with the script, a student page for your child, and a score sheet for marking each word. The code on the score sheet opens the reading check on screen.</p>
           </SectionHead>
           <div data-reveal="">
             <PrintPacket />
@@ -196,7 +198,7 @@ export default function Home() {
               </span>
               <span className="s-minutes-val num">{SAMPLE.screenMinutes} min</span>
             </div>
-            <p className="s-minutes-note">Screen minutes next to paper minutes, in every weekly report. You set the daily screen limit for each child.</p>
+            <p className="s-minutes-note">Each weekly report shows minutes on paper next to minutes on screen. You set a daily screen limit for each child.</p>
           </div>
         </div>
       </section>
@@ -205,9 +207,9 @@ export default function Home() {
       <section className="s-section" aria-labelledby="s-proof-title">
         <div className="s-wrap s-split s-split-flip">
           <div className="s-split-copy">
-            <SectionHead eyebrow="For parents" title="Progress you can measure, and hear." id="s-proof-title">
-              <p className="s-body-lg">Three numbers every week: rungs mastered, the rung your child reads at, and words correct per minute.</p>
-              <p className="s-body-lg">And the same passage, recorded in week 1 and week 8, so you can hear the difference.</p>
+            <SectionHead eyebrow="For parents" title="What the weekly report shows" id="s-proof-title">
+              <p className="s-body-lg">The report shows how many rungs your child has mastered, the rung they are reading at now, and how many words they read correctly per minute, compared with published norms for their grade.</p>
+              <p className="s-body-lg">It also keeps a recording of the same story from the first week and the eighth, so you can hear how the reading has changed.</p>
               <MoreLink href="/app/report?as=parent">See the parent report</MoreLink>
             </SectionHead>
           </div>
@@ -224,8 +226,8 @@ export default function Home() {
       {/* (h) Schools and co-ops */}
       <section className="s-section s-band" aria-labelledby="s-schools-title">
         <div className="s-wrap">
-          <SectionHead eyebrow="For schools and co-ops" title="Every child on the right rung." id="s-schools-title" center>
-            <p className="s-lede">Seven roles, from owner to observer. A mastery board for every class. Packets printed by rung. Paper scores entered in seconds.</p>
+          <SectionHead eyebrow="For schools and co-ops" title="Teachers see the whole class at once." id="s-schools-title" center>
+            <p className="s-lede">The mastery board shows where each child is on the ladder. Teachers print lessons for each group and enter scores from the paper sheets. A school account has seven roles, from owner to observer.</p>
           </SectionHead>
           <div data-reveal="">
             <RolesExplorer />
@@ -243,12 +245,12 @@ export default function Home() {
             <Illustration id="schoolroom" sizes="(min-width: 1080px) 600px, 100vw" />
           </div>
           <div className="s-split-copy">
-            <SectionHead eyebrow="The educator" title="Built on the methods of Susan Weaver, M.A." id="s-susan-title">
+            <SectionHead eyebrow="The educator" title="Based on the teaching of Susan Weaver, M.A." id="s-susan-title">
               <p className="s-body-lg">
                 Susan Weaver has taught for 42 years, including as a Master Teacher at Biola University. She holds a Master of Arts in Early Reading and educated all six of her children from early childhood through high school.
               </p>
               <p className="s-body-lg">
-                Her methods build on Hay &amp; Wingo’s <cite>Reading with Phonics</cite> and the McGuffey Readers. Heritage Readers is built on her methods.
+                Her teaching draws on Hay and Wingo’s <cite>Reading with Phonics</cite> and the McGuffey Readers, and Heritage Readers follows the way she structures a lesson.
               </p>
             </SectionHead>
             <dl className="s-facts">
@@ -277,16 +279,16 @@ export default function Home() {
             <div className="s-pricing-main" data-reveal="">
               <p className="s-eyebrow">Pricing</p>
               <h2 className="s-h2" id="s-price-title">
-                One price for the whole family.
+                One plan covers your whole family.
               </h2>
               <p className="s-price-line">
                 <span className="s-price-big num">$39</span>
                 <span className="s-price-unit">a month</span>
               </p>
-              <p className="s-body-lg">Or $399 a year. Every child in the household. Printable lessons, the reading check, the parent report and Mrs. Wren.</p>
+              <p className="s-body-lg">Or $399 a year, for every child in your household. The plan includes the printable lessons, the reading check, the weekly report and Mrs. Wren.</p>
               <div className="s-actions">
                 <Link href="/app/onboarding" className="btn btn-primary btn-lg">
-                  Begin placement
+                  Start placement
                 </Link>
                 <MoreLink href="/pricing">See all plans</MoreLink>
               </div>
@@ -296,7 +298,7 @@ export default function Home() {
               <p className="s-referral-title" id="s-ref-title">
                 Give a month, get a month.
               </p>
-              <p className="s-body">Share your link. When a family you invite starts a paid plan, you each get a month free. Up to 12 months a year.</p>
+              <p className="s-body">Share your link with another family. When they start a paid plan, you each get a free month, up to 12 months a year.</p>
               <div className="s-referral-code">
                 <span className="num">HARPER-8K2F</span>
                 <span>Copy link</span>
@@ -307,9 +309,9 @@ export default function Home() {
       </section>
 
       {/* (k) Close */}
-      <ClosingCTA title="Begin with placement." body="About ten minutes. Your child reads letters, sounds and words aloud, and Heritage Readers finds the right rung to start on.">
+      <ClosingCTA title="Start with a ten-minute placement." body="Your child reads some letter sounds, a few words and a short story aloud, and Heritage Readers picks the rung to start on.">
         <Link href="/app/onboarding" className="btn btn-primary btn-lg">
-          Begin placement
+          Start placement
         </Link>
         <Link href="/app" className="btn btn-secondary btn-lg">
           Open the app <IconArrowRight size={18} />

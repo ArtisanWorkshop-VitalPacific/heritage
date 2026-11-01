@@ -10,22 +10,22 @@ import { contactHref } from "@/components/site/site-config";
 export const metadata: Metadata = {
   title: "For schools",
   description:
-    "Heritage Readers for classical schools, co-ops and microschools: seven roles, a mastery board for each class, class packets by rung, paper scores entered in seconds, rostering and single sign-on.",
+    "Heritage Readers for classical schools, co-ops and microschools. Teachers get a mastery board for each class, lessons printed by rung and paper score entry, with roles, rostering and single sign-on.",
 };
 
 const SURFACE: Record<string, string> = { family: "Family", school: "School", student: "Student" };
 
 const PRIVACY = [
-  { icon: IconLock, title: "Parent consent for every child.", text: "A parent gives consent before a child’s first lesson." },
-  { icon: IconMic, title: "Raw audio is not kept by default.", text: "Speech is turned into text to score the read. Parents choose whether to keep the week 1 and week 8 recordings." },
-  { icon: IconPaper, title: "A standard data privacy agreement.", text: "Ready for your school to sign, so the terms are clear before any roster is shared." },
-  { icon: IconShield, title: "Student Privacy Pledge commitments.", text: "No selling student data. No advertising to students. Data used only to teach." },
+  { icon: IconLock, title: "A parent consents for each child.", text: "No child starts a lesson until a parent has given consent." },
+  { icon: IconMic, title: "Raw audio isn’t kept by default.", text: "Speech is turned into text to score the reading. Parents decide whether to keep the week 1 and week 8 recordings." },
+  { icon: IconPaper, title: "A standard data privacy agreement.", text: "Your school can sign it before any roster is shared, so the terms are settled first." },
+  { icon: IconShield, title: "Student Privacy Pledge commitments.", text: "We don’t sell student data or advertise to students, and we use the data only for teaching." },
 ];
 
 const FUNDING = [
-  { title: "529 plans", text: "529 plans can pay for K-12 curriculum and tutoring (federal change effective July 2025)." },
-  { title: "Tax credit scholarships", text: "Federal tax credit scholarships begin January 1, 2027, in states that opt in." },
-  { title: "Education savings accounts", text: "Education savings accounts in states where Heritage Readers is an approved vendor." },
+  { title: "529 plans", text: "Since a federal change in July 2025, 529 plans can pay for K-12 curriculum and tutoring." },
+  { title: "Tax credit scholarships", text: "Federal tax credit scholarships start on January 1, 2027, in states that opt in." },
+  { title: "Education savings accounts", text: "Families can pay from an education savings account in states where Heritage Readers is an approved vendor." },
 ];
 
 export default function SchoolsPage() {
@@ -34,7 +34,7 @@ export default function SchoolsPage() {
       <PageHeader
         eyebrow="For schools"
         title={<>For classical schools, <span className="s-nowrap">co-ops</span> and microschools.</>}
-        lede="Every child on the right rung. Every lesson on paper. Every score in one place."
+        lede="Each child in a class works on their own rung. Teachers print lessons for each group and keep every child’s scores in one place."
         art="schoolroom"
         actions={
           <>
@@ -50,8 +50,8 @@ export default function SchoolsPage() {
 
       <section id="roles" className="s-section s-band" aria-labelledby="sc-roles">
         <div className="s-wrap">
-          <SectionHead eyebrow="Roles" title="Seven roles. Each sees what it needs." id="sc-roles" center>
-            <p className="s-lede">Permissions are enforced in the interface and in the data layer. A teacher cannot change roles. A student sees the lesson and nothing else.</p>
+          <SectionHead eyebrow="Roles" title="Seven roles with different access" id="sc-roles" center>
+            <p className="s-lede">Permissions are enforced in the app and in the data itself. A teacher can’t change anyone’s role, and a student sees only the lesson.</p>
           </SectionHead>
           <ul className="s-rolegrid" data-reveal="">
             {ROLES.map((r) => (
@@ -70,8 +70,8 @@ export default function SchoolsPage() {
 
       <section id="board" className="s-section" aria-labelledby="sc-board">
         <div className="s-wrap">
-          <SectionHead eyebrow="Mastery board" title="One row per child. One glance per class." id="sc-board" center>
-            <p className="s-lede">Green for mastered. Navy for the rung each child is on. Ochre for a review that is due.</p>
+          <SectionHead eyebrow="Mastery board" title="The whole class on one screen" id="sc-board" center>
+            <p className="s-lede">Each row is a child and each column is a group of rungs. Green means mastered, navy marks the rung a child is on now, and ochre shows a review that is due.</p>
           </SectionHead>
           <div className="s-board-stage" data-reveal="">
             <MasteryBoard />
@@ -83,14 +83,14 @@ export default function SchoolsPage() {
         <div className="s-wrap">
           <div className="s-two">
             <div className="s-two-col" data-reveal="">
-              <SectionHead eyebrow="Class packets" title="Printed by rung." id="sc-packets">
-                <p className="s-body-lg">One print per group. Each child gets the student page for their own rung, and you get one teacher script per group.</p>
+              <SectionHead eyebrow="Class packets" title="Lessons printed by rung" id="sc-packets">
+                <p className="s-body-lg">You print once for each group. Each child gets the student page for their own rung, and you get one teacher script for the group.</p>
               </SectionHead>
               <PacketList />
             </div>
             <div className="s-two-col" data-reveal="">
-              <SectionHead eyebrow="Paper scores" title="Entered in seconds.">
-                <p className="s-body-lg">Tap the words that were missed. Accuracy is worked out, the ladder updates, and the parent sees the same result.</p>
+              <SectionHead eyebrow="Paper scores" title="Scores from the paper sheet">
+                <p className="s-body-lg">Tap the words a child missed. The app works out the accuracy, counts the reading toward mastery, and shows the parent the same result.</p>
               </SectionHead>
               <ScoreEntry />
             </div>
@@ -100,8 +100,8 @@ export default function SchoolsPage() {
 
       <section id="rostering" className="s-section" aria-labelledby="sc-roster">
         <div className="s-wrap">
-          <SectionHead eyebrow="Rostering and sign-in" title="Your classes, already there." id="sc-roster" center>
-            <p className="s-lede">Classes and students sync from Clever or ClassLink. Teachers and staff sign in with Google or Microsoft.</p>
+          <SectionHead eyebrow="Rostering and sign-in" title="Classes come from your roster" id="sc-roster" center>
+            <p className="s-lede">Classes and students sync from Clever or ClassLink, and teachers and staff sign in with their Google or Microsoft accounts.</p>
           </SectionHead>
           <ul className="s-integrations" data-reveal="">
             <li>
@@ -126,7 +126,7 @@ export default function SchoolsPage() {
 
       <section id="privacy" className="s-section s-band" aria-labelledby="sc-privacy">
         <div className="s-wrap">
-          <SectionHead eyebrow="Privacy" title="Children’s data, handled with care." id="sc-privacy" center />
+          <SectionHead eyebrow="Privacy" title="How we handle children’s data" id="sc-privacy" center />
           <ul className="s-privacy" data-reveal="">
             {PRIVACY.map(({ icon: Icon, title, text }) => (
               <li key={title}>
@@ -143,7 +143,7 @@ export default function SchoolsPage() {
 
       <section id="funding" className="s-section" aria-labelledby="sc-funding">
         <div className="s-wrap">
-          <SectionHead eyebrow="Funding" title="Ways families and schools can pay." id="sc-funding" center />
+          <SectionHead eyebrow="Funding" title="Paying with education funds" id="sc-funding" center />
           <ul className="s-funding" data-reveal="">
             {FUNDING.map((f) => (
               <li key={f.title}>
@@ -156,7 +156,7 @@ export default function SchoolsPage() {
         </div>
       </section>
 
-      <ClosingCTA band title="See the teacher view." body="Open the Primer Class as its teacher: the mastery board, the packets and the scores.">
+      <ClosingCTA band title="Open the teacher view." body="The demo opens the Primer Class as its teacher, with the mastery board, the class packets and score entry.">
         <Link href="/app/teacher?as=teacher" className="btn btn-primary btn-lg">
           See the teacher view
         </Link>

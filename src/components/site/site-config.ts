@@ -22,7 +22,7 @@ export const FOOTER_COLUMNS: { title: string; links: { href: string; label: stri
     title: "Product",
     links: [
       { href: "/app", label: "Open the app" },
-      { href: "/app/onboarding", label: "Begin placement" },
+      { href: "/app/onboarding", label: "Start placement" },
       { href: "/#lesson", label: "How a lesson works" },
       { href: "/pricing", label: "Pricing" },
     ],
@@ -32,7 +32,7 @@ export const FOOTER_COLUMNS: { title: string; links: { href: string; label: stri
     links: [
       { href: "/method#ladder", label: "The 40 rungs" },
       { href: "/method#mastery", label: "Mastery" },
-      { href: "/method#engine", label: "What the AI decides" },
+      { href: "/method#engine", label: "What the AI does" },
       { href: "/method#sources", label: "Sources" },
     ],
   },

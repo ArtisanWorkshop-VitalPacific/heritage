@@ -11,7 +11,7 @@ export function SiteFooter() {
             <Link href="/" aria-label="Heritage Readers, home" className="s-footer-mark">
               <Wordmark />
             </Link>
-            <p>A classical reading tutor that listens. Built on the methods of Susan Weaver, M.A.</p>
+            <p>A phonics tutor for children ages 4 to 8, based on the teaching of Susan Weaver, M.A.</p>
           </div>
           <nav className="s-footer-cols" aria-label="Footer">
             {FOOTER_COLUMNS.map((col) => (

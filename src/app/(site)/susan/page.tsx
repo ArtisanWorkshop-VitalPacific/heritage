@@ -6,7 +6,7 @@ import { ClosingCTA, MoreLink, PageHeader, SectionHead } from "@/components/site
 export const metadata: Metadata = {
   title: "Susan Weaver, M.A.",
   description:
-    "Susan Weaver, M.A.: 42 years of teaching, six children educated from early childhood through high school, Master Teacher at Biola University. Heritage Readers is built on her methods.",
+    "Susan Weaver, M.A., has taught for 42 years, including as a Master Teacher at Biola University, and educated her six children from early childhood through high school. Heritage Readers follows her approach to teaching reading.",
 };
 
 const RECORD = [
@@ -18,7 +18,7 @@ const RECORD = [
     area: "Teaching",
     items: [
       "Master Teacher at Biola University.",
-      "Classroom tenure across public colleges, private secondary schools and classical Christian academies.",
+      "Taught in public colleges, private secondary schools and classical Christian academies.",
       "42 years of teaching.",
     ],
   },
@@ -28,11 +28,11 @@ const RECORD = [
   },
   {
     area: "Tutoring",
-    items: ["Hundreds of tutored students.", "SAT Critical Reading and Writing preparation."],
+    items: ["Has tutored hundreds of students.", "Prepares students for the SAT Critical Reading and Writing sections."],
   },
   {
     area: "Speech",
-    items: ["Coached competitive speech and debate.", "Led Toastmasters chapters."],
+    items: ["Has coached competitive speech and debate.", "Has led Toastmasters chapters."],
   },
 ];
 
@@ -42,14 +42,14 @@ export default function SusanPage() {
       <PageHeader
         eyebrow="The educator"
         title="Susan Weaver, M.A."
-        lede="Forty-two years of teaching, from a child’s first sounds to competitive debate. Heritage Readers is built on her methods."
+        lede="Susan has taught for 42 years, from children learning their first letter sounds to students in competitive debate. Heritage Readers follows her approach to teaching reading."
         art="hearth-reading"
         actions={
           <>
             <Link href="/method" className="btn btn-primary btn-lg">
               See the method
             </Link>
-            <MoreLink href="/app/onboarding">Begin placement</MoreLink>
+            <MoreLink href="/app/onboarding">Start placement</MoreLink>
           </>
         }
       />
@@ -75,7 +75,7 @@ export default function SusanPage() {
 
       <section className="s-section s-band" aria-labelledby="su-record">
         <div className="s-wrap s-record-wrap">
-          <SectionHead eyebrow="The record" title="A teacher of reading, writing and speech." id="su-record" />
+          <SectionHead eyebrow="Her record" title="Teaching reading, writing and speech" id="su-record" />
           <dl className="s-record" data-reveal="">
             {RECORD.map((r) => (
               <div key={r.area} className="s-record-row">
@@ -95,31 +95,31 @@ export default function SusanPage() {
 
       <section className="s-section" aria-labelledby="su-foundation">
         <div className="s-wrap">
-          <SectionHead eyebrow="The foundation" title="Her methods, carried into a tutor that listens." id="su-foundation" center>
+          <SectionHead eyebrow="The foundation" title="What Heritage Readers takes from her teaching" id="su-foundation" center>
             <p className="s-lede">
-              Her methods build on Hay &amp; Wingo’s <cite>Reading with Phonics</cite> and the McGuffey Readers. Heritage Readers is built on her methods.
+              Her approach draws on Hay and Wingo’s <cite>Reading with Phonics</cite> and the McGuffey Readers. Three parts of it shape the app.
             </p>
           </SectionHead>
           <ol className="s-stages s-foundation" data-reveal="">
             <li className="s-stage">
               <p className="s-stage-name">The order of the sounds</p>
-              <p className="s-body">The Hay &amp; Wingo vowel ladder, rung by rung, from short a to two-syllable words.</p>
+              <p className="s-body">Children work up the Hay and Wingo vowel ladder one rung at a time, from short a to two-syllable words.</p>
             </li>
             <li className="s-stage">
               <p className="s-stage-name">The graded reader</p>
-              <p className="s-body">McGuffey-style stories and engravings, with every word decodable at the child’s rung.</p>
+              <p className="s-body">The stories and pictures follow the McGuffey Readers, and each word can be sounded out at the child’s rung.</p>
             </li>
             <li className="s-stage">
-              <p className="s-stage-name">The whole arc</p>
-              <p className="s-body">From first sounds to composition and speech, the range of her own teaching.</p>
+              <p className="s-stage-name">The later years</p>
+              <p className="s-body">Composition and speech come after reading, following the range of her own teaching.</p>
             </li>
           </ol>
         </div>
       </section>
 
-      <ClosingCTA band title="See the method in a lesson." body="Begin placement, or open the app and look at the ladder, the reading check and the printed lesson.">
+      <ClosingCTA band title="See her method in a lesson." body="Start a placement, or open the app to look at the ladder, the reading check and a printed lesson.">
         <Link href="/app/onboarding" className="btn btn-primary btn-lg">
-          Begin placement
+          Start placement
         </Link>
         <Link href="/app" className="btn btn-secondary btn-lg">
           Open the app <IconArrowRight size={18} />

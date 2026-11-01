@@ -29,13 +29,13 @@ export interface RoleInfo {
 }
 
 export const ROLES: RoleInfo[] = [
-  { id: "parent", label: "Parent", surface: "family", summary: "Own children only. Progress, print, screen limits, consent, referrals." },
-  { id: "teacher", label: "Teacher", surface: "school", summary: "Assigned classes. Mastery board, class packets, score entry." },
-  { id: "admin", label: "Admin", surface: "school", summary: "Members, roles, licenses, exports, audit log, SSO." },
-  { id: "student", label: "Student", surface: "student", summary: "The lesson. Nothing else. No settings, no sharing." },
-  { id: "owner", label: "Owner", surface: "school", summary: "Everything an Admin can do, plus billing and plan." },
-  { id: "aide", label: "Aide", surface: "school", summary: "Prints and scores for assigned groups. No progress history." },
-  { id: "observer", label: "Observer", surface: "family", summary: "Read-only progress for one named child." },
+  { id: "parent", label: "Parent", surface: "family", summary: "Sees only their own children, prints lessons, sets screen limits, gives consent and sends referrals." },
+  { id: "teacher", label: "Teacher", surface: "school", summary: "Sees the classes assigned to them, with the mastery board, class packets and score entry." },
+  { id: "admin", label: "Admin", surface: "school", summary: "Manages members, roles, licenses, exports, sign-in and the audit log." },
+  { id: "student", label: "Student", surface: "student", summary: "Sees the lesson and nothing else, with no settings and no sharing." },
+  { id: "owner", label: "Owner", surface: "school", summary: "Can do everything an Admin can, and also manages billing and the plan." },
+  { id: "aide", label: "Aide", surface: "school", summary: "Prints and scores for assigned groups, without access to progress history." },
+  { id: "observer", label: "Observer", surface: "family", summary: "Can see one named child’s progress but can’t change anything." },
 ];
 
 export const PRIMARY_ROLES: Role[] = ["parent", "teacher", "admin", "student"];

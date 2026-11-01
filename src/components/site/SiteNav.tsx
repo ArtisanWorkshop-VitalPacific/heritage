@@ -164,7 +164,7 @@ function MenuSheet({ onClose, isCurrent }: { onClose: () => void; isCurrent: (hr
       </nav>
       <div className="s-menu-actions">
         <Link href="/app/onboarding" className="btn btn-primary btn-lg" onClick={onClose}>
-          Begin placement
+          Start placement
         </Link>
         <Link href="/app" className="btn btn-secondary btn-lg" onClick={onClose}>
           Open the app <IconArrowRight size={18} />
