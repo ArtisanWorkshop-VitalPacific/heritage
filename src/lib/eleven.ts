@@ -106,6 +106,11 @@ async function firstThatSpeaks(key: string, narrator: string, attempts: () => At
   return { ok: false, failures };
 }
 
+/** One request body on one model, with the narrator's voices in turn. For the pronunciation lab. */
+export function synthesizeRaw(key: string, narrator: string, model: string, body: Record<string, unknown>): Promise<SpeechResult> {
+  return firstThatSpeaks(key, narrator, () => [{ model, body }]);
+}
+
 /** Speaks `text` with the first voice and model that works. Square brackets never come from callers. */
 export async function synthesize(key: string, rawText: string, narrator: string, kind: SpeechKind): Promise<SpeechResult> {
   const text = rawText.replace(/[[\]]/g, "").trim().slice(0, 600);

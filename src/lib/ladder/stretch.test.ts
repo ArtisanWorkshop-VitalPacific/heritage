@@ -3,27 +3,34 @@ import PRON from "./pron.json";
 import { canStretch, stretchedChunks, wordIPA } from "./stretch";
 
 describe("stretched lesson words", () => {
-  it("holds the short vowel between the onset and the rest of the word", () => {
-    expect(stretchedChunks("top")).toEqual(["tɑ", "ɑːː", "ɑp"]);
-    expect(stretchedChunks("nut")).toEqual(["nʌ", "ʌːː", "ʌt"]);
-    expect(stretchedChunks("bun")).toEqual(["bʌ", "ʌːː", "ʌn"]);
-    expect(stretchedChunks("mat")).toEqual(["mæ", "æːː", "æt"]);
-    expect(stretchedChunks("hen")).toEqual(["hɛ", "ɛːː", "ɛn"]);
-    expect(stretchedChunks("him")).toEqual(["hɪ", "ɪːː", "ɪm"]);
+  it("keeps a short vowel short in every part", () => {
+    expect(stretchedChunks("top")).toEqual(["tɑ", "ɑ", "ɑp"]);
+    expect(stretchedChunks("nut")).toEqual(["nʌ", "ʌ", "ʌt"]);
+    expect(stretchedChunks("bun")).toEqual(["bʌ", "ʌ", "ʌn"]);
+    expect(stretchedChunks("mat")).toEqual(["mæ", "æ", "æt"]);
+    expect(stretchedChunks("hen")).toEqual(["hɛ", "ɛ", "ɛn"]);
+    expect(stretchedChunks("him")).toEqual(["hɪ", "ɪ", "ɪm"]);
   });
 
-  it("drops the first chunk when the word starts on its vowel, and the last when it ends on it", () => {
-    expect(stretchedChunks("up")).toEqual(["ʌːː", "ʌp"]);
-    expect(stretchedChunks("and")).toEqual(["æːː", "ænd"]);
-    expect(stretchedChunks("bee")).toEqual(["bi", "iːː"]);
-    // A word that is all vowel is the held vowel, then the word.
-    expect(stretchedChunks("air", "british")).toEqual(["eəːː"]);
+  it("drops the first part when the word starts on its vowel, and the last when it ends on it", () => {
+    expect(stretchedChunks("up")).toEqual(["ʌ", "ʌp"]);
+    expect(stretchedChunks("and")).toEqual(["æ", "ænd"]);
+    expect(stretchedChunks("bee")).toEqual(["bi", "i"]);
+    expect(stretchedChunks("air", "british")).toEqual(["ɛə"]);
   });
 
-  it("holds the vowel team or long vowel the lesson teaches", () => {
-    expect(stretchedChunks("cake")).toEqual(["keɪ", "eɪːː", "eɪk"]);
-    expect(stretchedChunks("car")).toEqual(["kɑ", "ɑːː", "ɑɹ"]);
-    expect(stretchedChunks("mitten")).toEqual(["mɪ", "ɪːː", "ɪtən"]);
+  it("gives a long vowel its name", () => {
+    expect(stretchedChunks("cake")).toEqual(["keɪ", "eɪ", "eɪk"]);
+    expect(stretchedChunks("bike")).toEqual(["baɪ", "aɪ", "aɪk"]);
+    expect(stretchedChunks("boat")).toEqual(["boʊ", "oʊ", "oʊt"]);
+    expect(stretchedChunks("cube")).toEqual(["kju", "ju", "jub"]);
+    expect(stretchedChunks("use")).toEqual(["ju", "juz"]);
+    expect(stretchedChunks("boat", "british")).toEqual(["bəʊ", "əʊ", "əʊt"]);
+  });
+
+  it("holds r-controlled and two-syllable words on the stressed vowel", () => {
+    expect(stretchedChunks("car")).toEqual(["kɑ", "ɑ", "ɑɹ"]);
+    expect(stretchedChunks("mitten")).toEqual(["mɪ", "ɪ", "ɪtən"]);
   });
 
   it("uses the lesson reading of words with two pronunciations", () => {
@@ -33,12 +40,20 @@ describe("stretched lesson words", () => {
     expect(wordIPA("in")).toBe("ɪn");
   });
 
+  it("says short o the same way in hot, dog and off", () => {
+    expect(wordIPA("hot")).toBe("hɑt");
+    expect(wordIPA("dog")).toBe("dɑɡ");
+    expect(wordIPA("off")).toBe("ɑf");
+    expect(wordIPA("all")).toBe("ɔl");
+    expect(wordIPA("dog", "british")).toBe("dɒɡ");
+    expect(wordIPA("all", "british")).toBe("ɔːl");
+  });
+
   it("speaks Southern British vowels for the British narrator", () => {
-    expect(stretchedChunks("top", "british")).toEqual(["tɒ", "ɒːː", "ɒp"]);
-    expect(stretchedChunks("hot", "british")).toEqual(["hɒ", "ɒːː", "ɒt"]);
-    expect(stretchedChunks("path", "british")).toEqual(["pɑː", "ɑːː", "ɑːθ"]);
+    expect(stretchedChunks("top", "british")).toEqual(["tɒ", "ɒ", "ɒp"]);
+    expect(stretchedChunks("hen", "british")).toEqual(["hɛ", "ɛ", "ɛn"]);
+    expect(stretchedChunks("path", "british")).toEqual(["pɑː", "ɑː", "ɑːθ"]);
     expect(wordIPA("car", "british")).toBe("kɑː");
-    expect(wordIPA("boat", "british")).toBe("bəʊt");
     expect(wordIPA("mat", "british")).toBe("mæt");
   });
 
@@ -50,14 +65,16 @@ describe("stretched lesson words", () => {
     expect(canStretch("Top")).toBe(true);
   });
 
-  it("has a clean stretched form for every lesson word in both voices", () => {
-    const ipa = /^[a-zæɑɒɔəɚɛɜɝɪʊʌθðʃʒŋɡɹːˈ]+$/u;
+  it("never puts a length mark on a short vowel, in any lesson word or voice", () => {
+    const ipa = /^[a-zæɑɒɔəɚɛɜɝɪʊʌθðʃʒŋɡɹː]+$/u;
     for (const word of Object.keys(PRON)) {
       for (const narrator of ["american", "british"] as const) {
         const chunks = stretchedChunks(word, narrator);
         expect(chunks, `${word} (${narrator})`).not.toBeNull();
-        expect(chunks!.length, `${word} (${narrator})`).toBeGreaterThanOrEqual(1);
-        for (const c of chunks!) expect(c, `${word} (${narrator})`).toMatch(ipa);
+        for (const c of chunks!) {
+          expect(c, `${word} (${narrator})`).toMatch(ipa);
+          expect(c, `${word} (${narrator})`).not.toMatch(/[æɛɪɒʌʊ]ː/u);
+        }
       }
     }
   });

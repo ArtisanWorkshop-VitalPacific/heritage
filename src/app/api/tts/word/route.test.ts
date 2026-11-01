@@ -35,7 +35,7 @@ describe("GET /api/tts/word", () => {
     expect(new Uint8Array(await res.arrayBuffer())).toEqual(MP3);
     expect(sent).toHaveLength(1);
     expect(sent[0].body.model_id).toBe("eleven_v4");
-    expect(sent[0].body.text).toBe("[slowly] /nʌ/, /ʌːː/, /ʌt/... [warmly] nut.");
+    expect(sent[0].body.text).toBe("[slowly] /nʌ/, /ʌ/, /ʌt/... [warmly] nut.");
   });
 
   it("generates each word once per voice, then serves the stored audio", async () => {
