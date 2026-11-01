@@ -14,7 +14,7 @@ Live: https://heritage-readers.vercel.app
 
 ## 1. The website (3 minutes)
 
-1. Open the home page and scroll slowly. The engraving film plays with the scroll: the boy reads, the page turns, the frame opens. Then "Now the page listens."
+1. Open the home page and scroll slowly. The engraving film plays with the scroll: the boy reads and turns the page while the frame opens around him and the mother. The closing line is "Then your child reads the story to Mrs. Wren."
 2. Keep scrolling: the lesson in three parts, the Hay & Wingo vowel ladder (tap a word to hear it, then "Climb the ladder"), the reading check, the fables, every lesson prints, the parent report, roles, Susan, pricing.
 3. Top bar: Method (the 40 rungs, mastery, what the AI decides), Schools, Pricing, Susan.
 
