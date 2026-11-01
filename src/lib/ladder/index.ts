@@ -25,3 +25,4 @@ export {
   type WordAttempt,
   type PlacementScore,
 } from "./placement";
+export { partsFor } from "./phonics";
