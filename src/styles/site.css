@@ -698,8 +698,9 @@
   pointer-events: none;
 }
 
-/* Soft edges: the nav zone at the top and the page below. The top wash holds behind the nav links
-   and is gone 24px under the bar, above the mother's head at the end of the film. */
+/* Soft edges: the nav zone at the top and the page below. Both follow a smoothstep curve, so no
+   edge shows where a fade begins or ends. The top wash holds behind the nav links and is gone
+   28px under the bar, above the mother's head at the end of the film. */
 .s-hero-edges {
   position: absolute;
   inset: 0;
@@ -708,20 +709,46 @@
     linear-gradient(
       to bottom,
       var(--parchment) 0,
-      rgba(239, 230, 210, 0.9) calc(var(--s-nav-h) * 0.5),
-      rgba(239, 230, 210, 0.5) var(--s-nav-h),
-      var(--s-parchment-0) calc(var(--s-nav-h) + 24px)
+      var(--parchment) calc(var(--s-nav-h) - 36px),
+      rgba(239, 230, 210, 0.96) calc(var(--s-nav-h) - 28px),
+      rgba(239, 230, 210, 0.84) calc(var(--s-nav-h) - 20px),
+      rgba(239, 230, 210, 0.68) calc(var(--s-nav-h) - 12px),
+      rgba(239, 230, 210, 0.5) calc(var(--s-nav-h) - 4px),
+      rgba(239, 230, 210, 0.32) calc(var(--s-nav-h) + 4px),
+      rgba(239, 230, 210, 0.16) calc(var(--s-nav-h) + 12px),
+      rgba(239, 230, 210, 0.04) calc(var(--s-nav-h) + 20px),
+      var(--s-parchment-0) calc(var(--s-nav-h) + 28px)
     ),
-    linear-gradient(to top, var(--parchment) 0, var(--s-parchment-0) 14%);
+    linear-gradient(
+      to top,
+      var(--parchment) 0,
+      rgba(239, 230, 210, 0.96) 1.75%,
+      rgba(239, 230, 210, 0.84) 3.5%,
+      rgba(239, 230, 210, 0.68) 5.25%,
+      rgba(239, 230, 210, 0.5) 7%,
+      rgba(239, 230, 210, 0.32) 8.75%,
+      rgba(239, 230, 210, 0.16) 10.5%,
+      rgba(239, 230, 210, 0.04) 12.25%,
+      var(--s-parchment-0) 14%
+    );
 }
 
-/* The parchment behind the opening words: a gradient that falls from the top. */
+/* The parchment behind the opening words. On landscape screens the script sets its height to
+   where the words end, so it never reaches the mother's head; 62% is the guess before that. */
 .s-hero-fade {
   position: absolute;
   inset: 0 0 auto;
   height: 62%;
   pointer-events: none;
-  background: linear-gradient(to bottom, var(--parchment) 0%, rgba(239, 230, 210, 0.96) 40%, rgba(239, 230, 210, 0.62) 68%, var(--s-parchment-0) 100%);
+  background: linear-gradient(
+    to bottom,
+    var(--parchment) 0%,
+    rgba(239, 230, 210, 0.96) 45%,
+    rgba(239, 230, 210, 0.8) 70%,
+    rgba(239, 230, 210, 0.42) 86%,
+    rgba(239, 230, 210, 0.1) 95%,
+    var(--s-parchment-0) 100%
+  );
 }
 
 /* Behind the closing words: a soft oval centred on the words. It stops short of the right third,
@@ -773,7 +800,8 @@
   text-wrap: balance;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2.5rem, 1.15rem + 5.4vw, 5.5rem);
+  /* Capped by the screen height too, so a short laptop screen keeps room for the picture. */
+  font-size: min(clamp(2.5rem, 1.15rem + 5.4vw, 5.5rem), 11vh);
   line-height: 0.99;
   letter-spacing: -0.022em;
   color: var(--ink);
@@ -785,6 +813,12 @@
   line-height: 1.4;
   letter-spacing: -0.01em;
   color: var(--ink-2);
+}
+
+.s-hero-intro .s-hero-sub {
+  max-width: 44ch;
+  margin-inline: auto;
+  text-wrap: balance;
 }
 
 .s-hero-cta {
@@ -844,19 +878,27 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    /* An eased fade at the top: the oak goes soft instead of meeting a line, and the wash is
-       nearly gone by the top of the mother's head, about 13% down at the end of the film. */
+    /* Smoothstep fades at the top and bottom of the band: the oak goes soft instead of meeting a
+       line, and the top wash is nearly gone by the mother's hair, about 13% down at the end of the film. */
     background: linear-gradient(
       to bottom,
       var(--parchment) 0,
-      rgba(239, 230, 210, 0.78) 2.5%,
-      rgba(239, 230, 210, 0.52) 5%,
-      rgba(239, 230, 210, 0.3) 8%,
-      rgba(239, 230, 210, 0.14) 11%,
+      rgba(239, 230, 210, 0.96) 2%,
+      rgba(239, 230, 210, 0.84) 4%,
+      rgba(239, 230, 210, 0.68) 6%,
+      rgba(239, 230, 210, 0.5) 8%,
+      rgba(239, 230, 210, 0.32) 10%,
+      rgba(239, 230, 210, 0.16) 12%,
       rgba(239, 230, 210, 0.04) 14%,
       var(--s-parchment-0) 16%,
-      var(--s-parchment-0) 86%,
-      rgba(239, 230, 210, 0.45) 93%,
+      var(--s-parchment-0) 84%,
+      rgba(239, 230, 210, 0.04) 86%,
+      rgba(239, 230, 210, 0.16) 88%,
+      rgba(239, 230, 210, 0.32) 90%,
+      rgba(239, 230, 210, 0.5) 92%,
+      rgba(239, 230, 210, 0.68) 94%,
+      rgba(239, 230, 210, 0.84) 96%,
+      rgba(239, 230, 210, 0.96) 98%,
       var(--parchment) 100%
     );
   }
@@ -879,6 +921,16 @@
     font-size: 2.25rem;
   }
   .s-hero-sub {
+    margin-top: 12px;
+  }
+  .s-hero-cta {
+    margin-top: 18px;
+  }
+}
+
+/* Short landscape screens (small laptops): tighter spacing leaves more room for the plate. */
+@media (min-aspect-ratio: 6/5) and (max-height: 720px) {
+  .s-hero-intro .s-hero-sub {
     margin-top: 12px;
   }
   .s-hero-cta {

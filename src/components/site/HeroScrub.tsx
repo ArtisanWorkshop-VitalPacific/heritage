@@ -34,6 +34,11 @@ const VIGNETTE_MAX = 3.2;
 // so both figures sit below the words, and grows to full frame as the vignette opens.
 const START_SCALE = 0.68;
 const START_DROP = 0.2; // of the stage height
+const START_MIN_SCALE = 0.42;
+// Where the figures stand in the first frame of the film, as fractions of its height.
+const MOTHER_HEAD = 0.245; // the top of the mother's hair
+const FIGURES_FOOT = 0.83; // the hem of her skirt and the boy's shoes
+const HEAD_ROOM = 20; // px between the buttons and the top of her head
 const MAX_DPR = 2;
 const FILL_WORKERS = 4;
 const BLEND_STEPS = 8; // crossfade steps between neighbouring frames
@@ -47,6 +52,49 @@ function subscribeReduce(cb: () => void) {
 }
 const getReduce = () => window.matchMedia(REDUCE_QUERY).matches;
 const getReduceServer = () => false;
+
+interface Opening {
+  scale: number;
+  drop: number; // px
+  line: number; // px from the top of the stage where the words end and the figures may begin
+}
+
+/**
+ * The landscape opening plate for one screen size. The default sits under the words. When the
+ * mother's head would reach the words (short screens), the plate drops until it clears them, and
+ * shrinks if that would push the figures past the fold.
+ */
+function openingPlate(width: number, height: number, aspect: number, focusY: number, wordsBottom: number): Opening {
+  const drawnH = Math.max(height, width / aspect); // the cover-cropped frame, as drawn
+  const cropTop = (drawnH - height) * focusY;
+  const head = MOTHER_HEAD * drawnH - cropTop;
+  const foot = FIGURES_FOOT * drawnH - cropTop;
+  const line = wordsBottom + HEAD_ROOM;
+  const mid = height / 2;
+  const at = (scale: number, drop: number, y: number) => mid + scale * (y - mid) + drop;
+  const dropFor = (scale: number) => line - mid - scale * (head - mid);
+  let scale = START_SCALE;
+  let drop = START_DROP * height;
+  if (at(scale, drop, head) < line) {
+    drop = dropFor(scale);
+    if (at(scale, drop, foot) > height) {
+      scale = Math.max(START_MIN_SCALE, Math.min(START_SCALE, (height - line) / (foot - head)));
+      drop = dropFor(scale);
+    }
+  }
+  return { scale, drop, line };
+}
+
+/** The bottom of the opening words in stage coordinates, ignoring the transforms the scroll applies. */
+function wordsBottomIn(stage: HTMLElement, intro: HTMLElement): number {
+  let y = intro.offsetHeight;
+  let el: HTMLElement | null = intro;
+  while (el && el !== stage) {
+    y += el.offsetTop;
+    el = el.offsetParent as HTMLElement | null;
+  }
+  return el === stage ? y : intro.getBoundingClientRect().bottom - stage.getBoundingClientRect().top;
+}
 
 /**
  * The home page hero. A tall section pins a full-viewport stage while the engraving film plays
@@ -90,7 +138,38 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     const introEl = introRef.current;
     const outroEl = outroRef.current;
     if (!section || !stage || !picture || !canvas || !vignette || !fade || !fadeOut || !introEl || !outroEl) return;
-    if (reduced) return;
+
+    const portrait = window.matchMedia(PORTRAIT_QUERY);
+    const aspect = frames && !reduced ? frames.lg.width / frames.lg.height : still.width / still.height;
+    let opening: Opening = { scale: START_SCALE, drop: START_DROP * stage.offsetHeight, line: 0 };
+    // Landscape: fit the opening plate under the words, and end the wash behind the words where
+    // the figures begin. Portrait screens keep the stylesheet's band.
+    const measureOpening = () => {
+      if (portrait.matches) {
+        fade.style.height = "";
+        return;
+      }
+      opening = openingPlate(picture.clientWidth, picture.clientHeight, aspect, focusY, wordsBottomIn(stage, introEl));
+      fade.style.height = `${Math.round(opening.line)}px`;
+    };
+
+    if (reduced) {
+      // No film and no scroll choreography, but the plate still clears the words.
+      const place = () => {
+        measureOpening();
+        picture.style.transform = portrait.matches ? "" : `translate3d(0, ${opening.drop.toFixed(1)}px, 0) scale(${opening.scale.toFixed(4)})`;
+      };
+      const ro = new ResizeObserver(place);
+      ro.observe(stage);
+      ro.observe(introEl);
+      place();
+      return () => {
+        ro.disconnect();
+        picture.removeAttribute("style");
+        fade.removeAttribute("style");
+      };
+    }
+
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -127,7 +206,6 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     };
 
     // Portrait screens: the picture band rises to the middle while no copy is shown.
-    const portrait = window.matchMedia(PORTRAIT_QUERY);
     let riseBy = 0;
     const measureRise = () => {
       riseBy = portrait.matches ? Math.max(0, picture.offsetTop - (stageH - picture.offsetHeight) / 2) : 0;
@@ -157,8 +235,8 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
         picture.style.transform = rise ? `translate3d(0, ${(-rise * riseBy).toFixed(1)}px, 0) scale(${(1 + rise * 0.16).toFixed(4)})` : "";
       } else {
         const grow = push * push * (3 - 2 * push);
-        const scale = START_SCALE + (1 - START_SCALE) * grow;
-        const drop = START_DROP * stageH * (1 - grow);
+        const scale = opening.scale + (1 - opening.scale) * grow;
+        const drop = opening.drop * (1 - grow);
         // "none" at full frame: the stylesheet's default is the opening plate.
         picture.style.transform = grow < 1 ? `translate3d(0, ${drop.toFixed(1)}px, 0) scale(${scale.toFixed(4)})` : "none";
       }
@@ -407,6 +485,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     const resize = () => {
       stageH = stage.offsetHeight;
       measureRise();
+      measureOpening();
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       const w = Math.max(1, Math.round(picture.clientWidth * dpr));
       const h = Math.max(1, Math.round(picture.clientHeight * dpr));
@@ -419,9 +498,19 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
       schedule();
     };
 
+    // The stylesheet's opening plate is a fixed guess. Where the measured one differs (short
+    // screens), the plate settles into place on load instead of jumping.
+    picture.style.transition = "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)";
+    fade.style.transition = "height 600ms cubic-bezier(0.22, 1, 0.36, 1)";
+    const settled = window.setTimeout(() => {
+      picture.style.transition = "";
+      fade.style.transition = "";
+    }, 700);
+
     const ro = new ResizeObserver(resize);
     ro.observe(picture);
     ro.observe(stage);
+    ro.observe(introEl); // the words reflow when the fonts arrive
     resize();
 
     const onScroll = () => schedule();
@@ -436,6 +525,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      window.clearTimeout(settled);
       ro.disconnect();
       window.removeEventListener("scroll", onScroll);
       introEl.removeEventListener("focusin", onFocusIn);
@@ -443,7 +533,7 @@ export function HeroScrub({ frames, still, videoSrc, intro, outro, focusX = 0.5,
       for (const el of [introEl, outroEl, vignette, fade, fadeOut, picture]) el.removeAttribute("style");
       picture.removeAttribute("data-live");
     };
-  }, [reduced, frames, videoSrc, still.src, focusX, focusY, fyEnd]);
+  }, [reduced, frames, videoSrc, still.src, still.width, still.height, focusX, focusY, fyEnd]);
 
   return (
     <section ref={sectionRef} className="s-hero" data-s-hero aria-labelledby="s-hero-title">
