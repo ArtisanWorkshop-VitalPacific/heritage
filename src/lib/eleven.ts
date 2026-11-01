@@ -12,6 +12,8 @@
  *   Every request falls back to Multilingual v2 if a newer model refuses it.
  */
 
+import { stretchedChunks, type Narrator } from "./ladder/stretch";
+
 export type SpeechKind = "word" | "sentence" | "story" | "talk";
 export const SPEECH_KINDS: readonly SpeechKind[] = ["word", "sentence", "story", "talk"];
 
@@ -21,6 +23,8 @@ const VOICES = {
 } as const;
 
 const STABLE = "eleven_multilingual_v2";
+// Stretched lesson words need IPA, which Eleven v4 reads as sounds.
+const STRETCH_MODEL = "eleven_v4";
 const SPEED: Record<SpeechKind, number> = { word: 0.8, sentence: 0.9, story: 0.92, talk: 0.94 };
 // Delivery for the expressive models. A tag holds until the next one.
 const DIRECTION: Record<SpeechKind, string> = {
@@ -71,16 +75,20 @@ export type SpeechResult =
   | { ok: true; audio: ReadableStream<Uint8Array>; model: string; voice: string; failures: SpeechFailure[] }
   | { ok: false; failures: SpeechFailure[] };
 
-/** Speaks `text` with the first voice and model that works. Square brackets never come from callers. */
-export async function synthesize(key: string, rawText: string, narrator: string, kind: SpeechKind): Promise<SpeechResult> {
-  const text = rawText.replace(/[[\]]/g, "").trim().slice(0, 600);
+interface Attempt {
+  model: string;
+  body: Record<string, unknown>;
+}
+
+/** Tries each voice in turn, and each attempt (model and text) for that voice, until one answers. */
+async function firstThatSpeaks(key: string, narrator: string, attempts: () => Attempt[]): Promise<SpeechResult> {
   const failures: SpeechFailure[] = [];
   for (const voice of voicesFor(narrator)) {
-    for (const model of modelsFor(kind)) {
+    for (const { model, body } of attempts()) {
       const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}?output_format=mp3_44100_128`, {
         method: "POST",
         headers: { "xi-api-key": key, "content-type": "application/json", accept: "audio/mpeg" },
-        body: JSON.stringify(payload(text, model, kind)),
+        body: JSON.stringify({ ...body, model_id: model }),
         signal: AbortSignal.timeout(15000),
       }).catch(() => null);
 
@@ -96,4 +104,32 @@ export async function synthesize(key: string, rawText: string, narrator: string,
     }
   }
   return { ok: false, failures };
+}
+
+/** Speaks `text` with the first voice and model that works. Square brackets never come from callers. */
+export async function synthesize(key: string, rawText: string, narrator: string, kind: SpeechKind): Promise<SpeechResult> {
+  const text = rawText.replace(/[[\]]/g, "").trim().slice(0, 600);
+  return firstThatSpeaks(key, narrator, () => modelsFor(kind).map((model) => ({ model, body: payload(text, model, kind) })));
+}
+
+/**
+ * A lesson word the way a teacher models it on the ladder: the vowel stretched, then the word.
+ * "top" becomes "ta, aah, op... top". Eleven v4 reads the IPA chunks as sounds. If v4 cannot
+ * answer, Multilingual v2 says the word slowly twice. Null when the word has no stretched form.
+ */
+export async function synthesizeStretched(key: string, word: string, narrator: Narrator): Promise<SpeechResult | null> {
+  const chunks = stretchedChunks(word, narrator);
+  if (!chunks) return null;
+  const sounds = chunks.map((c) => `/${c}/`).join(", ");
+  const expressive = `[slowly] ${sounds}... [warmly] ${word}.`;
+  const plain = `${word}... ${word}.`;
+  return firstThatSpeaks(key, narrator, () =>
+    [
+      ...(refused.has(STRETCH_MODEL) ? [] : [{ model: STRETCH_MODEL, body: { text: expressive, voice_settings: { stability: 0.5 } } }]),
+      {
+        model: STABLE,
+        body: { text: plain, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed: 0.75 } },
+      },
+    ],
+  );
 }

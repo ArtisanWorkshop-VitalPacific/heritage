@@ -15,6 +15,7 @@
     "@fontsource/andika": "5.3.0",
     "@fontsource/libre-caslon-display": "5.3.0",
     "@fontsource/libre-caslon-text": "5.3.0",
+    "@vercel/functions": "3.10.1",
     "ai": "7.0.159",
     "ffmpeg-static": "5.2.0",
     "next": "16.4.3",

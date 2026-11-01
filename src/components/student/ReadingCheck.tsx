@@ -4,7 +4,7 @@ import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef, use
 import type { AgeBand, Narrator, Passage, WordOutcome } from "@/lib/types";
 import { partsFor, tokenize, type Token } from "@/lib/ladder";
 import { accuracyOf, alignReading, liveProgress, splitHeard, wcpm } from "@/lib/align";
-import { hasRecognition, listen, sayWordWithParts, stopSpeaking, type Listener } from "@/lib/speech";
+import { hasRecognition, listen, sayWord, stopSpeaking, type Listener } from "@/lib/speech";
 import { Illustration } from "@/components/Illustration";
 import { IconCheck, IconMic } from "@/components/icons";
 import { MicChip } from "./Drills";
@@ -105,7 +105,7 @@ export function PassageView({ passage, band, narrator, phase = "ready", place, m
       if (popTimer.current) clearTimeout(popTimer.current);
       popTimer.current = setTimeout(() => setPop(null), 3400);
       const word = tokens[i]?.clean ?? "";
-      void sayWordWithParts(bareWord(tokens[i]?.display ?? word), partsFor(word), narrator);
+      void sayWord(bareWord(tokens[i]?.display ?? word), narrator);
     },
     [narrator, tokens],
   );

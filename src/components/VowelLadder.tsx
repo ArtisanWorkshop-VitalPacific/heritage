@@ -58,7 +58,7 @@ export function VowelLadder({
       const word = data.right[i];
       setActive(i);
       onRung?.(i, word);
-      if (word) await speak(word, { narrator, kind: "word" });
+      if (word) await speak(word, { narrator, kind: "word", stretch: true });
     },
     [data.right, narrator, onRung],
   );

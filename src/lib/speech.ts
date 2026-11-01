@@ -10,6 +10,7 @@
  */
 
 import type { Narrator } from "./types";
+import { STRETCH_VERSION } from "./stretch-version";
 
 /* ---------------- Speaking ---------------- */
 
@@ -18,6 +19,8 @@ export interface SpeakOptions {
   /** 1 = normal. Defaults by kind. */
   rate?: number;
   kind?: "word" | "sentence" | "story" | "talk";
+  /** A lesson word printed with its vowel in color: Mrs. Wren holds the vowel, then says the word. */
+  stretch?: boolean;
   onStart?: () => void;
   onEnd?: () => void;
 }
@@ -121,6 +124,25 @@ function chunks(text: string): string[] {
 // After two failed requests in a row (a bad key, a spent quota), the browser voice takes over.
 let elevenFailures = 0;
 
+const isAudio = (res: Response) => res.status === 200 && (res.headers.get("content-type") ?? "").startsWith("audio/");
+
+async function play(res: Response, opts: SpeakOptions, token: number): Promise<boolean> {
+  if (token !== speakToken) return true;
+  const blob = await res.blob();
+  if (token !== speakToken) return true;
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  currentAudio = audio;
+  await new Promise<void>((resolve) => {
+    audio.onended = () => resolve();
+    audio.onerror = () => resolve();
+    opts.onStart?.();
+    audio.play().catch(() => resolve());
+  });
+  URL.revokeObjectURL(url);
+  return true;
+}
+
 async function speakEleven(text: string, opts: SpeakOptions, token: number): Promise<boolean> {
   try {
     const res = await fetch("/api/tts", {
@@ -129,26 +151,34 @@ async function speakEleven(text: string, opts: SpeakOptions, token: number): Pro
       body: JSON.stringify({ text, narrator: opts.narrator ?? "american", kind: opts.kind ?? "sentence" }),
     });
     // 204 means the server could not speak this line: fall back to the browser voice.
-    const audioReply = res.status === 200 && (res.headers.get("content-type") ?? "").startsWith("audio/");
-    if (!audioReply) {
+    if (!isAudio(res)) {
       if (++elevenFailures >= 2) ttsMode = "browser";
       return false;
     }
     elevenFailures = 0;
-    if (token !== speakToken) return true;
-    const blob = await res.blob();
-    if (token !== speakToken) return true;
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    currentAudio = audio;
-    await new Promise<void>((resolve) => {
-      audio.onended = () => resolve();
-      audio.onerror = () => resolve();
-      opts.onStart?.();
-      audio.play().catch(() => resolve());
-    });
-    URL.revokeObjectURL(url);
-    return true;
+    return await play(res, opts, token);
+  } catch {
+    return false;
+  }
+}
+
+/* Lesson words are said the way a teacher models them on the ladder: the vowel held, then the
+   word ("ta, aah, op... top"). The server builds it once per word and voice and caches it. */
+
+/** The bare word when `text` is a single word ("Hat." -> "hat"), otherwise null. */
+function singleWord(text: string): string | null {
+  const w = text.trim().replace(/^[\s"'“‘(]+|[\s"'”’).,!?;:]+$/g, "");
+  return /^[A-Za-z]{1,24}$/.test(w) ? w.toLowerCase() : null;
+}
+
+async function speakStretched(word: string, opts: SpeakOptions, token: number): Promise<boolean> {
+  try {
+    const q = new URLSearchParams({ w: word, n: opts.narrator ?? "american", v: STRETCH_VERSION });
+    const res = await fetch(`/api/tts/word?${q}`);
+    // 404: a heart word or a word the lessons do not use. It is said plainly instead.
+    if (!isAudio(res)) return false;
+    elevenFailures = 0;
+    return await play(res, opts, token);
   } catch {
     return false;
   }
@@ -194,7 +224,11 @@ export async function speak(text: string, opts: SpeakOptions = {}): Promise<void
   const mode = await probeTts();
   if (token !== speakToken) return;
   let done = false;
-  if (mode === "elevenlabs") done = await speakEleven(text, opts, token);
+  if (mode === "elevenlabs") {
+    const word = opts.stretch ? singleWord(text) : null;
+    if (word) done = await speakStretched(word, opts, token);
+    if (!done && token === speakToken) done = await speakEleven(text, opts, token);
+  }
   if (!done && token === speakToken) await speakBrowser(text, opts, token);
   if (token === speakToken) opts.onEnd?.();
 }
@@ -328,9 +362,11 @@ export function listen(handlers: ListenHandlers, opts: { continuous?: boolean; l
 
 /* ---------------- Phonics helpers ---------------- */
 
-/** What the tutor says for a word tapped in a passage: the word, then the word slowly in parts. */
-export function sayWordWithParts(word: string, parts: string[], narrator?: Narrator) {
+/**
+ * What the tutor says for a word tapped in a passage: the vowel held, then the word. Heart words,
+ * and every word in the browser voice, are said slowly as they are.
+ */
+export function sayWord(word: string, narrator?: Narrator) {
   const clean = word.replace(/[^A-Za-z']/g, "");
-  const text = parts.length > 1 ? `${clean}. ${parts.join(", ")}. ${clean}.` : `${clean}.`;
-  return speak(text, { narrator, kind: "word" });
+  return speak(clean, { narrator, kind: "word", stretch: true });
 }

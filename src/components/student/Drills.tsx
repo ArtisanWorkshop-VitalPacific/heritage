@@ -64,7 +64,8 @@ export function HearWord({ word, narrator, large, className, say, children }: He
       data-on={on || undefined}
       onClick={() => {
         flash();
-        void speak(say ?? word, { narrator, kind: "word" });
+        // A word printed with its vowel in color is heard with the vowel held. A custom line is said as written.
+        void speak(say ?? word, { narrator, kind: "word", stretch: !say });
       }}
       aria-label={`Hear ${word}`}
     >
