@@ -698,13 +698,20 @@
   pointer-events: none;
 }
 
-/* Soft edges: the nav zone at the top and the page below. */
+/* Soft edges: the nav zone at the top and the page below. The top wash holds behind the nav links
+   and is gone 24px under the bar, above the mother's head at the end of the film. */
 .s-hero-edges {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(to bottom, var(--parchment) 0, var(--s-parchment-0) var(--s-nav-h)),
+    linear-gradient(
+      to bottom,
+      var(--parchment) 0,
+      rgba(239, 230, 210, 0.9) calc(var(--s-nav-h) * 0.5),
+      rgba(239, 230, 210, 0.5) var(--s-nav-h),
+      var(--s-parchment-0) calc(var(--s-nav-h) + 24px)
+    ),
     linear-gradient(to top, var(--parchment) 0, var(--s-parchment-0) 14%);
 }
 
@@ -837,7 +844,21 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, var(--parchment) 0, var(--s-parchment-0) 6%, var(--s-parchment-0) 88%, var(--parchment) 100%);
+    /* An eased fade at the top: the oak goes soft instead of meeting a line, and the wash is
+       nearly gone by the top of the mother's head, about 13% down at the end of the film. */
+    background: linear-gradient(
+      to bottom,
+      var(--parchment) 0,
+      rgba(239, 230, 210, 0.78) 2.5%,
+      rgba(239, 230, 210, 0.52) 5%,
+      rgba(239, 230, 210, 0.3) 8%,
+      rgba(239, 230, 210, 0.14) 11%,
+      rgba(239, 230, 210, 0.04) 14%,
+      var(--s-parchment-0) 16%,
+      var(--s-parchment-0) 86%,
+      rgba(239, 230, 210, 0.45) 93%,
+      var(--parchment) 100%
+    );
   }
   .s-hero-vignette {
     background: radial-gradient(closest-side, var(--s-parchment-0) 58%, rgba(239, 230, 210, 0.72) 84%, var(--parchment) 100%);
