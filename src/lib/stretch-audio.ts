@@ -65,11 +65,12 @@ const hann = (n: number) => Float32Array.from({ length: n }, (_, i) => 0.5 - 0.5
 
 /** Lengthens a sound by `factor` without changing its pitch or vowel quality (WSOLA). */
 export function stretch(x: Float32Array, factor: number, sampleRate: number): Float32Array {
-  const n = Math.round(0.03 * sampleRate);
+  // 25 ms frames; a short vowel (a short a before t can be under 80 ms) gets frames half its length.
+  const n = Math.max(Math.round(0.01 * sampleRate), Math.min(Math.round(0.025 * sampleRate), Math.floor(x.length / 2)));
   if (x.length < n * 2 || factor <= 1) return x.slice();
   const hs = Math.floor(n / 2);
   const ha = hs / factor;
-  const tol = Math.round(0.008 * sampleRate);
+  const tol = Math.min(Math.round(0.006 * sampleRate), Math.floor(n / 3));
   const outLen = Math.round(x.length * factor);
   const y = new Float32Array(outLen + n);
   const norm = new Float32Array(outLen + n);
@@ -113,26 +114,41 @@ function fade(x: Float32Array, inSec: number, outSec: number, sampleRate: number
 
 interface Frames {
   rms: number[];
-  zcr: number[];
+  /** How periodic each frame is, 0 to 1: a vowel is periodic even when breathy; h, s, t and p are not. */
+  pitch: number[];
   hop: number;
 }
 
-function frames(x: Float32Array, from: number, to: number, sampleRate: number): Frames {
+function frames(x: Float32Array, from: number, to: number, sampleRate: number, periodicity = false): Frames {
   const hop = Math.round(0.01 * sampleRate);
-  const len = Math.round(0.02 * sampleRate);
+  const len = Math.round(0.03 * sampleRate);
+  const minLag = Math.round(sampleRate / 400);
+  const maxLag = Math.round(sampleRate / 80);
   const rms: number[] = [];
-  const zcr: number[] = [];
+  const pitch: number[] = [];
   for (let s = from; s + len <= to; s += hop) {
     let e = 0;
-    let z = 0;
-    for (let i = s; i < s + len; i++) {
-      e += x[i] * x[i];
-      if (i > s && x[i] >= 0 !== x[i - 1] >= 0) z++;
-    }
+    for (let i = s; i < s + len; i++) e += x[i] * x[i];
     rms.push(Math.sqrt(e / len));
-    zcr.push(z / len);
+    if (!periodicity) continue;
+    let best = 0;
+    const span = len - maxLag;
+    if (e > 0 && span > 0) {
+      for (let lag = minLag; lag <= maxLag; lag++) {
+        let c = 0;
+        let a = 0;
+        let b = 0;
+        for (let i = s; i < s + span; i++) {
+          c += x[i] * x[i + lag];
+          a += x[i] * x[i];
+          b += x[i + lag] * x[i + lag];
+        }
+        if (a > 0 && b > 0) best = Math.max(best, c / Math.sqrt(a * b));
+      }
+    }
+    pitch.push(best);
   }
-  return { rms, zcr, hop };
+  return { rms, pitch, hop };
 }
 
 export interface StretchTiming {
@@ -189,9 +205,9 @@ export function buildStretched(
   // The vowel: the letters' timings, narrowed to the voiced frames around them.
   const ls = sec(t0[at + letters[0]]);
   const le = sec(t1[at + letters[1] - 1]);
-  const g = frames(pcm, ws, we, sampleRate);
+  const g = frames(pcm, ws, we, sampleRate, true);
   const gpeak = Math.max(...g.rms);
-  const voiced = g.rms.map((r, i) => r > gpeak * 0.25 && g.zcr[i] < 0.15);
+  const voiced = g.rms.map((r, i) => r > gpeak * 0.12 && g.pitch[i] > 0.5);
   let a = Math.min(voiced.length - 1, Math.max(0, Math.round(((ls + le) / 2 - ws) / g.hop)));
   if (!voiced[a]) {
     // Nearest voiced frame to the middle of the letters.
@@ -209,19 +225,20 @@ export function buildStretched(
   // A voiced run can carry on into a nasal or l (hum, hill): keep to the vowel letters, with 30 ms either side.
   const margin = Math.round(0.03 * sampleRate);
   let vs = Math.max(ws, ws + a * g.hop, ls - margin);
-  let ve = Math.min(we, ws + (b + 2) * g.hop, le + margin);
-  if (ve - vs < 0.06 * sampleRate) {
+  let ve = Math.min(we, ws + (b + 3) * g.hop, le + margin);
+  if (ve - vs < 0.05 * sampleRate) {
     vs = Math.max(ws, ws + a * g.hop);
-    ve = Math.min(we, ws + (b + 2) * g.hop);
+    ve = Math.min(we, ws + (b + 3) * g.hop);
   }
-  if (ve - vs < 0.06 * sampleRate) return null;
+  if (ve - vs < 0.04 * sampleRate) return null;
 
   const cut = (from: number, to: number) => pcm.slice(from, to);
   const hasOnset = vs - ws > 0.03 * sampleRate;
   const hasCoda = we - ve > 0.03 * sampleRate;
-  const trim = Math.round((ve - vs) * 0.12);
+  // The middle of the vowel, away from the consonants on either side, held for `timing.hold`.
+  const trim = Math.round((ve - vs) * 0.1);
   const steady = cut(vs + trim, ve - trim);
-  const held = fade(stretch(steady, Math.min(4, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), 0.03, 0.04, sampleRate);
+  const held = fade(stretch(steady, Math.min(14, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), 0.03, 0.05, sampleRate);
 
   const parts: Float32Array[] = [];
   if (hasOnset) parts.push(fade(cut(ws, ve), 0.005, 0.03, sampleRate));

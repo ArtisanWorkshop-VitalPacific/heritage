@@ -91,6 +91,37 @@ describe("building the stretched word", () => {
     expect(Math.max(...built.samples.map(Math.abs))).toBeCloseTo(0.89, 2);
   });
 
+  it("holds a short, breathy vowel for the full hold (a short a between a long h and t)", () => {
+    const seg = (sec: number, f: (t: number) => number) => Float32Array.from({ length: Math.round(sec * RATE) }, (_, i) => f(i / RATE));
+    let seed = 11;
+    const noise = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+    const parts = [
+      seg(0.04, () => 0),
+      seg(0.16, () => 0.12 * noise()),
+      seg(0.08, (t) => 0.35 * Math.sin(2 * Math.PI * 190 * t) + 0.15 * Math.sin(2 * Math.PI * 950 * t) + 0.04 * noise()),
+      seg(0.06, () => 0),
+      seg(0.16, () => 0.15 * noise()),
+      seg(0.1, () => 0),
+    ];
+    const pcm = new Float32Array(parts.reduce((s, p) => s + p.length, 0));
+    let at = 0;
+    for (const p of parts) {
+      pcm.set(p, at);
+      at += p.length;
+    }
+    const alignment = {
+      characters: ["h", "a", "t", "."],
+      character_start_times_seconds: [0.04, 0.2, 0.28, 0.5],
+      character_end_times_seconds: [0.2, 0.28, 0.5, 0.55],
+    };
+    const built = buildStretched(pcm, RATE, alignment, "hat", 0, { gap: 0.2, beforeWord: 0.55, hold: 0.6 })!;
+    expect(built).not.toBeNull();
+    expect(built.vowel[0]).toBeGreaterThan(0.17);
+    expect(built.vowel[1]).toBeLessThan(0.32);
+    // onset part, held vowel, rest, word: well over two and a half seconds with a 0.6 s hold.
+    expect(built.samples.length / RATE).toBeGreaterThan(2.6);
+  });
+
   it("finds the word after a carrier phrase, and gives up when the word is missing", () => {
     const { pcm, alignment } = fakeTop();
     expect(buildStretched(pcm, RATE, { ...alignment, characters: ["x", "y", "z", "."] }, "top")).toBeNull();
