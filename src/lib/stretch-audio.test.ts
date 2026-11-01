@@ -122,6 +122,16 @@ describe("building the stretched word", () => {
     expect(built.samples.length / RATE).toBeGreaterThan(2.6);
   });
 
+  it("leaves out the onset part for a word that starts on its vowel", () => {
+    const { pcm, alignment } = fakeTop();
+    // The same recording read as "op": the vowel is the first letter.
+    const op = { ...alignment, characters: ["o", "p", ".", " "], character_start_times_seconds: [0.05, 0.35, 0.45, 0.5], character_end_times_seconds: [0.35, 0.45, 0.5, 0.5] };
+    const withOnset = buildStretched(pcm, RATE, alignment, "top")!;
+    const without = buildStretched(pcm, RATE, op, "op")!;
+    expect(without).not.toBeNull();
+    expect(without.samples.length).toBeLessThan(withOnset.samples.length - 0.2 * RATE);
+  });
+
   it("finds the word after a carrier phrase, and gives up when the word is missing", () => {
     const { pcm, alignment } = fakeTop();
     expect(buildStretched(pcm, RATE, { ...alignment, characters: ["x", "y", "z", "."] }, "top")).toBeNull();

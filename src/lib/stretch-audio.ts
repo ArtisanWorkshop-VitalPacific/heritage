@@ -233,8 +233,10 @@ export function buildStretched(
   if (ve - vs < 0.04 * sampleRate) return null;
 
   const cut = (from: number, to: number) => pcm.slice(from, to);
-  const hasOnset = vs - ws > 0.03 * sampleRate;
-  const hasCoda = we - ve > 0.03 * sampleRate;
+  // The spelling decides the parts: "up" has no onset part, "bee" no part after the vowel. A voiced
+  // onset (b, d, g) can run into the vowel, so the audio alone would miss it.
+  const hasOnset = letters[0] > 0;
+  const hasCoda = letters[1] < word.length;
   // The middle of the vowel, away from the consonants on either side, held for `timing.hold`.
   const trim = Math.round((ve - vs) * 0.1);
   const steady = cut(vs + trim, ve - trim);

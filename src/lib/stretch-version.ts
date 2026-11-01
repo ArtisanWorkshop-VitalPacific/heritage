@@ -3,4 +3,4 @@
  * Bump it after a change to the pronunciations, the spoken template or the voices: every word is
  * then generated again, and the old answers drop out of the browser, CDN and runtime caches.
  */
-export const STRETCH_VERSION = "4";
+export const STRETCH_VERSION = "5";
