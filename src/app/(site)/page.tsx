@@ -32,7 +32,11 @@ export default function Home() {
               A phonics tutor for children ages 4 to 8.
             </h1>
             <p className="s-hero-sub">
-              Fifteen-minute lessons based on <cite>Reading with Phonics</cite> (1946), taught from a printed page at your table.
+              Fifteen-minute lessons based on{" "}
+              <span className="s-nowrap">
+                <cite>Reading with Phonics</cite> (1946),
+              </span>
+              <br className="s-hero-br" /> taught from a printed page at your table.
             </p>
             <div className="s-hero-cta glass glass-lg">
               <Link href="/app/onboarding" className="btn btn-primary btn-lg">

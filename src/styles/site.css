@@ -815,10 +815,17 @@
   color: var(--ink-2);
 }
 
+/* Wide screens: two lines, broken after the book and its year. Narrow screens: balanced lines. */
 .s-hero-intro .s-hero-sub {
-  max-width: 44ch;
+  max-width: 34em;
   margin-inline: auto;
   text-wrap: balance;
+}
+
+@media (max-width: 759px) {
+  .s-hero-br {
+    display: none;
+  }
 }
 
 .s-hero-cta {
