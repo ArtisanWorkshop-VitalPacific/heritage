@@ -4,7 +4,7 @@ import { IconArrowRight } from "@/components/icons";
 import { ClosingCTA, MoreLink, PageHeader, SectionHead } from "@/components/site/blocks";
 
 export const metadata: Metadata = {
-  title: "Susan Weaver, M.A.",
+  title: "Our Story",
   description:
     "Susan Weaver, M.A., has taught for 42 years, including as a Master Teacher at Biola University, and educated her six children from early childhood through high school. Heritage Readers follows her approach to teaching reading.",
 };
@@ -36,11 +36,11 @@ const RECORD = [
   },
 ];
 
-export default function SusanPage() {
+export default function OurStoryPage() {
   return (
     <>
       <PageHeader
-        eyebrow="The educator"
+        eyebrow="Our story"
         title="Susan Weaver, M.A."
         lede="Susan has taught for 42 years, from children learning their first letter sounds to students in competitive debate. Heritage Readers follows her approach to teaching reading."
         art="hearth-reading"

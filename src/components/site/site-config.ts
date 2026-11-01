@@ -4,7 +4,7 @@ export const NAV_LINKS = [
   { href: "/method", label: "Method" },
   { href: "/schools", label: "Schools" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/susan", label: "Susan" },
+  { href: "/our-story", label: "Our Story" },
 ] as const;
 
 /**
@@ -48,7 +48,7 @@ export const FOOTER_COLUMNS: { title: string; links: { href: string; label: stri
   {
     title: "Company",
     links: [
-      { href: "/susan", label: "Susan Weaver, M.A." },
+      { href: "/our-story", label: "Our Story" },
       { href: "/pricing#referral", label: "Give a month" },
       { href: "/pricing#faq", label: "Questions" },
     ],

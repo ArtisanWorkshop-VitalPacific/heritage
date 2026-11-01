@@ -272,7 +272,7 @@ export default function Home() {
                 <dt>Early Reading</dt>
               </div>
             </dl>
-            <MoreLink href="/susan">About Susan</MoreLink>
+            <MoreLink href="/our-story">About Susan</MoreLink>
           </div>
         </div>
       </section>
