@@ -55,7 +55,7 @@ Nora is 6, on rung 10 (the letter h), with one clean read already.
 
 - Mrs. Wren answers from a script tonight. Add a payment card to the Vercel account and the AI Gateway turns on by itself: live replies and generated passages, still checked word by word by the validator.
 - Her voice is ElevenLabs (Eleven v4 Turbo for her lines, Multilingual v2 for single words). The family's narrator setting picks the voice: Gentle Mara (American) or Sandy Soft (British). If ElevenLabs can't answer, the browser voice takes over.
-- Tap a lesson word printed with a pink vowel (the ladder, the warm up, the drills, a word in the story) and she holds the vowel, then says the word: "top" is "ta, aah, op... top." Eleven v4 reads the sounds from IPA. Each word is made once per voice and kept, so the first tap of a new word takes about two seconds and every tap after plays at once. Heart words (the, said, was) are said plainly.
+- Tap a lesson word printed with a pink vowel (the ladder, the warm up, the drills, a word in the story) and she says it the ladder way: "top" is "ta, ah, op... top." Every part is cut from her own recording of the word, so a short vowel stays short and a long vowel says its name. Each word is made once per voice and kept, so the first tap of a new word takes about two seconds and every tap after plays at once. Heart words (the, said, was) are said plainly.
 - Speech is scored by the browser's recognizer. Production uses a child-tuned scorer and Susan's recorded phonograms.
 - Ladder colors were sampled from photographs of Reading with Phonics. McGuffey colors are provisional until scans arrive.
 - "Mrs. Wren" is a working name.

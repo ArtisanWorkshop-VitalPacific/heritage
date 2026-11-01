@@ -6,7 +6,7 @@ import { STRETCH_VERSION } from "@/lib/stretch-version";
 export const dynamic = "force-dynamic";
 
 /**
- * A lesson word in Mrs. Wren's voice with the vowel held: GET /api/tts/word?w=top&n=american&v=1.
+ * A lesson word in Mrs. Wren's voice, said the ladder way: GET /api/tts/word?w=top&n=american&v=2.
  * Only the lessons' decodable words are accepted, so the spend is bounded. Each word is generated
  * once per voice, kept in Vercel's runtime cache (which outlives deployments) and in the CDN, then
  * plays at once for everyone. 404 for words without a stretched form (the client then says them
@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 const KEEP_SECONDS = 60 * 60 * 24 * 30;
 
 interface Stored {
-  audio: string; // base64 mp3
+  audio: string; // base64 WAV
   model: string;
   voice: string;
 }
@@ -39,7 +39,7 @@ const noStore = { "cache-control": "no-store" };
 function audio(bytes: Uint8Array<ArrayBuffer>, model: string, voice: string, source: "stored" | "new") {
   return new Response(bytes, {
     headers: {
-      "content-type": "audio/mpeg",
+      "content-type": "audio/wav",
       "content-length": String(bytes.byteLength),
       // The browser keeps it a day; the CDN keeps it until STRETCH_VERSION changes.
       "cache-control": "public, max-age=86400",
@@ -75,7 +75,7 @@ export async function GET(req: Request) {
   for (const f of result.failures) console.error(`[tts/word] ${word}: ${f.model} with voice ${f.voice} failed: ${f.status ?? "-"} ${f.detail}`);
   if (!result.ok) return new Response(null, { status: 204, headers: noStore });
 
-  const bytes = new Uint8Array(await new Response(result.audio).arrayBuffer());
+  const bytes = result.wav;
   const entry: Stored = { audio: Buffer.from(bytes).toString("base64"), model: result.model, voice: result.voice };
   waitUntil(
     cache.set(slot, entry, { ttl: KEEP_SECONDS, name: `${narrator} ${word}` }).catch((e) => console.error(`[tts/word] could not keep ${word}:`, e)),

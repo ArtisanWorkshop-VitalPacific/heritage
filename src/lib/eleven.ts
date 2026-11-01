@@ -12,7 +12,8 @@
  *   Every request falls back to Multilingual v2 if a newer model refuses it.
  */
 
-import { stretchedChunks, type Narrator } from "./ladder/stretch";
+import { canStretch, stressedVowel, type Narrator } from "./ladder/stretch";
+import { buildStretched, pcmToFloat, sourceText, wav } from "./stretch-audio";
 
 export type SpeechKind = "word" | "sentence" | "story" | "talk";
 export const SPEECH_KINDS: readonly SpeechKind[] = ["word", "sentence", "story", "talk"];
@@ -23,7 +24,7 @@ const VOICES = {
 } as const;
 
 const STABLE = "eleven_multilingual_v2";
-// Stretched lesson words need IPA, which Eleven v4 reads as sounds.
+// Lesson words are recorded once with Eleven v4, said slowly, then cut into their parts.
 const STRETCH_MODEL = "eleven_v4";
 const SPEED: Record<SpeechKind, number> = { word: 0.8, sentence: 0.9, story: 0.92, talk: 0.94 };
 // Delivery for the expressive models. A tag holds until the next one.
@@ -106,35 +107,64 @@ async function firstThatSpeaks(key: string, narrator: string, attempts: () => At
   return { ok: false, failures };
 }
 
-/** One request body on one model, with the narrator's voices in turn. For the pronunciation lab. */
-export function synthesizeRaw(key: string, narrator: string, model: string, body: Record<string, unknown>): Promise<SpeechResult> {
-  return firstThatSpeaks(key, narrator, () => [{ model, body }]);
-}
-
 /** Speaks `text` with the first voice and model that works. Square brackets never come from callers. */
 export async function synthesize(key: string, rawText: string, narrator: string, kind: SpeechKind): Promise<SpeechResult> {
   const text = rawText.replace(/[[\]]/g, "").trim().slice(0, 600);
   return firstThatSpeaks(key, narrator, () => modelsFor(kind).map((model) => ({ model, body: payload(text, model, kind) })));
 }
 
+/** Sample rate of the recordings the stretched words are cut from. Below 44.1 kHz, which needs a Pro plan. */
+const SOURCE_RATE = 24000;
+
+export type StretchResult =
+  | { ok: true; wav: Uint8Array<ArrayBuffer>; model: string; voice: string; failures: SpeechFailure[] }
+  | { ok: false; failures: SpeechFailure[] };
+
 /**
- * A lesson word the way a teacher models it on the ladder: the vowel stretched, then the word.
- * "top" becomes "ta, aah, op... top". Eleven v4 reads the IPA chunks as sounds. If v4 cannot
- * answer, Multilingual v2 says the word slowly twice. Null when the word has no stretched form.
+ * A lesson word the way a teacher models it on the ladder: "top" becomes "ta, ah, op... top".
+ * The word is recorded once, with per-letter timings, and the parts are cut from that recording,
+ * so the vowel in every part is the vowel of the word. Null when the word has no stretched form.
  */
-export async function synthesizeStretched(key: string, word: string, narrator: Narrator): Promise<SpeechResult | null> {
-  const chunks = stretchedChunks(word, narrator);
-  if (!chunks) return null;
-  const sounds = chunks.map((c) => `/${c}/`).join(", ");
-  const expressive = `[slowly] ${sounds}... [warmly] ${word}.`;
-  const plain = `${word}... ${word}.`;
-  return firstThatSpeaks(key, narrator, () =>
-    [
-      ...(refused.has(STRETCH_MODEL) ? [] : [{ model: STRETCH_MODEL, body: { text: expressive, voice_settings: { stability: 0.5 } } }]),
-      {
-        model: STABLE,
-        body: { text: plain, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0.1, use_speaker_boost: true, speed: 0.75 } },
-      },
-    ],
-  );
+export async function synthesizeStretched(key: string, word: string, narrator: Narrator): Promise<StretchResult | null> {
+  if (!canStretch(word)) return null;
+  const stressed = stressedVowel(word);
+  const failures: SpeechFailure[] = [];
+  for (const voice of voicesFor(narrator)) {
+    for (const model of [STRETCH_MODEL, STABLE]) {
+      if (refused.has(model)) continue;
+      const body =
+        model === STABLE
+          ? { text: sourceText(word), model_id: model, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0, use_speaker_boost: true, speed: 0.8 } }
+          : { text: `[slowly] ${sourceText(word)}`, model_id: model, voice_settings: { stability: 0.5 } };
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=pcm_${SOURCE_RATE}`, {
+        method: "POST",
+        headers: { "xi-api-key": key, "content-type": "application/json" },
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(20000),
+      }).catch(() => null);
+
+      if (!res?.ok) {
+        const detail = res ? (await res.text().catch(() => "")).slice(0, 300) : "network error";
+        failures.push({ model, voice, status: res?.status ?? null, detail });
+        if (res && (res.status === 401 || res.status === 429)) return { ok: false, failures };
+        if (res && res.status === 400 && /model/i.test(detail) && !/voice/i.test(detail)) refused.add(model);
+        if (res && (res.status === 404 || /voice/i.test(detail))) break;
+        continue;
+      }
+
+      const json = (await res.json().catch(() => null)) as {
+        audio_base64?: string;
+        alignment?: Parameters<typeof buildStretched>[2] | null;
+        normalized_alignment?: Parameters<typeof buildStretched>[2] | null;
+      } | null;
+      const align = json?.alignment ?? json?.normalized_alignment;
+      const built = json?.audio_base64 && align ? buildStretched(pcmToFloat(Buffer.from(json.audio_base64, "base64")), SOURCE_RATE, align, word, stressed) : null;
+      if (!built) {
+        failures.push({ model, voice, status: 200, detail: "the word or its vowel could not be found in the recording" });
+        continue;
+      }
+      return { ok: true, wav: wav(built.samples, SOURCE_RATE), model, voice, failures };
+    }
+  }
+  return { ok: false, failures };
 }
