@@ -295,6 +295,9 @@ export function buildStretched(
   // even loudness.
   const trim = Math.round((ve - vs) * 0.15);
   const steady = cut(vs + trim, ve - trim);
+  // A take whose vowel is breath or noise (an h or a t cut by mistake) is not used.
+  const check = frames(steady, 0, steady.length, sampleRate, true);
+  if (check.pitch.length && check.pitch.reduce((s, x) => s + x, 0) / check.pitch.length < 0.45) return null;
   const held = fade(even(stretch(steady, Math.min(14, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), sampleRate), 0.03, 0.05, sampleRate);
 
   const lead = Math.round(0.05 * sampleRate);

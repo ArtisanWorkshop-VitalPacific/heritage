@@ -227,8 +227,11 @@ function speakBrowser(text: string, opts: SpeakOptions, token: number): Promise<
 
 const SOUND = /⟦([A-Za-z]+)⟧/g;
 
-/** The word each short vowel sound is cut from: a voiceless consonant either side keeps it clean. */
-const VOWEL_KEY: Record<string, string> = { a: "hat", e: "pet", i: "hit", o: "hot", u: "hut" };
+/**
+ * The word each short vowel sound is cut from. McGuffey keys the short vowels to am, end, in, odd
+ * and up; words that open on the vowel and close on a voiceless stop give the cleanest sound.
+ */
+const VOWEL_KEY: Record<string, string> = { a: "at", e: "pet", i: "it", o: "odd", u: "up" };
 
 /** "ha, a, at" for "hat": onset with the vowel, the vowel, the vowel with the rest. */
 export function partsCaption(word: string): string {

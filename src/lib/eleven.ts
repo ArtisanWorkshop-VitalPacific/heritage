@@ -131,7 +131,10 @@ export async function synthesizeStretched(key: string, word: string, narrator: N
   // clear word. Eleven v4's timings drift when an audio tag sets the pace.
   const model = STABLE;
   const body = { text: sourceText(word), model_id: model, voice_settings: { stability: 0.7, similarity_boost: 0.8, style: 0, use_speaker_boost: true, speed: 0.75 } };
-  for (const voice of voicesFor(narrator)) {
+  // Up to two takes per voice: a take now and then clips its vowel, and a second take keeps the same voice.
+  const takes = voicesFor(narrator).flatMap((voice) => [voice, voice]);
+  for (const [n, voice] of takes.entries()) {
+    if (n % 2 === 1 && failures.at(-1)?.status !== 200) continue;
     const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voice}/with-timestamps?output_format=pcm_${SOURCE_RATE}`, {
       method: "POST",
       headers: { "xi-api-key": key, "content-type": "application/json" },
