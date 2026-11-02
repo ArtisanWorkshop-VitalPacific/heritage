@@ -123,7 +123,7 @@ export type StretchResult =
  * The word is recorded once, with per-letter timings, and the parts are cut from that recording,
  * so the vowel in every part is the vowel of the word. Null when the word has no stretched form.
  */
-export async function synthesizeStretched(key: string, word: string, narrator: Narrator): Promise<StretchResult | null> {
+export async function synthesizeStretched(key: string, word: string, narrator: Narrator, only?: "vowel"): Promise<StretchResult | null> {
   if (!canStretch(word)) return null;
   const stressed = stressedVowel(word);
   const failures: SpeechFailure[] = [];
@@ -153,7 +153,7 @@ export async function synthesizeStretched(key: string, word: string, narrator: N
       normalized_alignment?: Alignment | null;
     } | null;
     const align = json?.alignment ?? json?.normalized_alignment;
-    const built = json?.audio_base64 && align ? buildStretched(pcmToFloat(Buffer.from(json.audio_base64, "base64")), SOURCE_RATE, align, word, stressed) : null;
+    const built = json?.audio_base64 && align ? buildStretched(pcmToFloat(Buffer.from(json.audio_base64, "base64")), SOURCE_RATE, align, word, stressed, undefined, only) : null;
     if (!built) {
       failures.push({ model, voice, status: 200, detail: "the word or its vowel could not be found in the recording" });
       continue;

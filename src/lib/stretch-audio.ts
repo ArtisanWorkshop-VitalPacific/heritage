@@ -112,6 +112,17 @@ function fade(x: Float32Array, inSec: number, outSec: number, sampleRate: number
   return y;
 }
 
+/** Sets the loudest sample at -1 dBFS. */
+function level(x: Float32Array): Float32Array {
+  let max = 0;
+  for (const v of x) max = Math.max(max, Math.abs(v));
+  if (max > 0) {
+    const k = 0.89 / max;
+    for (let i = 0; i < x.length; i++) x[i] *= k;
+  }
+  return x;
+}
+
 /** Evens out the loudness of a held vowel (within 6 dB) so it does not fade or swell. */
 function even(x: Float32Array, sampleRate: number): Float32Array {
   const block = Math.round(0.02 * sampleRate);
@@ -204,6 +215,7 @@ export function buildStretched(
   word: string,
   stressed = 0,
   timing: StretchTiming = TIMING,
+  only?: "vowel",
 ): Built | null {
   const chars = align.characters.map((c) => c.toLowerCase()).join("");
   const at = chars.lastIndexOf(word.toLowerCase());
@@ -247,8 +259,10 @@ export function buildStretched(
     a = best;
   }
   let b = a;
-  while (a > 0 && voiced[a - 1]) a--;
-  while (b < voiced.length - 1 && voiced[b + 1]) b++;
+  // A voiced stretch may dip for a frame or two (a breathy patch): bridge gaps of up to 20 ms.
+  const on = (i: number) => voiced[i] || (voiced[i - 1] && (voiced[i + 1] || voiced[i + 2])) || (voiced[i + 1] && voiced[i - 2]);
+  while (a > 0 && on(a - 1)) a--;
+  while (b < voiced.length - 1 && on(b + 1)) b++;
   const runStart = Math.max(ws, ws + a * g.hop);
   const runEnd = Math.min(we, ws + (b + 3) * g.hop);
   const w = word.toLowerCase();
@@ -261,6 +275,11 @@ export function buildStretched(
   if (ve - vs < 0.05 * sampleRate) {
     vs = runStart;
     ve = runEnd;
+  }
+  // Too little voicing to trust: fall back to the letters' own timings.
+  if (ve - vs < 0.04 * sampleRate && le - ls >= 0.04 * sampleRate) {
+    vs = Math.max(ws, ls);
+    ve = Math.min(we, le);
   }
   if (ve - vs < 0.04 * sampleRate) return null;
   // No onset runs longer than a slow, careful consonant: trims a breath or hum before the word.
@@ -278,6 +297,14 @@ export function buildStretched(
   const steady = cut(vs + trim, ve - trim);
   const held = fade(even(stretch(steady, Math.min(14, Math.max(1, (timing.hold * sampleRate) / steady.length)), sampleRate), sampleRate), 0.03, 0.05, sampleRate);
 
+  const lead = Math.round(0.05 * sampleRate);
+  if (only === "vowel") {
+    // The sound alone (ă, not "ay"), as McGuffey's phonic method teaches it before the letter's name.
+    const out = new Float32Array(lead + held.length + lead);
+    out.set(held, lead);
+    return { samples: level(out), vowel: [vs / sampleRate, ve / sampleRate], word: [ws / sampleRate, we / sampleRate] };
+  }
+
   const parts: Float32Array[] = [];
   if (hasOnset) parts.push(fade(cut(ws, ve), 0.005, 0.03, sampleRate));
   parts.push(held);
@@ -285,7 +312,6 @@ export function buildStretched(
   const whole = fade(cut(ws, we), 0.005, 0.01, sampleRate);
 
   const gap = Math.round(timing.gap * sampleRate);
-  const lead = Math.round(0.05 * sampleRate);
   const total = lead + parts.reduce((s, p) => s + p.length, 0) + gap * (parts.length - 1) + Math.round(timing.beforeWord * sampleRate) + whole.length + lead;
   const out = new Float32Array(total);
   let pos = lead;
@@ -296,14 +322,7 @@ export function buildStretched(
   pos += Math.round(timing.beforeWord * sampleRate);
   out.set(whole, pos);
 
-  // Level: the loudest sample at -1 dBFS.
-  let max = 0;
-  for (const s of out) max = Math.max(max, Math.abs(s));
-  if (max > 0) {
-    const k = 0.89 / max;
-    for (let i = 0; i < out.length; i++) out[i] *= k;
-  }
-  return { samples: out, vowel: [vs / sampleRate, ve / sampleRate], word: [ws / sampleRate, we / sampleRate] };
+  return { samples: level(out), vowel: [vs / sampleRate, ve / sampleRate], word: [ws / sampleRate, we / sampleRate] };
 }
 
 /** Little-endian 16-bit PCM bytes to samples in [-1, 1]. */

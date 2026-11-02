@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { useDemo } from "@/lib/store";
 import { passageFor } from "@/lib/ladder";
 import { askTutor } from "@/lib/tutor-client";
-import { hasRecognition, listen, speak, stopSpeaking, type Listener } from "@/lib/speech";
+import { captionOf, hasRecognition, listen, speak, stopSpeaking, type Listener } from "@/lib/speech";
 import type { Child, TutorTurn } from "@/lib/types";
 import { IconArrowRight, IconMic, IconSpeaker, IconStop } from "@/components/icons";
 import { BackToToday } from "./Chrome";
@@ -248,7 +248,7 @@ function TalkView({ child, rung }: { child: Child; rung: number }) {
           <li key={i} className="st-bubble" data-role={t.role}>
             {t.role === "tutor" && <WrenAvatar size={44} speaking={speakingIndex === i} />}
             <div className="st-bubble-body">
-              <p>{t.text}</p>
+              <p>{captionOf(t.text)}</p>
               {t.role === "tutor" && (
                 <button type="button" className="st-bubble-hear" onClick={() => sayTurn(t.text, i)} aria-label="Hear this again">
                   <IconSpeaker size={18} />

@@ -55,11 +55,13 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const word = (url.searchParams.get("w") ?? "").toLowerCase().trim();
   const narrator: Narrator = url.searchParams.get("n") === "british" ? "british" : "american";
+  // p=vowel: the word's vowel alone, held (the short a cut from "hat"), for letter pages and vowel taps.
+  const only = url.searchParams.get("p") === "vowel" ? "vowel" : undefined;
   if (url.searchParams.get("v") !== STRETCH_VERSION) return new Response(null, { status: 404, headers: noStore });
   if (!/^[a-z]{1,24}$/.test(word) || !canStretch(word)) return new Response(null, { status: 404, headers: noStore });
 
   const cache = getCache({ namespace: "heritage-tts" });
-  const slot = `word-v${STRETCH_VERSION}-${narrator}-${word}`;
+  const slot = `word-v${STRETCH_VERSION}-${narrator}-${word}${only ? "-vowel" : ""}`;
   const stored = (await cache.get(slot).catch(() => null)) as Stored | null;
   if (stored && typeof stored.audio === "string") {
     return audio(new Uint8Array(Buffer.from(stored.audio, "base64")), stored.model, stored.voice, "stored");
@@ -70,7 +72,7 @@ export async function GET(req: Request) {
   // Only the app itself may spend characters on a new word.
   if (!sameOrigin(req)) return new Response(null, { status: 403, headers: noStore });
 
-  const result = await synthesizeStretched(key, word, narrator);
+  const result = await synthesizeStretched(key, word, narrator, only);
   if (!result) return new Response(null, { status: 404, headers: noStore });
   for (const f of result.failures) console.error(`[tts/word] ${word}: ${f.model} with voice ${f.voice} failed: ${f.status ?? "-"} ${f.detail}`);
   if (!result.ok) return new Response(null, { status: 204, headers: noStore });
@@ -78,7 +80,7 @@ export async function GET(req: Request) {
   const bytes = result.wav;
   const entry: Stored = { audio: Buffer.from(bytes).toString("base64"), model: result.model, voice: result.voice };
   waitUntil(
-    cache.set(slot, entry, { ttl: KEEP_SECONDS, name: `${narrator} ${word}` }).catch((e) => console.error(`[tts/word] could not keep ${word}:`, e)),
+    cache.set(slot, entry, { ttl: KEEP_SECONDS, name: `${narrator} ${word}${only ? " vowel" : ""}` }).catch((e) => console.error(`[tts/word] could not keep ${word}:`, e)),
   );
   return audio(bytes, result.model, result.voice, "new");
 }

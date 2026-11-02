@@ -2,6 +2,7 @@ import type { AgeBand, Rung, TutorRequest } from "./types";
 import { getRung, RUNGS } from "./ladder/rungs";
 import { passageFor } from "./ladder/corpus";
 import { partsFor } from "./ladder/phonics";
+import { canStretch } from "./ladder/stretch";
 import { isAllowed } from "./ladder/validator";
 import { isIrregular } from "./ladder/lexicon";
 import { newWordsAt } from "./ladder/bank";
@@ -391,8 +392,12 @@ export function spokenPattern(r: Rung): string {
   }
 }
 
+/**
+ * A word sounded out the ladder way, ending on the whole word: "ha, a, at... hat". Speech plays it
+ * from Mrs. Wren's own recording, so each vowel keeps its sound.
+ */
 function soundOut(word: string): string {
-  return partsFor(word).join(", ");
+  return canStretch(word) ? `⟦${word}⟧` : `${partsFor(word).join(", ")}. ${cap1(word)}`;
 }
 
 /** A word to model for this rung: a pattern word from the story, else a practice word. */
@@ -529,9 +534,9 @@ function reply(req: TutorRequest): string {
       const parts = soundOut(w);
       return fit(
         pick([
-          `Let us sound it out together. ${parts}. ${cap1(w)}. Now you say it.`,
+          `Let us sound it out together. ${parts}. Now you say it.`,
           `Here are its sounds: ${parts}. Put them together, and it says ${w}. Your turn.`,
-          `Listen closely, {name}: ${parts}. ${cap1(w)}. Say it with me.`,
+          `Listen closely, {name}: ${parts}. Say it with me.`,
         ]),
       );
     }
@@ -541,7 +546,7 @@ function reply(req: TutorRequest): string {
       const m = modelWord(rung.n, passage);
       return fit(
         pick([
-          `Tap the word, and I will say each sound with you. Here is one from our story: ${soundOut(m)}. ${cap1(m)}.`,
+          `Tap the word, and I will say each sound with you. Here is one from our story: ${soundOut(m)}.`,
           "Put your finger under the word and tap it. Then we will sound it out together, one sound at a time.",
         ]),
       );
@@ -625,11 +630,11 @@ function reply(req: TutorRequest): string {
       const m = word && !STOP.has(word) ? word : modelWord(rung.n, passage);
       const parts = soundOut(m);
       const variants = [
-        `That is all right, {name}. Hard words grow easy one sound at a time. Listen: ${parts}. ${cap1(m)}. Now you try.`,
+        `That is all right, {name}. Hard words grow easy one sound at a time. Listen: ${parts}. Now you try.`,
         `You can do hard things, a little at a time. My turn: ${m}. Your turn: say ${m}. We will come back to it.`,
-        `Let us do it together. ${parts}. ${cap1(m)}. Say it with me, and we will try it again in a moment.`,
+        `Let us do it together. ${parts}. Say it with me, and we will try it again in a moment.`,
       ];
-      if (child.faithTrack) variants.push(`Be strong and of good courage, {name}. Listen: ${parts}. ${cap1(m)}. Now you say it.`);
+      if (child.faithTrack) variants.push(`Be strong and of good courage, {name}. Listen: ${parts}. Now you say it.`);
       return fit(pick(variants));
     }
 

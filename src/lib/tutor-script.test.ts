@@ -80,8 +80,10 @@ describe("scripted tutor", () => {
     expect(second).not.toBe(first);
   });
 
-  it("sounds out a word with its parts", () => {
-    expect(scriptedReply(req("how do I say hen?"))).toMatch(/h, e, n/);
+  it("sounds out a word the ladder way, never by its letters' names", () => {
+    const reply = scriptedReply(req("how do I say hen?"));
+    expect(reply).toContain("⟦hen⟧");
+    expect(reply).not.toMatch(/h, e, n/);
   });
 
   it("ties why-read to interests and greets by name", () => {

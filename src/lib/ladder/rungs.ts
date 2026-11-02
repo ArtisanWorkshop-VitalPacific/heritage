@@ -21,11 +21,11 @@ const vowel = (n: number, v: string, keyword: string, spot: string, say: string)
 });
 
 export const RUNGS: Rung[] = [
-  vowel(1, "a", "apple", "spot-apple", "a says the first sound in apple."),
-  vowel(2, "e", "egg", "spot-egg", "e says the first sound in egg."),
-  vowel(3, "i", "ink", "spot-inkwell", "i says the first sound in ink."),
-  vowel(4, "o", "ox", "spot-ox", "o says the first sound in ox."),
-  vowel(5, "u", "umbrella", "spot-umbrella", "u says the first sound in umbrella."),
+  vowel(1, "a", "apple", "spot-apple", "⟦a⟧, as in apple."),
+  vowel(2, "e", "egg", "spot-egg", "⟦e⟧, as in egg."),
+  vowel(3, "i", "ink", "spot-inkwell", "⟦i⟧, as in ink."),
+  vowel(4, "o", "ox", "spot-ox", "⟦o⟧, as in ox."),
+  vowel(5, "u", "umbrella", "spot-umbrella", "⟦u⟧, as in umbrella."),
 
   {
     n: 6,

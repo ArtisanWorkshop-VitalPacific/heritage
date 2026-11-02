@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Narrator } from "@/lib/types";
-import { speak, type SpeakOptions } from "@/lib/speech";
+import { captionOf, speak, type SpeakOptions } from "@/lib/speech";
 import { Illustration } from "@/components/Illustration";
 import { IconSpeaker } from "@/components/icons";
 import { cx } from "./util";
@@ -81,7 +81,7 @@ export function WrenSays({ text, speech, narrator, auto = true, floating, size =
       <WrenAvatar size={size === "lg" ? 64 : 52} speaking={speaking} />
       <p className="st-say-text" aria-live="polite">
         <span className="visually-hidden">Mrs. Wren says: </span>
-        {text}
+        {captionOf(text)}
       </p>
       <button type="button" className="st-say-again" onClick={() => say(line)} aria-label="Hear Mrs. Wren again">
         <IconSpeaker size={24} />

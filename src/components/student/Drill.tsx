@@ -127,7 +127,7 @@ function DrillView({ child, ladder }: { child: Child; ladder: LadderState }) {
                 {VOWELS.map((v, i) => {
                   const page = getRung(i + 1).letterPages![0];
                   return (
-                    <HearWord key={v} word={v} narrator={narrator} say={`${v}, as in ${page.keyword}`} className="st-vowelrow-v">
+                    <HearWord key={v} word={v} narrator={narrator} say={`⟦${v}⟧, as in ${page.keyword}.`} className="st-vowelrow-v">
                       <span className="vowel-lg">{v}</span>
                     </HearWord>
                   );

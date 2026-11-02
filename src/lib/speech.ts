@@ -11,6 +11,7 @@
 
 import type { Narrator } from "./types";
 import { STRETCH_VERSION } from "./stretch-version";
+import { vowelLetters } from "./stretch-audio";
 
 /* ---------------- Speaking ---------------- */
 
@@ -171,9 +172,10 @@ function singleWord(text: string): string | null {
   return /^[A-Za-z]{1,24}$/.test(w) ? w.toLowerCase() : null;
 }
 
-async function speakStretched(word: string, opts: SpeakOptions, token: number): Promise<boolean> {
+async function speakStretched(word: string, opts: SpeakOptions, token: number, part?: "vowel"): Promise<boolean> {
   try {
     const q = new URLSearchParams({ w: word, n: opts.narrator ?? "american", v: STRETCH_VERSION });
+    if (part) q.set("p", part);
     const res = await fetch(`/api/tts/word?${q}`);
     // 404: a heart word or a word the lessons do not use. It is said plainly instead.
     if (!isAudio(res)) return false;
@@ -217,12 +219,52 @@ function speakBrowser(text: string, opts: SpeakOptions, token: number): Promise<
   });
 }
 
-/** Speaks text in the tutor's voice. Resolves when finished or interrupted. */
-export async function speak(text: string, opts: SpeakOptions = {}): Promise<void> {
-  stopSpeaking();
-  const token = ++speakToken;
-  const mode = await probeTts();
-  if (token !== speakToken) return;
+/* ---------------- Sounds inside a line ----------------
+   A line can carry sounds that a speech engine would get wrong if it read them as text:
+   ⟦a⟧ is the short vowel sound (ă, never the letter name "ay"), cut from Mrs. Wren's own "hat";
+   ⟦hat⟧ is the word sounded out the ladder way, "ha, a, at... hat".
+   McGuffey's phonic method teaches the sound first, the letter's name later. */
+
+const SOUND = /⟦([A-Za-z]+)⟧/g;
+
+/** The word each short vowel sound is cut from: a voiceless consonant either side keeps it clean. */
+const VOWEL_KEY: Record<string, string> = { a: "hat", e: "pet", i: "hit", o: "hot", u: "hut" };
+
+/** "ha, a, at" for "hat": onset with the vowel, the vowel, the vowel with the rest. */
+export function partsCaption(word: string): string {
+  const r = vowelLetters(word);
+  if (!r) return word;
+  const [a, b] = r;
+  const onset = word.slice(0, a);
+  const vowel = word.slice(a, b);
+  const rest = word.slice(b);
+  return [onset ? onset + vowel : "", vowel, rest ? vowel + rest : ""].filter(Boolean).join(", ");
+}
+
+/** The caption for a line: ⟦a⟧ shows as "a", a sounded-out word as its parts and then the word. */
+export function captionOf(text: string): string {
+  return text.replace(SOUND, (_, w: string) => (w.length === 1 ? w : `${partsCaption(w.toLowerCase())}... ${w.toLowerCase()}`));
+}
+
+type Piece = { text: string } | { vowel: string } | { word: string };
+
+/** Splits a line into what is read as text and the sounds within it. */
+export function piecesOf(text: string): Piece[] {
+  const out: Piece[] = [];
+  let last = 0;
+  for (const m of text.matchAll(SOUND)) {
+    const before = text.slice(last, m.index).trim();
+    if (before) out.push({ text: before });
+    const w = m[1].toLowerCase();
+    out.push(w.length === 1 && VOWEL_KEY[w] ? { vowel: w } : { word: w });
+    last = (m.index ?? 0) + m[0].length;
+  }
+  const after = text.slice(last).replace(/^[\s,.]+$/, "").trim();
+  if (after) out.push({ text: after });
+  return out;
+}
+
+async function speakOne(text: string, opts: SpeakOptions, token: number, mode: "elevenlabs" | "browser"): Promise<void> {
   let done = false;
   if (mode === "elevenlabs") {
     const word = opts.stretch ? singleWord(text) : null;
@@ -230,6 +272,38 @@ export async function speak(text: string, opts: SpeakOptions = {}): Promise<void
     if (!done && token === speakToken) done = await speakEleven(text, opts, token);
   }
   if (!done && token === speakToken) await speakBrowser(text, opts, token);
+}
+
+/** Speaks text in the tutor's voice. Resolves when finished or interrupted. */
+export async function speak(text: string, opts: SpeakOptions = {}): Promise<void> {
+  stopSpeaking();
+  const token = ++speakToken;
+  const mode = await probeTts();
+  if (token !== speakToken) return;
+  const pieces = piecesOf(text);
+  if (pieces.length === 1 && "text" in pieces[0]) {
+    await speakOne(text, opts, token, mode);
+  } else {
+    let started = false;
+    const onStart = () => {
+      if (!started) {
+        started = true;
+        opts.onStart?.();
+      }
+    };
+    for (const piece of pieces) {
+      if (token !== speakToken) return;
+      const sub: SpeakOptions = { ...opts, onStart, onEnd: undefined };
+      if ("text" in piece) await speakOne(piece.text, sub, token, mode);
+      else if ("vowel" in piece) {
+        // The browser voice cannot make a short vowel on its own: it would say the letter's name.
+        if (mode === "elevenlabs") await speakStretched(VOWEL_KEY[piece.vowel], sub, token, "vowel");
+      } else {
+        const done = mode === "elevenlabs" && (await speakStretched(piece.word, sub, token));
+        if (!done && token === speakToken) await speakOne(piece.word, { ...sub, kind: "word" }, token, mode);
+      }
+    }
+  }
   if (token === speakToken) opts.onEnd?.();
 }
 

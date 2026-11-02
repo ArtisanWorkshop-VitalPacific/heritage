@@ -271,7 +271,7 @@ function VowelWarmup({ child, rung, onNext }: { child: Child; rung: Rung; onNext
         <div className="st-card surface-drill st-vowelrow-card">
           <p className="st-vowelrow" aria-label="a, e, i, o, u">
             {VOWELS.map((v) => (
-              <HearWord key={v} word={v} narrator={child.narrator} large className="st-vowelrow-v" say={v}>
+              <HearWord key={v} word={v} narrator={child.narrator} large className="st-vowelrow-v" say={`⟦${v}⟧`}>
                 <span className="vowel-lg">{v}</span>
               </HearWord>
             ))}
@@ -757,7 +757,10 @@ function CloseStep({ child, rung, result, onDone }: { child: Child; rung: Rung; 
   let line = "";
   if (mastered) line += `You mastered rung ${rung.n}, ${child.name}. `;
   if (word) line += `Today’s word is ${word.word}. ${capitalize(word.word)} means ${word.gloss}.`;
-  else if (lp) line += `Today you learned ${lp.glyphs.split(" ")[0]}, as in ${lp.keyword}. Well done.`;
+  else if (lp) {
+    const glyph = lp.glyphs.split(" ")[0];
+    line += `Today you learned ${/^[aeiou]$/.test(glyph) ? `⟦${glyph}⟧` : glyph}, as in ${lp.keyword}. Well done.`;
+  }
   else line += `Well done today, ${child.name}.`;
 
   const caption = <WrenSays narrator={child.narrator} text={line} floating />;
